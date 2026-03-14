@@ -198,3 +198,582 @@ The POWER OF THE WORLD mobile application will provide a modern digital platform
 By combining video, live streaming, radio, daily teachings, and church information, the application ensures that members stay spiritually connected wherever they are.
 This platform will help extend the reach and impact of the church worldwide.
 
+# Media Church Backend API
+
+A **Django REST Framework backend** that powers a **church media mobile application**.
+The system manages **videos, live streams, audio sermons, radio broadcasts, feeds, daily words, and programs** while tracking **views, likes, shares, and listeners** from Android devices.
+
+This backend is designed to work with a **Kotlin Android application** and provides REST APIs for all media features.
+
+---
+
+# Project Features
+
+The system provides the following features:
+
+### Video Module
+
+* Store preaching videos
+* Track video views per device
+* Track likes
+* Track shares
+* Filter videos by language
+* Filter videos by type
+
+Video Types:
+
+* testimony
+* preach
+* live
+
+---
+
+### Live Streaming
+
+* Manage live church broadcasts
+* Track viewers by device
+* Show only active live streams
+* Automatically delete viewer logs when live stops
+
+---
+
+### Audio Sermons
+
+* Upload sermon audio
+* Title automatically generated:
+
+```
+ISEGERO + current date
+```
+
+Example:
+
+```
+ISEGERO 2026-03-14
+```
+
+Users can:
+
+* Listen
+* Like
+* Share
+
+---
+
+### Feeds (Announcements)
+
+Church announcements such as:
+
+* Prayer meetings
+* Special events
+* Church news
+
+Feed Types:
+
+```
+igikorane
+itaganzo
+```
+
+---
+
+### Daily Word
+
+Displays a **daily scripture image** for mobile users.
+
+---
+
+### Radio Broadcast
+
+Church radio programs that become active automatically when current time is between:
+
+```
+start_hour → end_hour
+```
+
+Example:
+
+```
+Start: 08:00
+End: 10:00
+```
+
+Radio becomes active automatically.
+
+---
+
+### Programs
+
+Church schedule system including:
+
+* Sunday service
+* Weekly meetings
+* Special events
+
+Each program includes:
+
+* title
+* description
+* day
+* start hour
+* end hour
+
+---
+
+### Horaire (Contacts / Schedule)
+
+Stores contact information such as:
+
+* prayer lines
+* church contacts
+* leaders
+
+---
+
+### Android Push Notifications
+
+Automatic notifications are sent when:
+
+* new video is added
+* new audio is added
+* live stream starts
+* radio broadcast begins
+
+Notifications are delivered through **Firebase Cloud Messaging (FCM)**.
+
+---
+
+# Supported Languages
+
+The application supports four languages:
+
+| Code | Language |
+| ---- | -------- |
+| FR   | French   |
+| EN   | English  |
+| SW   | Swahili  |
+| RN   | Kirundi  |
+
+---
+
+# Device Tracking
+
+The mobile app identifies users using:
+
+```
+device_id
+```
+
+Example in Android:
+
+```kotlin
+val deviceId = Settings.Secure.getString(
+    context.contentResolver,
+    Settings.Secure.ANDROID_ID
+)
+```
+
+Device ID is used for:
+
+* views
+* likes
+* shares
+* listens
+
+---
+
+# Project Architecture
+
+```
+media_app
+│
+├── models.py
+├── serializers.py
+├── views.py
+├── urls.py
+├── admin.py
+├── signals.py
+├── services.py
+├── notifications.py
+```
+
+---
+
+# Models Overview
+
+Main models in the system:
+
+```
+Video
+ViewVideo
+LikeVideo
+ShareVideo
+
+Live
+ViewLive
+
+Audio
+ListenAudio
+LikeAudio
+ShareAudio
+
+Feeds
+Horaire
+Radio
+DailyWord
+Program
+```
+
+---
+
+# API Endpoints
+
+Base URL:
+
+```
+/api/
+```
+
+---
+
+## Videos
+
+Get all videos
+
+```
+GET /api/videos/
+```
+
+Filters:
+
+```
+?language=EN
+?type=preach
+```
+
+Record view
+
+```
+POST /api/viewvideo/
+```
+
+Like video
+
+```
+POST /api/likevideo/
+```
+
+Share video
+
+```
+POST /api/sharevideo/
+```
+
+---
+
+## Live Streams
+
+Get live streams
+
+```
+GET /api/live/
+```
+
+Register live viewer
+
+```
+POST /api/viewlive/
+```
+
+---
+
+## Audio
+
+Get audio sermons
+
+```
+GET /api/audio/
+```
+
+Register listen
+
+```
+POST /api/listenaudio/
+```
+
+Like audio
+
+```
+POST /api/likeaudio/
+```
+
+Share audio
+
+```
+POST /api/shareaudio/
+```
+
+---
+
+## Feeds
+
+```
+GET /api/feeds/
+```
+
+Filters:
+
+```
+?language=RN
+?type=igikorane
+```
+
+---
+
+## Daily Word
+
+```
+GET /api/dailyword/
+```
+
+---
+
+## Radio
+
+```
+GET /api/radio/
+```
+
+Returns radio status.
+
+If:
+
+```
+is_active = true
+```
+
+the mobile app should start streaming.
+
+---
+
+## Programs
+
+```
+GET /api/programs/
+```
+
+---
+
+## Horaire
+
+```
+GET /api/horaire/
+```
+
+---
+
+# Installation
+
+### Clone repository
+
+```
+git clone https://github.com/your-repo/church-media-backend.git
+```
+
+---
+
+### Create virtual environment
+
+```
+python -m venv venv
+```
+
+Activate environment
+
+Linux / Mac
+
+```
+source venv/bin/activate
+```
+
+Windows
+
+```
+venv\Scripts\activate
+```
+
+---
+
+### Install dependencies
+
+```
+pip install -r requirements.txt
+```
+
+Main packages:
+
+* Django
+* Django REST Framework
+* Pillow
+* django-filter
+* pyfcm
+* django-cors-headers
+
+---
+
+### Run migrations
+
+```
+python manage.py makemigrations
+python manage.py migrate
+```
+
+---
+
+### Create admin user
+
+```
+python manage.py createsuperuser
+```
+
+---
+
+### Run server
+
+```
+python manage.py runserver
+```
+
+Access admin panel:
+
+```
+http://127.0.0.1:8000/admin
+```
+
+---
+
+# Media Files
+
+Media files include:
+
+* audio
+* thumbnails
+* feeds images
+* daily word images
+
+Configured in settings:
+
+```
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+```
+
+---
+
+# Push Notifications
+
+Push notifications use **Firebase Cloud Messaging**.
+
+Install library:
+
+```
+pip install pyfcm
+```
+
+Add Firebase server key in settings:
+
+```
+FCM_SERVER_KEY = "YOUR_FIREBASE_KEY"
+```
+
+Android devices should subscribe to topic:
+
+```
+all
+```
+
+---
+
+# Radio Automatic Activation
+
+Radio status updates automatically based on time.
+
+Logic:
+
+```
+if start_hour <= current_time <= end_hour
+    radio.is_active = True
+else
+    radio.is_active = False
+```
+
+This runs using:
+
+* cron
+* celery beat
+* scheduled task
+
+---
+
+# Android Integration
+
+Recommended Android libraries:
+
+Networking:
+
+```
+Retrofit
+OkHttp
+```
+
+Media:
+
+```
+ExoPlayer
+```
+
+Notifications:
+
+```
+Firebase Cloud Messaging
+```
+
+---
+
+# Security Notes
+
+Recommended improvements for production:
+
+* add authentication
+* prevent multiple likes per device
+* rate limit API
+* use Redis caching
+* add analytics tracking
+
+---
+
+# Future Improvements
+
+Possible enhancements:
+
+* trending videos
+* video analytics
+* live chat
+* podcast system
+* podcast downloads
+* playlist system
+* admin analytics dashboard
+
+---
+
+# License
+
+This project is intended for **church media streaming applications**.
+
+---
+
+# Author
+
+Backend Developer:
+Django REST Framework API for Android Media App
+
