@@ -1,5 +1,5 @@
 POWER OF THE WORLD – Mobile Application
-User Manual & Functional Overview 
+User Manual & Functional Overview  
 1. Introduction
 POWER OF THE WORLD is a mobile application designed to help church members and followers stay connected with the ministry anytime and anywhere.
 The application provides access to sermons, live broadcasts, radio sessions, church programs, daily spiritual messages, and important announcements. It allows users to engage with the church through multimedia content and stay informed about upcoming activities.
