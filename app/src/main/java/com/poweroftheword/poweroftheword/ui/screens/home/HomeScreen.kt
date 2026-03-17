@@ -52,18 +52,69 @@ fun HomeScreen(
     onSeeAllFeeds: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
-    val view = LocalView.current
+//    val view = LocalView.current
 
-    if (!view.isInEditMode) {
-        SideEffect {
-            val window = (view.context as Activity).window
-            window.statusBarColor = Color.Transparent.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = false
-        }
-    }
+//    if (!view.isInEditMode) {
+//        SideEffect {
+//            val window = (view.context as Activity).window
+//            window.statusBarColor = Color.Transparent.toArgb()
+//            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = false
+//        }
+//    }
 
     Scaffold(
-        contentWindowInsets = WindowInsets(0, 0, 0, 0)
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        topBar = {
+            TopAppBar(
+                title = {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+//                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                            .statusBarsPadding(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            "Power of the Word",
+                            modifier = Modifier.weight(1f),
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            fontSize = 20.sp
+                        )
+
+                        // Pastor Profile Image - Design Position
+
+                        Spacer(modifier = Modifier.width(12.dp))
+
+                        Surface(
+                            color = Color.White.copy(alpha = 0.2f),
+                            shape = RoundedCornerShape(4.dp),
+                            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.3f))
+                        ) {
+                            Text(
+                                "EN",
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                                color = Color.White,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+
+                        IconButton(onClick = { /* Search */ }) {
+                            Icon(
+                                Icons.Default.Search,
+                                contentDescription = "Search",
+                                tint = Color.White
+                            )
+                        }
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent,
+                ),
+
+            )
+        }
     ) { paddingValues ->
         PullToRefreshBox(
             isRefreshing = state.isLoading,
@@ -99,62 +150,15 @@ fun HomeScreen(
                             .height(120.dp)
                             .background(
                                 Brush.verticalGradient(
-                                    colors = listOf(Color.Black.copy(alpha = 0.5f), Color.Transparent)
+                                    colors = listOf(
+                                        Color.Black.copy(alpha = 0.5f),
+                                        Color.Transparent
+                                    )
                                 )
                             )
                     )
 
                     // App Bar Elements Overlaid on Image
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
-                            .statusBarsPadding(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            "Power of the Word",
-                            modifier = Modifier.weight(1f),
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            fontSize = 20.sp
-                        )
-
-                        // Pastor Profile Image - Design Position
-                        AsyncImage(
-                            model = "https://power.clubtechlac.bi/static/admin/img/pastor_placeholder.png",
-                            contentDescription = "Pastor",
-                            modifier = Modifier
-                                .size(50.dp)
-                                .clip(CircleShape)
-                                .border(1.5.dp, Color.White.copy(alpha = 0.5f), CircleShape),
-                            contentScale = ContentScale.Crop
-                        )
-                        
-                        Spacer(modifier = Modifier.width(12.dp))
-
-                        Surface(
-                            color = Color.White.copy(alpha = 0.2f),
-                            shape = RoundedCornerShape(4.dp),
-                            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.3f))
-                        ) {
-                            Text(
-                                "EN",
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                                color = Color.White,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                        
-                        IconButton(onClick = { /* Search */ }) {
-                            Icon(
-                                Icons.Default.Search,
-                                contentDescription = "Search",
-                                tint = Color.White
-                            )
-                        }
-                    }
                 }
 
                 Spacer(modifier = Modifier.height(20.dp))

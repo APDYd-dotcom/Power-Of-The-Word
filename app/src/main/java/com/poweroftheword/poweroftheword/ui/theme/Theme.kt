@@ -61,7 +61,7 @@ fun PowerOfTheWordTheme(
             val window = (view.context as Activity).window
             // Note: HomeScreen handles its own status bar transparency for the immersive header
             if (view.context is Activity) {
-                 window.statusBarColor = colorScheme.background.toArgb()
+                 window.statusBarColor = Color.Transparent.toArgb()
                  WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
             }
         }
