@@ -1,22 +1,29 @@
 package com.poweroftheword.poweroftheword.ui.screens.video
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.poweroftheword.poweroftheword.domain.model.Video
 
@@ -36,22 +43,40 @@ fun VideoListScreen(
 
     Scaffold(
         topBar = {
-            Column {
-                TopAppBar(title = { Text("Church Sermons") })
-                SearchBar(
-                    query = searchQuery,
-                    onQueryChange = viewModel::onSearchQueryChange,
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+            Column(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
+                TopAppBar(
+                    title = { Text("Sermons", fontWeight = FontWeight.Bold) },
+                    actions = {
+                        IconButton(onClick = { /* Search */ }) {
+                            Icon(Icons.Default.Search, contentDescription = null)
+                        }
+                    }
                 )
+                // Filter chips like YouTube's top bar
                 LazyRow(
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
+                    item {
+                        FilterChip(
+                            selected = selectedType == null,
+                            onClick = { viewModel.onTypeSelect(null) },
+                            label = { Text("All") },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = MaterialTheme.colorScheme.onSurface,
+                                selectedLabelColor = MaterialTheme.colorScheme.surface
+                            )
+                        )
+                    }
                     items(videoTypes) { type ->
                         FilterChip(
                             selected = selectedType == type,
                             onClick = { viewModel.onTypeSelect(type) },
-                            label = { Text(type.replaceFirstChar { it.uppercase() }) }
+                            label = { Text(type.replaceFirstChar { it.uppercase() }) },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = MaterialTheme.colorScheme.onSurface,
+                                selectedLabelColor = MaterialTheme.colorScheme.surface
+                            )
                         )
                     }
                 }
@@ -72,19 +97,15 @@ fun VideoListScreen(
                 }
             } else {
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    modifier = Modifier.fillMaxSize()
                 ) {
                     items(videos) { video ->
-                        VideoItem(
+                        VideoYouTubeItem(
                             video = video,
                             onClick = {
                                 viewModel.onVideoViewed(video.id)
                                 onVideoClick(video)
-                            },
-                            onLikeClick = { viewModel.likeVideo(video.id) },
-                            onShareClick = { viewModel.shareVideo(video) }
+                            }
                         )
                     }
                 }
@@ -94,71 +115,64 @@ fun VideoListScreen(
 }
 
 @Composable
-fun SearchBar(
-    query: String,
-    onQueryChange: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    OutlinedTextField(
-        value = query,
-        onValueChange = onQueryChange,
-        modifier = modifier,
-        placeholder = { Text("Search sermons...") },
-        leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-        trailingIcon = {
-            if (query.isNotEmpty()) {
-                IconButton(onClick = { onQueryChange("") }) {
-                    Icon(Icons.Default.Clear, contentDescription = "Clear")
-                }
-            }
-        },
-        singleLine = true,
-        shape = MaterialTheme.shapes.medium
-    )
-}
-
-@Composable
-fun VideoItem(
+fun VideoYouTubeItem(
     video: Video,
-    onClick: () -> Unit,
-    onLikeClick: () -> Unit,
-    onShareClick: () -> Unit
+    onClick: () -> Unit
 ) {
-    Card(
-        modifier = Modifier.fillMaxWidth().clickable { onClick() },
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(bottom = 12.dp)
     ) {
-        Column {
-            AsyncImage(
-                model = video.thumbnailUrl,
-                contentDescription = null,
-                modifier = Modifier.fillMaxWidth().height(200.dp),
-                contentScale = ContentScale.Crop
-            )
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(text = video.title, style = MaterialTheme.typography.titleMedium)
-                Spacer(modifier = Modifier.height(4.dp))
+        AsyncImage(
+            model = video.thumbnailUrl,
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(210.dp),
+            contentScale = ContentScale.Crop
+        )
+        Row(
+            modifier = Modifier
+                .padding(12.dp)
+                .fillMaxWidth()
+        ) {
+            // Channel Avatar placeholder
+            Box(
+                modifier = Modifier
+                    .size(36.dp)
+                    .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
                 Text(
-                    text = video.description,
-                    style = MaterialTheme.typography.bodySmall,
-                    maxLines = 2
+                    text = "P", 
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(text = "${video.views} views • ${video.likes} likes", style = MaterialTheme.typography.labelSmall)
-                    Row {
-                        IconButton(onClick = onLikeClick) {
-                            Icon(Icons.Default.Favorite, contentDescription = "Like", tint = MaterialTheme.colorScheme.primary)
-                        }
-                        IconButton(onClick = onShareClick) {
-                            Icon(Icons.Default.Share, contentDescription = "Share")
-                        }
-                    }
-                }
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = video.title,
+                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = "Power Of The Word • ${video.views} views",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
+            }
+            IconButton(onClick = { /* Menu */ }) {
+                Icon(
+                    imageVector = Icons.Default.MoreVert, 
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp),
+                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
             }
         }
     }

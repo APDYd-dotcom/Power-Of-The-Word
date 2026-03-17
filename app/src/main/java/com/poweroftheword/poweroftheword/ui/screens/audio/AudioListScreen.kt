@@ -1,21 +1,25 @@
 package com.poweroftheword.poweroftheword.ui.screens.audio
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.poweroftheword.poweroftheword.domain.model.Audio
 
@@ -31,14 +35,20 @@ fun AudioListScreen(
 
     Scaffold(
         topBar = {
-            Column {
-                TopAppBar(title = { Text("Audio Sermons") })
+            Column(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
+                TopAppBar(
+                    title = { Text("Audio Sermons", fontWeight = FontWeight.Bold) },
+                    actions = {
+                        IconButton(onClick = { /* Search */ }) {
+                            Icon(Icons.Default.Search, contentDescription = null)
+                        }
+                    }
+                )
                 SearchBar(
                     query = searchQuery,
                     onQueryChange = viewModel::onSearchQueryChange,
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
                 )
-                Spacer(modifier = Modifier.height(8.dp))
             }
         }
     ) { paddingValues ->
@@ -54,18 +64,20 @@ fun AudioListScreen(
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    contentPadding = PaddingValues(bottom = 16.dp)
                 ) {
                     items(audios) { audio ->
-                        AudioItem(
+                        AudioModernItem(
                             audio = audio,
                             onClick = {
                                 viewModel.onAudioListened(audio.id)
                                 onAudioClick(audio)
-                            },
-                            onLikeClick = { viewModel.likeAudio(audio.id) },
-                            onShareClick = { viewModel.shareAudio(audio) }
+                            }
+                        )
+                        HorizontalDivider(
+                            modifier = Modifier.padding(start = 72.dp),
+                            thickness = 0.5.dp,
+                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
                         )
                     }
                 }
@@ -94,48 +106,61 @@ fun SearchBar(
             }
         },
         singleLine = true,
-        shape = MaterialTheme.shapes.medium
+        shape = MaterialTheme.shapes.extraLarge,
+        colors = OutlinedTextFieldDefaults.colors(
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            focusedContainerColor = MaterialTheme.colorScheme.surface,
+            unfocusedBorderColor = Color.Transparent,
+            focusedBorderColor = Color.Transparent
+        )
     )
 }
 
 @Composable
-fun AudioItem(
+fun AudioModernItem(
     audio: Audio,
-    onClick: () -> Unit,
-    onLikeClick: () -> Unit,
-    onShareClick: () -> Unit
+    onClick: () -> Unit
 ) {
-    Card(
-        modifier = Modifier.fillMaxWidth().clickable { onClick() },
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f), CircleShape),
+            contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = Icons.Default.PlayArrow,
                 contentDescription = null,
-                modifier = Modifier.size(40.dp),
-                tint = MaterialTheme.colorScheme.primary
+                tint = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier.size(24.dp)
             )
-            Spacer(modifier = Modifier.width(16.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(text = audio.title, style = MaterialTheme.typography.titleMedium)
-                Text(text = audio.date, style = MaterialTheme.typography.bodySmall)
-                Text(
-                    text = "${audio.listens} listens",
-                    style = MaterialTheme.typography.labelSmall
-                )
-            }
-            Row {
-                IconButton(onClick = onLikeClick) {
-                    Icon(Icons.Default.Favorite, contentDescription = "Like", tint = MaterialTheme.colorScheme.primary)
-                }
-                IconButton(onClick = onShareClick) {
-                    Icon(Icons.Default.Share, contentDescription = "Share")
-                }
-            }
+        }
+        Spacer(modifier = Modifier.width(16.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = audio.title, 
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = "${audio.date} • ${audio.listens} listens", 
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            )
+        }
+        IconButton(onClick = { /* More options */ }) {
+            Icon(
+                imageVector = Icons.Default.MoreVert, 
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            )
         }
     }
 }

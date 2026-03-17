@@ -46,15 +46,14 @@ class AudioListViewModel @Inject constructor(
     private fun loadAudios() {
         viewModelScope.launch {
             _isLoading.value = true
-            repository.getSavedLanguage().collectLatest { language ->
-                try {
-                    val result = repository.getAudioSermons(language)
-                    _audios.value = result
-                } catch (e: Exception) {
-                    // Handle error
-                } finally {
-                    _isLoading.value = false
-                }
+            try {
+                val language = repository.getSavedLanguage().first()
+                val result = repository.getAudioSermons(language)
+                _audios.value = result
+            } catch (e: Exception) {
+                // Handle error
+            } finally {
+                _isLoading.value = false
             }
         }
     }

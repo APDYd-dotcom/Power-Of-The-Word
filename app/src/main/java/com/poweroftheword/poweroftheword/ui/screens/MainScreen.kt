@@ -28,12 +28,13 @@ import com.poweroftheword.poweroftheword.ui.screens.home.HomeScreen
 import com.poweroftheword.poweroftheword.ui.screens.home.HomeViewModel
 import com.poweroftheword.poweroftheword.ui.screens.horaire.HoraireScreen
 import com.poweroftheword.poweroftheword.ui.screens.horaire.HoraireViewModel
+import com.poweroftheword.poweroftheword.ui.screens.program.ProgramScreen
+import com.poweroftheword.poweroftheword.ui.screens.program.ProgramViewModel
 import com.poweroftheword.poweroftheword.ui.screens.live.LiveScreen
 import com.poweroftheword.poweroftheword.ui.screens.live.LiveViewModel
 import com.poweroftheword.poweroftheword.ui.screens.radio.RadioScreen
 import com.poweroftheword.poweroftheword.ui.screens.radio.RadioViewModel
-import com.poweroftheword.poweroftheword.ui.screens.settings.SettingsScreen
-import com.poweroftheword.poweroftheword.ui.screens.settings.SettingsViewModel
+import com.poweroftheword.poweroftheword.ui.screens.settings.*
 import com.poweroftheword.poweroftheword.ui.screens.video.VideoListScreen
 import com.poweroftheword.poweroftheword.ui.screens.video.VideoListViewModel
 import com.poweroftheword.poweroftheword.ui.screens.video.VideoPlayerScreen
@@ -45,8 +46,9 @@ fun MainScreen() {
         Screen.Home,
         Screen.Videos,
         Screen.Audios,
-        Screen.Live,
-        Screen.Settings
+        Screen.Radio,
+        Screen.About,
+        Screen.Feed
     )
 
     Scaffold(
@@ -57,7 +59,10 @@ fun MainScreen() {
             val isBottomBarVisible = bottomNavItems.any { it.route == currentDestination?.route }
 
             if (isBottomBarVisible) {
-                NavigationBar {
+                NavigationBar(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.primary
+                ) {
                     bottomNavItems.forEach { screen ->
                         NavigationBarItem(
                             icon = { screen.icon?.let { Icon(it, contentDescription = null) } },
@@ -71,7 +76,14 @@ fun MainScreen() {
                                     launchSingleTop = true
                                     restoreState = true
                                 }
-                            }
+                            },
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = MaterialTheme.colorScheme.primary,
+                                selectedTextColor = MaterialTheme.colorScheme.primary,
+                                unselectedIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                unselectedTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                            )
                         )
                     }
                 }
@@ -90,6 +102,9 @@ fun MainScreen() {
                     onVideoClick = { video ->
                         navController.navigate(Screen.VideoPlayer.createRoute(video.videoUrl))
                     },
+                    onFeedClick = { feed ->
+                        navController.navigate(Screen.FeedDetail.createRoute(feed.id))
+                    },
                     onLiveClick = { url ->
                         navController.navigate(Screen.VideoPlayer.createRoute(url))
                     },
@@ -98,6 +113,9 @@ fun MainScreen() {
                     },
                     onSeeAllVideos = {
                         navController.navigate(Screen.Videos.route)
+                    },
+                    onSeeAllFeeds = {
+                        navController.navigate(Screen.Feed.route)
                     }
                 )
             }
@@ -157,14 +175,27 @@ fun MainScreen() {
             }
             composable(Screen.DailyWord.route) {
                 val viewModel: DailyWordViewModel = hiltViewModel()
-                DailyWordScreen(viewModel = viewModel)
+                DailyWordScreen(
+                    viewModel = viewModel,
+                    onBackClick = { navController.popBackStack() }
+                )
             }
             composable(Screen.Horaire.route) {
                 val viewModel: HoraireViewModel = hiltViewModel()
                 HoraireScreen(viewModel = viewModel)
             }
+            composable(Screen.Programs.route) {
+                val viewModel: ProgramViewModel = hiltViewModel()
+                ProgramScreen(viewModel = viewModel, onBackClick = { navController.popBackStack() })
+            }
             composable(Screen.Donation.route) {
                 DonationScreen()
+            }
+            composable(Screen.About.route) {
+                AboutScreen(onBackClick = { navController.popBackStack() })
+            }
+            composable(Screen.Contact.route) {
+                ContactScreen(onBackClick = { navController.popBackStack() })
             }
             composable(Screen.Settings.route) {
                 val viewModel: SettingsViewModel = hiltViewModel()
@@ -173,7 +204,10 @@ fun MainScreen() {
                     onNavigateToFeed = { navController.navigate(Screen.Feed.route) },
                     onNavigateToDailyWord = { navController.navigate(Screen.DailyWord.route) },
                     onNavigateToHoraire = { navController.navigate(Screen.Horaire.route) },
-                    onNavigateToDonation = { navController.navigate(Screen.Donation.route) }
+                    onNavigateToPrograms = { navController.navigate(Screen.Programs.route) },
+                    onNavigateToDonation = { navController.navigate(Screen.Donation.route) },
+                    onNavigateToAbout = { navController.navigate(Screen.About.route) },
+                    onNavigateToContact = { navController.navigate(Screen.Contact.route) }
                 )
             }
             composable(

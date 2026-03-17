@@ -24,7 +24,10 @@ fun SettingsScreen(
     onNavigateToFeed: () -> Unit,
     onNavigateToDailyWord: () -> Unit,
     onNavigateToHoraire: () -> Unit,
-    onNavigateToDonation: () -> Unit
+    onNavigateToPrograms: () -> Unit,
+    onNavigateToDonation: () -> Unit,
+    onNavigateToAbout: () -> Unit,
+    onNavigateToContact: () -> Unit
 ) {
     val currentLanguage by viewModel.currentLanguage.collectAsState()
     val languages = listOf(
@@ -71,9 +74,28 @@ fun SettingsScreen(
                 onClick = onNavigateToHoraire
             )
             SettingsMenuItem(
+                title = "Church Programs",
+                icon = Icons.Default.DateRange,
+                onClick = onNavigateToPrograms
+            )
+            SettingsMenuItem(
                 title = "Donations & Giving",
-                icon = Icons.Default.Add, // Placeholder for Donation icon
+                icon = Icons.Default.Add,
                 onClick = onNavigateToDonation
+            )
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            SectionTitle("Information")
+            
+            SettingsMenuItem(
+                title = "About Us",
+                icon = Icons.Default.Info,
+                onClick = onNavigateToAbout
+            )
+            SettingsMenuItem(
+                title = "Contact Us",
+                icon = Icons.Default.Call,
+                onClick = onNavigateToContact
             )
         }
     }
@@ -121,6 +143,9 @@ fun SettingsMenuItem(title: String, icon: ImageVector, onClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(imageVector = icon, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+        
+
+
         Spacer(modifier = Modifier.width(16.dp))
         Text(text = title, style = MaterialTheme.typography.bodyLarge)
         Spacer(modifier = Modifier.weight(1f))

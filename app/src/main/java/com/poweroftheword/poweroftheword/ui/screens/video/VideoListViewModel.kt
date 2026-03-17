@@ -58,15 +58,14 @@ class VideoListViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.value = true
             _error.value = null
-            repository.getSavedLanguage().collectLatest { language ->
-                try {
-                    val result = repository.getVideos(language, _selectedType.value)
-                    _videos.value = result
-                } catch (e: Exception) {
-                    _error.value = "Failed to load videos. Please check your connection."
-                } finally {
-                    _isLoading.value = false
-                }
+            try {
+                val language = repository.getSavedLanguage().first()
+                val result = repository.getVideos(language, _selectedType.value)
+                _videos.value = result
+            } catch (e: Exception) {
+                _error.value = "Failed to load videos. Please check your connection."
+            } finally {
+                _isLoading.value = false
             }
         }
     }

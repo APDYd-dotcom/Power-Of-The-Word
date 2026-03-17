@@ -27,7 +27,7 @@ class FeedViewModel @Inject constructor(
         loadFeeds()
     }
 
-    private fun loadFeeds() {
+    fun loadFeeds() {
         viewModelScope.launch {
             _isLoading.value = true
             repository.getSavedLanguage().collectLatest { language ->

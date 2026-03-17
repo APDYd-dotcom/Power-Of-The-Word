@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -15,14 +16,21 @@ import com.poweroftheword.poweroftheword.R
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
+        Log.d("FCM", "From: ${remoteMessage.from}")
+        
         remoteMessage.notification?.let {
+            Log.d("FCM", "Message Notification Body: ${it.body}")
             sendNotification(it.title ?: "Power Of The Word", it.body ?: "")
+        }
+        
+        if (remoteMessage.data.isNotEmpty()) {
+            Log.d("FCM", "Message data payload: ${remoteMessage.data}")
+            // Handle data payload if needed
         }
     }
 
     override fun onNewToken(token: String) {
-        // Handle new token - usually send to backend if needed for targeted notifications
-        // But the app uses 'all' topic subscription mostly
+        Log.d("FCM", "Refreshed token: $token")
     }
 
     private fun sendNotification(title: String, messageBody: String) {
@@ -53,6 +61,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             notificationManager.createNotificationChannel(channel)
         }
 
-        notificationManager.notify(0, notificationBuilder.build())
+        notificationManager.notify(System.currentTimeMillis().toInt(), notificationBuilder.build())
     }
 }
