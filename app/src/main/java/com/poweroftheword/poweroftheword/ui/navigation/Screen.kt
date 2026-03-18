@@ -1,7 +1,6 @@
 package com.poweroftheword.poweroftheword.ui.navigation
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.LibraryBooks
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -25,6 +24,10 @@ sealed class Screen(val route: String, val title: String = "", val icon: ImageVe
     
     object VideoPlayer : Screen("video_player/{videoUrl}") {
         fun createRoute(videoUrl: String) = "video_player/${java.net.URLEncoder.encode(videoUrl, "UTF-8")}"
+    }
+
+    object VideoDetail : Screen("video_detail/{videoId}") {
+        fun createRoute(videoId: String) = "video_detail/$videoId"
     }
 
     object FeedDetail : Screen("feed_detail/{feedId}") {

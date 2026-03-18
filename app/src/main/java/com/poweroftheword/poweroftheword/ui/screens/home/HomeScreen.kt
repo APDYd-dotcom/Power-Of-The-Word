@@ -1,10 +1,10 @@
 package com.poweroftheword.poweroftheword.ui.screens.home
 
 import android.app.Activity
+import android.graphics.drawable.BitmapDrawable
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -17,25 +17,28 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
+import androidx.palette.graphics.Palette
 import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.poweroftheword.poweroftheword.R
 import com.poweroftheword.poweroftheword.domain.model.Feed
 import com.poweroftheword.poweroftheword.domain.model.Video
@@ -52,15 +55,40 @@ fun HomeScreen(
     onSeeAllFeeds: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
-//    val view = LocalView.current
+    val context = LocalContext.current
+    val view = LocalView.current
 
-//    if (!view.isInEditMode) {
-//        SideEffect {
-//            val window = (view.context as Activity).window
-//            window.statusBarColor = Color.Transparent.toArgb()
-//            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = false
-//        }
-//    }
+    // Dynamic color logic from the Daily Word image
+    var dynamicColor by remember { mutableStateOf(Color.Black.copy(alpha = 0.5f)) }
+
+    val imageRequest = ImageRequest.Builder(context)
+        .data(R.drawable.dailword)
+        .allowHardware(false)
+        .build()
+
+    val painter = rememberAsyncImagePainter(model = imageRequest)
+
+    LaunchedEffect(painter.state) {
+        val painterState = painter.state
+        if (painterState is AsyncImagePainter.State.Success) {
+            val bitmap = (painterState.result.drawable as? BitmapDrawable)?.bitmap
+            bitmap?.let {
+                Palette.from(it).generate { palette ->
+                    val rgb = palette?.dominantSwatch?.rgb ?: Color.Black.toArgb()
+                    dynamicColor = Color(rgb)
+                }
+            }
+        }
+    }
+
+    // Status bar management
+    if (!view.isInEditMode) {
+        LaunchedEffect(dynamicColor) {
+            val window = (view.context as Activity).window
+            window.statusBarColor = Color.Transparent.toArgb() // Make it transparent for immersive look
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = false
+        }
+    }
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -68,10 +96,7 @@ fun HomeScreen(
             TopAppBar(
                 title = {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-//                            .padding(horizontal = 16.dp, vertical = 8.dp)
-                            .statusBarsPadding(),
+                        modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
@@ -79,12 +104,8 @@ fun HomeScreen(
                             modifier = Modifier.weight(1f),
                             fontWeight = FontWeight.Bold,
                             color = Color.White,
-                            fontSize = 20.sp
+                            fontSize = 18.sp
                         )
-
-                        // Pastor Profile Image - Design Position
-
-                        Spacer(modifier = Modifier.width(12.dp))
 
                         Surface(
                             color = Color.White.copy(alpha = 0.2f),
@@ -93,18 +114,22 @@ fun HomeScreen(
                         ) {
                             Text(
                                 "EN",
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 1.dp),
                                 color = Color.White,
-                                fontSize = 12.sp,
+                                fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold
                             )
                         }
 
-                        IconButton(onClick = { /* Search */ }) {
+                        IconButton(
+                            onClick = { /* Search */ },
+                            modifier = Modifier.size(40.dp)
+                        ) {
                             Icon(
                                 Icons.Default.Search,
                                 contentDescription = "Search",
-                                tint = Color.White
+                                tint = Color.White,
+                                modifier = Modifier.size(20.dp)
                             )
                         }
                     }
@@ -112,7 +137,7 @@ fun HomeScreen(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent,
                 ),
-
+                windowInsets = WindowInsets(top = 0.dp)
             )
         }
     ) { paddingValues ->
@@ -129,52 +154,76 @@ fun HomeScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(bottom = paddingValues.calculateBottomPadding())
             ) {
-                // 1. Immersive Header Section
+                // 1. IMMERSIVE HEADER (Daily Word)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(300.dp)
+                        .height(340.dp)
                         .clip(RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp))
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.dailword),
+                        painter = painter,
                         contentDescription = "Daily Word",
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop
                     )
 
-                    // Top Bar area gradient for readability
+                    // Top Gradient (for TopAppBar readability)
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(120.dp)
                             .background(
                                 Brush.verticalGradient(
-                                    colors = listOf(
-                                        Color.Black.copy(alpha = 0.5f),
-                                        Color.Transparent
-                                    )
+                                    colors = listOf(Color.Black.copy(alpha = 0.5f), Color.Transparent)
                                 )
                             )
                     )
 
-                    // App Bar Elements Overlaid on Image
-                }
+                    // Bottom Gradient and Quote
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(
+                                Brush.verticalGradient(
+                                    colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.8f)),
+                                    startY = 500f
+                                )
+                            )
+                    )
 
-                Spacer(modifier = Modifier.height(20.dp))
-
-                // 2. Popular Video Section
-                if (state.latestVideos.isNotEmpty()) {
-                    HomeSectionHeader(title = "Popular Video", onSeeAll = onSeeAllVideos)
-                    VideoLargeCard(
-                        video = state.latestVideos.first(), 
-                        onClick = { onVideoClick(state.latestVideos.first()) }
+                    Text(
+                        text = state.dailyWord?.content ?: "As a Christian, you will never carry the fire of God or grow spiritually if you only pray when you attend church on Sunday.",
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        lineHeight = 24.sp,
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier
+                            .align(Alignment.BottomStart)
+                            .padding(horizontal = 20.dp, vertical = 24.dp)
                     )
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // 3. Latest Post Section
+                // 2. POPULAR VIDEOS SECTION
+                if (state.latestVideos.isNotEmpty()) {
+                    HomeSectionHeader(title = "Popular Video", onSeeAll = onSeeAllVideos)
+                    VideoLargeCard(
+                        video = state.latestVideos.first(),
+                        onClick = { onVideoClick(state.latestVideos.first()) }
+                    )
+                    
+                    // Small related videos
+                    state.latestVideos.drop(1).take(2).forEach { video ->
+                        VideoSmallCard(video = video, onClick = { onVideoClick(video) })
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // 3. LATEST POSTS SECTION
                 if (state.latestFeeds.isNotEmpty()) {
                     HomeSectionHeader(title = "Latest Post", onSeeAll = onSeeAllFeeds)
                     state.latestFeeds.forEach { feed ->
@@ -182,8 +231,8 @@ fun HomeScreen(
                         Spacer(modifier = Modifier.height(16.dp))
                     }
                 }
-                
-                Spacer(modifier = Modifier.height(16.dp))
+
+                Spacer(modifier = Modifier.height(20.dp))
             }
         }
     }
@@ -194,7 +243,7 @@ fun HomeSectionHeader(title: String, onSeeAll: (() -> Unit)?) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(horizontal = 20.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -204,23 +253,13 @@ fun HomeSectionHeader(title: String, onSeeAll: (() -> Unit)?) {
             color = Color.Black
         )
         if (onSeeAll != null) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
+            Text(
+                "View All",
+                color = Color.Gray,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
                 modifier = Modifier.clickable { onSeeAll() }
-            ) {
-                Text(
-                    "View All",
-                    color = Color.Black.copy(alpha = 0.7f),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium
-                )
-                Icon(
-                    Icons.AutoMirrored.Outlined.OpenInNew,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp).padding(start = 4.dp),
-                    tint = Color.Black.copy(alpha = 0.7f)
-                )
-            }
+            )
         }
     }
 }
@@ -229,12 +268,12 @@ fun HomeSectionHeader(title: String, onSeeAll: (() -> Unit)?) {
 fun VideoLargeCard(video: Video, onClick: () -> Unit) {
     Card(
         modifier = Modifier
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 20.dp)
             .fillMaxWidth()
             .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column {
             Box(modifier = Modifier.height(200.dp).fillMaxWidth()) {
@@ -250,14 +289,28 @@ fun VideoLargeCard(video: Video, onClick: () -> Unit) {
                     color = Color.Red
                 ) {
                     Icon(
-                        Icons.Default.PlayArrow, 
-                        contentDescription = null, 
+                        Icons.Default.PlayArrow,
+                        contentDescription = null,
                         tint = Color.White,
-                        modifier = Modifier.padding(10.dp).size(28.dp)
+                        modifier = Modifier.padding(10.dp).size(24.dp)
+                    )
+                }
+                
+                Surface(
+                    color = Color.Black.copy(alpha = 0.8f),
+                    shape = RoundedCornerShape(4.dp),
+                    modifier = Modifier.align(Alignment.BottomEnd).padding(8.dp)
+                ) {
+                    Text(
+                        text = "45:15",
+                        color = Color.White,
+                        fontSize = 10.sp,
+                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+                        fontWeight = FontWeight.Bold
                     )
                 }
             }
-            Column(modifier = Modifier.padding(14.dp)) {
+            Column(modifier = Modifier.padding(16.dp)) {
                 Text(
                     text = video.title,
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
@@ -266,7 +319,7 @@ fun VideoLargeCard(video: Video, onClick: () -> Unit) {
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "${video.views} views",
+                    text = "${video.views} views • 2 days ago",
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.Gray
                 )
@@ -276,18 +329,59 @@ fun VideoLargeCard(video: Video, onClick: () -> Unit) {
 }
 
 @Composable
+fun VideoSmallCard(video: Video, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(horizontal = 20.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(modifier = Modifier.size(120.dp, 70.dp).clip(RoundedCornerShape(8.dp))) {
+            AsyncImage(
+                model = video.thumbnailUrl,
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+            Surface(
+                color = Color.Black.copy(alpha = 0.8f),
+                shape = RoundedCornerShape(4.dp),
+                modifier = Modifier.align(Alignment.BottomEnd).padding(4.dp)
+            ) {
+                Text("12:30", color = Color.White, fontSize = 8.sp, modifier = Modifier.padding(2.dp))
+            }
+        }
+        Spacer(modifier = Modifier.width(16.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = video.title,
+                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = "${video.views} views",
+                style = MaterialTheme.typography.labelSmall,
+                color = Color.Gray
+            )
+        }
+    }
+}
+
+@Composable
 fun FeedLargeCard(feed: Feed, onClick: () -> Unit) {
     Card(
         modifier = Modifier
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 20.dp)
             .fillMaxWidth()
             .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column {
-            Box(modifier = Modifier.height(170.dp).fillMaxWidth()) {
+            Box(modifier = Modifier.height(180.dp).fillMaxWidth()) {
                 AsyncImage(
                     model = feed.imageUrl ?: "",
                     contentDescription = null,
@@ -299,8 +393,8 @@ fun FeedLargeCard(feed: Feed, onClick: () -> Unit) {
                         .fillMaxSize()
                         .background(
                             Brush.verticalGradient(
-                                colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.8f)),
-                                startY = 250f
+                                colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.7f)),
+                                startY = 200f
                             )
                         )
                 )
@@ -309,27 +403,38 @@ fun FeedLargeCard(feed: Feed, onClick: () -> Unit) {
                     color = Color.White,
                     modifier = Modifier
                         .align(Alignment.BottomStart)
-                        .padding(12.dp),
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 16.sp),
+                        .padding(16.dp),
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                     maxLines = 2
                 )
             }
-            Column(modifier = Modifier.padding(12.dp)) {
+            Column(modifier = Modifier.padding(16.dp)) {
                 Text(
                     text = feed.description,
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.DarkGray,
-                    maxLines = 3,
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(12.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("2 days ago", fontSize = 11.sp, color = Color.Gray)
-                    Text("1,243 views", fontSize = 11.sp, color = Color.Gray)
+                    Surface(
+                        color = Color(0xFFF2F2F2),
+                        shape = RoundedCornerShape(4.dp)
+                    ) {
+                        Text(
+                            text = feed.type.uppercase(),
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Gray
+                        )
+                    }
+                    Text("Read more", fontSize = 12.sp, color = Color.Blue, fontWeight = FontWeight.Bold)
                 }
             }
         }

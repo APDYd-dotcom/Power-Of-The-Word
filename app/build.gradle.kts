@@ -66,6 +66,9 @@ dependencies {
     implementation(libs.firebase.messaging.ktx)
     implementation(libs.firebase.analytics.ktx)
 
+    // Palette for dynamic colors
+    implementation("androidx.palette:palette-ktx:1.0.0")
+
     //accompanist compose
     implementation("com.google.accompanist:accompanist-placeholder-material:0.36.0")
 

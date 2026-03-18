@@ -32,36 +32,67 @@ class ChurchRepositoryImpl @Inject constructor(
     private val staticVideos = listOf(
         Video(
             id = "1",
-            title = "Test Sermon 1 - The Power of Faith",
+            title = "Faith That Moves Mountains - Sunday Morning Sermon",
             description = "A powerful message about faith in difficult times.",
             thumbnailUrl = "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?q=80&w=1000&auto=format&fit=crop",
             videoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
             language = "EN",
-            views = 1250,
+            views = 15250,
             likes = 450,
             datePublished = "2023-10-01"
         ),
         Video(
             id = "2",
-            title = "Test Sermon 2 - Grace and Mercy",
-            description = "Understanding God's grace in our daily lives.",
+            title = "The Power of Prayer - Understanding Gods Grace",
+            description = "Understanding God's grace through the power of prayer. Learn how to develop a deeper prayer life and experience breakthrough in every area of your life.",
             thumbnailUrl = "https://images.unsplash.com/photo-1504052434569-70ad5836ab65?q=80&w=1000&auto=format&fit=crop",
             videoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
             language = "EN",
-            views = 890,
+            views = 22100,
             likes = 320,
             datePublished = "2023-10-05"
         ),
         Video(
             id = "3",
-            title = "Test Sermon 3 - Walking in Love",
+            title = "Walking in Victory - Overcoming Lifes Challenges",
             description = "How to show Christ's love to everyone you meet.",
             thumbnailUrl = "https://images.unsplash.com/photo-1519834785169-98be25ec3f84?q=80&w=1000&auto=format&fit=crop",
             videoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
             language = "EN",
-            views = 2100,
+            views = 8900,
             likes = 850,
             datePublished = "2023-10-10"
+        )
+    )
+
+    // Static test data for audios
+    private val staticAudios = listOf(
+        Audio(
+            id = "1",
+            title = "GUSENGA BIHINDURA IBINTU",
+            audioUrl = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+            date = "30-05-2025",
+            language = "EN",
+            listens = 1250,
+            likes = 3100
+        ),
+        Audio(
+            id = "2",
+            title = "Power of the Word - Morning Devotion",
+            audioUrl = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+            date = "31 January 2026",
+            language = "EN",
+            listens = 890,
+            likes = 450
+        ),
+        Audio(
+            id = "3",
+            title = "Walking in the Spirit",
+            audioUrl = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+            date = "29 January 2026",
+            language = "EN",
+            listens = 2100,
+            likes = 850
         )
     )
 
@@ -74,7 +105,7 @@ class ChurchRepositoryImpl @Inject constructor(
             
             if (response.isEmpty()) staticVideos else response
         } catch (e: Exception) {
-            staticVideos // Return static data if API fails
+            staticVideos
         }
     }
 
@@ -88,11 +119,12 @@ class ChurchRepositoryImpl @Inject constructor(
 
     override suspend fun getAudioSermons(language: String): List<Audio> {
         return try {
-            client.get("$BASE_URL/audio/") {
+            val response: List<Audio> = client.get("$BASE_URL/audio/") {
                 parameter("language", language)
             }.body()
+            if (response.isEmpty()) staticAudios else response
         } catch (e: Exception) {
-            emptyList()
+            staticAudios
         }
     }
 

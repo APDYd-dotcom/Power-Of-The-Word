@@ -35,9 +35,7 @@ import com.poweroftheword.poweroftheword.ui.screens.live.LiveViewModel
 import com.poweroftheword.poweroftheword.ui.screens.radio.RadioScreen
 import com.poweroftheword.poweroftheword.ui.screens.radio.RadioViewModel
 import com.poweroftheword.poweroftheword.ui.screens.settings.*
-import com.poweroftheword.poweroftheword.ui.screens.video.VideoListScreen
-import com.poweroftheword.poweroftheword.ui.screens.video.VideoListViewModel
-import com.poweroftheword.poweroftheword.ui.screens.video.VideoPlayerScreen
+import com.poweroftheword.poweroftheword.ui.screens.video.*
 
 @Composable
 fun MainScreen() {
@@ -100,7 +98,7 @@ fun MainScreen() {
                 HomeScreen(
                     viewModel = viewModel,
                     onVideoClick = { video ->
-                        navController.navigate(Screen.VideoPlayer.createRoute(video.videoUrl))
+                        navController.navigate(Screen.VideoDetail.createRoute(video.id))
                     },
                     onFeedClick = { feed ->
                         navController.navigate(Screen.FeedDetail.createRoute(feed.id))
@@ -124,7 +122,7 @@ fun MainScreen() {
                 VideoListScreen(
                     viewModel = viewModel,
                     onVideoClick = { video ->
-                        navController.navigate(Screen.VideoPlayer.createRoute(video.videoUrl))
+                        navController.navigate(Screen.VideoDetail.createRoute(video.id))
                     }
                 )
             }
@@ -172,6 +170,19 @@ fun MainScreen() {
                 val viewModel: FeedViewModel = hiltViewModel()
                 val feed = viewModel.feeds.collectAsState().value.find { feed -> feed.id == feedId }
                 FeedDetailScreen(feed = feed, onBackClick = { navController.popBackStack() })
+            }
+            composable(
+                route = Screen.VideoDetail.route,
+                arguments = listOf(navArgument("videoId") { type = NavType.StringType })
+            ) { 
+                val viewModel: VideoDetailViewModel = hiltViewModel()
+                VideoDetailScreen(
+                    viewModel = viewModel,
+                    onBackClick = { navController.popBackStack() },
+                    onVideoClick = { video ->
+                        navController.navigate(Screen.VideoDetail.createRoute(video.id))
+                    }
+                )
             }
             composable(Screen.DailyWord.route) {
                 val viewModel: DailyWordViewModel = hiltViewModel()
