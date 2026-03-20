@@ -147,7 +147,8 @@ fun AudioListScreen(
                 )
             } else {
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(bottom = 16.dp)
                 ) {
                     // Integrated Audio Player Component logic playing from Raw
                     item {
@@ -157,27 +158,29 @@ fun AudioListScreen(
                             title = "GUSENGA BIHINDURA IBINTU",
                             desc = "30-05-2025"
                         )
-                        Spacer(modifier = Modifier.height(16.dp))
                     }
 
                     item {
                         AudioPlayerComponent(
                             context = context,
                             audioResId = R.raw.audio2,
-                            title = "GUSENGA BIHINDURA IBINTU",
-                            desc = "30-05-2025"
+                            title = "THE POWER OF FAITH",
+                            desc = "31-05-2025"
                         )
-                        Spacer(modifier = Modifier.height(16.dp))
                     }
 
                     item {
                         AudioPlayerComponent(
                             context = context,
                             audioResId = R.raw.audio3,
-                            title = "GUSENGA BIHINDURA IBINTU",
-                            desc = "30-05-2025"
+                            title = "WALKING IN THE SPIRIT",
+                            desc = "01-06-2025"
                         )
-                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                    
+                    // Dynamic items from viewModel
+                    items(audios) { audio ->
+                        AudioCardItem(audio = audio, onClick = { onAudioClick(audio) })
                     }
                 }
             }
@@ -209,31 +212,41 @@ fun AudioPlayerComponent(context: Context, @RawRes audioResId: Int, title: Strin
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp)
-            .padding(8.dp),
-        elevation = CardDefaults.cardElevation(6.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF2EFF2)),
-        shape = RoundedCornerShape(20.dp)
+            .height(210.dp)
+            .padding(12.dp),
+        elevation = CardDefaults.cardElevation(4.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        shape = RoundedCornerShape(20.dp),
+        border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.2f))
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .fillMaxSize()
+                .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Audio Wave Visualizer Placeholder
-                Icon(
-                    imageVector = Icons.Default.GraphicEq,
-                    contentDescription = null,
-                    tint = Color(0xFFFF3474),
-                    modifier = Modifier.size(60.dp).background(Color.White, RoundedCornerShape(4.dp)).padding(8.dp)
-                )
+                // Audio Wave Visualizer Placeholder in a white square
+                Box(
+                    modifier = Modifier
+                        .size(60.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(Color.White),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.GraphicEq,
+                        contentDescription = null,
+                        tint = com.poweroftheword.poweroftheword.ui.theme.FigmaRed,
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
 
                 Spacer(modifier = Modifier.weight(1f))
 
+                // Play Button
                 Button(
                     onClick = {
                         if (mediaPlayer.isPlaying) {
@@ -246,8 +259,8 @@ fun AudioPlayerComponent(context: Context, @RawRes audioResId: Int, title: Strin
                     },
                     shape = CircleShape,
                     contentPadding = PaddingValues(0.dp),
-                    modifier = Modifier.size(50.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF3474))
+                    modifier = Modifier.size(54.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = com.poweroftheword.poweroftheword.ui.theme.FigmaRed)
                 ) {
                     Icon(
                         imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
@@ -258,6 +271,9 @@ fun AudioPlayerComponent(context: Context, @RawRes audioResId: Int, title: Strin
                 }
             }
 
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Progress Slider
             Slider(
                 value = position,
                 onValueChange = { newPosition ->
@@ -269,47 +285,56 @@ fun AudioPlayerComponent(context: Context, @RawRes audioResId: Int, title: Strin
                 track = { _ ->
                     Box(
                         modifier = Modifier
-                            .height(8.dp)
+                            .height(6.dp)
                             .fillMaxWidth()
-                            .background(Color.LightGray.copy(alpha = 0.4f), shape = CircleShape)
+                            .background(Color.LightGray.copy(alpha = 0.3f), shape = CircleShape)
                     ) {
                         val progressFraction = if (duration > 0f) (position / duration) else 0f
                         Box(
                             modifier = Modifier
-                                .height(8.dp)
+                                .height(6.dp)
                                 .fillMaxWidth(progressFraction)
-                                .background(Color(0xFFFF3474), shape = CircleShape)
+                                .background(com.poweroftheword.poweroftheword.ui.theme.FigmaRed, shape = CircleShape)
                         )
                     }
                 },
                 thumb = {
                     Box(
                         modifier = Modifier
-                            .size(20.dp)
-                            .shadow(2.dp, CircleShape)
+                            .size(18.dp)
+                            .shadow(1.dp, CircleShape)
                             .background(Color.White, CircleShape)
-                            .border(2.dp, Color(0xFFFF3474), CircleShape)
+                            .border(2.dp, com.poweroftheword.poweroftheword.ui.theme.FigmaRed, CircleShape)
                     )
                 }
             )
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth().padding(top = 2.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = formatTime(position), style = MaterialTheme.typography.bodySmall, color = Color.Gray)
-                Text(text = formatTime(duration), style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                Text(text = formatTime(position), style = MaterialTheme.typography.bodySmall, color = Color.Gray, fontSize = 11.sp)
+                Text(text = formatTime(duration), style = MaterialTheme.typography.bodySmall, color = Color.Gray, fontSize = 11.sp)
             }
+
+            Spacer(modifier = Modifier.weight(1f))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(text = title, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), maxLines = 1)
-                    Text(text = desc, style = MaterialTheme.typography.bodySmall, color = Color.Gray, maxLines = 1)
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Text(
+                        text = desc,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray
+                    )
                 }
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -318,7 +343,8 @@ fun AudioPlayerComponent(context: Context, @RawRes audioResId: Int, title: Strin
                         Icon(
                             imageVector = Icons.Outlined.ThumbUp,
                             contentDescription = "Like",
-                            tint = Color.Black
+                            tint = Color.Black.copy(alpha = 0.7f),
+                            modifier = Modifier.size(22.dp)
                         )
                     }
 
@@ -342,7 +368,8 @@ fun AudioPlayerComponent(context: Context, @RawRes audioResId: Int, title: Strin
                         Icon(
                             imageVector = Icons.Default.Share,
                             contentDescription = "Share",
-                            tint = Color.Black
+                            tint = Color.Black.copy(alpha = 0.7f),
+                            modifier = Modifier.size(22.dp)
                         )
                     }
                 }
@@ -382,61 +409,59 @@ fun formatTime(ms: Float): String {
 }
 
 @Composable
-fun AudioArchiveItem(
+fun AudioCardItem(
     audio: Audio,
     onClick: () -> Unit
 ) {
-    Row(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(16.dp),
-        verticalAlignment = Alignment.Top
+            .padding(horizontal = 12.dp, vertical = 6.dp)
+            .clickable { onClick() },
+        elevation = CardDefaults.cardElevation(2.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        shape = RoundedCornerShape(16.dp),
+        border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.2f))
     ) {
-        AsyncImage(
-            model = "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?q=80&w=200&auto=format&fit=crop",
-            contentDescription = null,
+        Row(
             modifier = Modifier
-                .size(80.dp)
-                .clip(RoundedCornerShape(8.dp)),
-            contentScale = ContentScale.Crop
-        )
-        
-        Spacer(modifier = Modifier.width(16.dp))
-        
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = audio.title,
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                color = Color.Black
+                .padding(12.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            AsyncImage(
+                model = "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?q=80&w=200&auto=format&fit=crop",
+                contentDescription = null,
+                modifier = Modifier
+                    .size(60.dp)
+                    .clip(RoundedCornerShape(12.dp)),
+                contentScale = ContentScale.Crop
             )
             
-            Text(
-                text = "${audio.date} • 07:00",
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.Gray
-            )
+            Spacer(modifier = Modifier.width(16.dp))
             
-            Spacer(modifier = Modifier.height(8.dp))
-            
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.clickable { /* Like action */ }
-            ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = audio.title,
+                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    color = Color.Black
+                )
+                
+                Text(
+                    text = "${audio.date} • 07:00",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
+                )
+            }
+
+            IconButton(onClick = { /* Like */ }) {
                 Icon(
                     imageVector = Icons.Outlined.ThumbUp,
                     contentDescription = "Like",
-                    tint = Color.Gray,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                    text = "Like",
-                    fontSize = 13.sp,
-                    color = Color.Gray,
-                    fontWeight = FontWeight.Medium
+                    tint = Color.Gray.copy(alpha = 0.6f),
+                    modifier = Modifier.size(20.dp)
                 )
             }
         }

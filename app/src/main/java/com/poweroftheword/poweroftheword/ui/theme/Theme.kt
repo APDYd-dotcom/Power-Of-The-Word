@@ -17,11 +17,11 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Color(0xFF3D74F6), // Professional Blue from Pastor image border
-    secondary = Color(0xFF00C853), // Success Green
-    tertiary = Color(0xFFFFD600), // Gold Accent
-    background = Color(0xFF0F0F0F),
-    surface = Color(0xFF1E1E1E),
+    primary = FigmaBrightBlue,
+    secondary = FigmaRed,
+    tertiary = Color(0xFFFFD600),
+    background = FigmaDarkNavy,
+    surface = Color(0xFF252B38), // Slightly lighter navy for cards
     onPrimary = Color.White,
     onSecondary = Color.White,
     onBackground = Color.White,
@@ -29,15 +29,15 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Color(0xFF3D74F6), // Professional Blue
-    secondary = Color(0xFF00C853),
+    primary = FigmaBrightBlue,
+    secondary = FigmaRed,
     tertiary = Color(0xFFFFD600),
-    background = Color(0xFFF8F9FA), // Off-white background from design
-    surface = Color(0xFFFFFFFF),
+    background = FigmaLightBg,
+    surface = Color.White,
     onPrimary = Color.White,
     onSecondary = Color.White,
-    onBackground = Color(0xFF212121),
-    onSurface = Color(0xFF212121)
+    onBackground = Color(0xFF1E232E),
+    onSurface = Color(0xFF1E232E)
 )
 
 @Composable

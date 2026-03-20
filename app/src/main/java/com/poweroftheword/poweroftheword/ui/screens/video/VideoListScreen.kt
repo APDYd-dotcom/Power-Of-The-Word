@@ -156,45 +156,50 @@ fun VideoYouTubeItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() }
-            .padding(bottom = 16.dp)
+            .padding(bottom = 20.dp)
     ) {
-        Box(modifier = Modifier.fillMaxWidth().height(220.dp)) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(16/9f)
+                .clip(RoundedCornerShape(12.dp))
+        ) {
             AsyncImage(
                 model = video.thumbnailUrl,
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
             )
-            // Duration Badge (Dummy data for UI)
+            // Duration Badge
             Surface(
-                color = Color.Black.copy(alpha = 0.8f),
+                color = Color.Black.copy(alpha = 0.7f),
                 shape = RoundedCornerShape(4.dp),
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(8.dp)
+                    .padding(12.dp)
             ) {
                 Text(
                     text = "45:15",
                     color = Color.White,
-                    fontSize = 10.sp,
-                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
-                    fontWeight = FontWeight.Bold
+                    fontSize = 11.sp,
+                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                    fontWeight = FontWeight.Medium
                 )
             }
         }
 
         Row(
             modifier = Modifier
-                .padding(12.dp)
+                .padding(top = 12.dp, start = 4.dp, end = 4.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.Top
         ) {
             // Channel Avatar
             AsyncImage(
-                model = "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?q=80&w=100&auto=format&fit=crop", // Using a placeholder for avatar
+                model = "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?q=80&w=100&auto=format&fit=crop",
                 contentDescription = null,
                 modifier = Modifier
-                    .size(36.dp)
+                    .size(40.dp)
                     .clip(CircleShape),
                 contentScale = ContentScale.Crop
             )
@@ -204,25 +209,32 @@ fun VideoYouTubeItem(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = video.title,
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        fontWeight = FontWeight.SemiBold,
-                        lineHeight = 20.sp
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        lineHeight = 22.sp
                     ),
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     color = Color.Black
                 )
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(
-                    text = "Power of the Word",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
-                )
-                Text(
-                    text = "${video.views} views • 2 days ago",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
-                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "Power of the Word",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray
+                    )
+                    Text(
+                        text = " • ",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray
+                    )
+                    Text(
+                        text = "${video.views} views • 2 days ago",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray
+                    )
+                }
             }
             
             IconButton(
@@ -232,7 +244,7 @@ fun VideoYouTubeItem(
                 Icon(
                     imageVector = Icons.Default.MoreVert, 
                     contentDescription = null,
-                    tint = Color.Gray
+                    tint = Color.Gray.copy(alpha = 0.6f)
                 )
             }
         }

@@ -286,7 +286,7 @@ fun VideoLargeCard(video: Video, onClick: () -> Unit) {
                 Surface(
                     modifier = Modifier.align(Alignment.Center),
                     shape = CircleShape,
-                    color = Color.Red
+                    color = com.poweroftheword.poweroftheword.ui.theme.FigmaRed
                 ) {
                     Icon(
                         Icons.Default.PlayArrow,
@@ -434,7 +434,7 @@ fun FeedLargeCard(feed: Feed, onClick: () -> Unit) {
                             color = Color.Gray
                         )
                     }
-                    Text("Read more", fontSize = 12.sp, color = Color.Blue, fontWeight = FontWeight.Bold)
+                    Text("Read more", fontSize = 12.sp, color = com.poweroftheword.poweroftheword.ui.theme.FigmaBrightBlue, fontWeight = FontWeight.Bold)
                 }
             }
         }

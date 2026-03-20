@@ -18,3 +18,12 @@ val LightBackground = Color(0xFFFFFFFF)
 
 val PrimaryColor = Color(0xFFFF0000) // YouTube Red as primary
 val SecondaryColor = Color(0xFF2E7D32) // Kanguka Green as secondary
+
+// Figma Design Colors
+val FigmaDarkNavy = Color(0xFF1E232E)
+val FigmaBrightBlue = Color(0xFF3D74F6)
+val FigmaRed = Color(0xFFFF2D55)
+val FigmaGray = Color(0xFF8E8E93)
+val FigmaLightBg = Color(0xFFF8F9FA)
+val FigmaGreen = Color(0xFF34C759)
+val FigmaPurple = Color(0xFF5856D6)

@@ -76,11 +76,11 @@ fun MainScreen() {
                                 }
                             },
                             colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = MaterialTheme.colorScheme.primary,
-                                selectedTextColor = MaterialTheme.colorScheme.primary,
+                                selectedIconColor = com.poweroftheword.poweroftheword.ui.theme.FigmaBrightBlue,
+                                selectedTextColor = com.poweroftheword.poweroftheword.ui.theme.FigmaBrightBlue,
                                 unselectedIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                                 unselectedTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                                indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                                indicatorColor = com.poweroftheword.poweroftheword.ui.theme.FigmaBrightBlue.copy(alpha = 0.1f)
                             )
                         )
                     }
