@@ -62,7 +62,7 @@ fun HomeScreen(
     var dynamicColor by remember { mutableStateOf(Color.Black.copy(alpha = 0.5f)) }
 
     val imageRequest = ImageRequest.Builder(context)
-        .data(R.drawable.dailword)
+        .data(R.drawable.dailword1)
         .allowHardware(false)
         .build()
 
@@ -158,7 +158,7 @@ fun HomeScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(340.dp)
+                        .height(270.dp)
                         .clip(RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp))
                 ) {
                     Image(
@@ -191,21 +191,9 @@ fun HomeScreen(
                                 )
                             )
                     )
-
-                    Text(
-                        text = state.dailyWord?.content ?: "As a Christian, you will never carry the fire of God or grow spiritually if you only pray when you attend church on Sunday.",
-                        color = Color.White,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium,
-                        lineHeight = 24.sp,
-                        textAlign = TextAlign.Start,
-                        modifier = Modifier
-                            .align(Alignment.BottomStart)
-                            .padding(horizontal = 20.dp, vertical = 24.dp)
-                    )
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 // 2. POPULAR VIDEOS SECTION
                 if (state.latestVideos.isNotEmpty()) {
@@ -221,7 +209,7 @@ fun HomeScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 // 3. LATEST POSTS SECTION
                 if (state.latestFeeds.isNotEmpty()) {
