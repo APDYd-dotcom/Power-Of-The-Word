@@ -42,43 +42,43 @@ fun VideoListScreen(
 
     Scaffold(
         topBar = {
-            Column(modifier = Modifier.background(Color.White)) {
+            Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
                 TopAppBar(
                     title = {
                         Text(
                             "Videos",
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp,
-                            color = Color.Black
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     },
                     actions = {
                         Surface(
                             color = Color.Transparent,
                             shape = RoundedCornerShape(4.dp),
-                            border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f)),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)),
                             modifier = Modifier.padding(end = 8.dp)
                         ) {
                             Text(
                                 "EN",
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                                color = Color.Gray,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold
                             )
                         }
                         IconButton(onClick = { /* Search */ }) {
-                            Icon(Icons.Default.Search, contentDescription = null, tint = Color.Black)
+                            Icon(Icons.Default.Search, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface)
                         }
                     },
-                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
                 )
 
                 // Filter chips like YouTube's top bar
                 LazyRow(
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxWidth().background(Color.White)
+                    modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface)
                 ) {
                     item {
                         FilterChip(
@@ -88,10 +88,10 @@ fun VideoListScreen(
                             shape = RoundedCornerShape(20.dp),
                             border = null,
                             colors = FilterChipDefaults.filterChipColors(
-                                containerColor = Color(0xFFF2F2F2),
-                                labelColor = Color.Black,
-                                selectedContainerColor = Color.Black,
-                                selectedLabelColor = Color.White
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                selectedLabelColor = MaterialTheme.colorScheme.onPrimary
                             )
                         )
                     }
@@ -101,31 +101,31 @@ fun VideoListScreen(
                             onClick = { viewModel.onTypeSelect(type) },
                             label = { Text(type.replaceFirstChar { it.uppercase() }, fontSize = 14.sp) },
                             shape = RoundedCornerShape(20.dp),
-                            border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f)),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)),
                             colors = FilterChipDefaults.filterChipColors(
-                                containerColor = Color.White,
-                                labelColor = Color.Black,
-                                selectedContainerColor = Color.Black,
-                                selectedLabelColor = Color.White
+                                containerColor = MaterialTheme.colorScheme.surface,
+                                labelColor = MaterialTheme.colorScheme.onSurface,
+                                selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                selectedLabelColor = MaterialTheme.colorScheme.onPrimary
                             )
                         )
                     }
                 }
-                HorizontalDivider(color = Color.LightGray.copy(alpha = 0.3f))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
             }
         }
     ) { paddingValues ->
         PullToRefreshBox(
             isRefreshing = isLoading,
             onRefresh = { viewModel.loadVideos() },
-            modifier = Modifier.padding(paddingValues).fillMaxSize().background(Color.White)
+            modifier = Modifier.padding(paddingValues).fillMaxSize().background(MaterialTheme.colorScheme.background)
         ) {
             if (videos.isEmpty() && !isLoading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(
                         text = error ?: "No videos found.",
                         style = MaterialTheme.typography.bodyLarge,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
                     )
                 }
             } else {
@@ -215,24 +215,24 @@ fun VideoYouTubeItem(
                     ),
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onBackground
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = "Power of the Word",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
                     )
                     Text(
                         text = " • ",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
                     )
                     Text(
                         text = "${video.views} views • 2 days ago",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
                     )
                 }
             }
@@ -244,7 +244,7 @@ fun VideoYouTubeItem(
                 Icon(
                     imageVector = Icons.Default.MoreVert, 
                     contentDescription = null,
-                    tint = Color.Gray.copy(alpha = 0.6f)
+                    tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
                 )
             }
         }

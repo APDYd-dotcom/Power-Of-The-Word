@@ -1,5 +1,6 @@
 package com.poweroftheword.poweroftheword.ui.screens.feed
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -47,11 +48,12 @@ fun FeedScreen(
                 title = { Text("Church News", fontWeight = FontWeight.Bold) },
                 actions = {
                     IconButton(onClick = { /* Search */ }) {
-                        Icon(Icons.Default.Search, contentDescription = null)
+                        Icon(Icons.Default.Search, contentDescription = null, tint = MaterialTheme.colorScheme.onBackground)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
                 )
             )
         }
@@ -59,7 +61,7 @@ fun FeedScreen(
         PullToRefreshBox(
             isRefreshing = isLoading,
             onRefresh = { viewModel.loadFeeds() },
-            modifier = Modifier.padding(paddingValues).fillMaxSize()
+            modifier = Modifier.padding(paddingValues).fillMaxSize().background(MaterialTheme.colorScheme.background)
         ) {
             if (feeds.isEmpty() && !isLoading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -98,92 +100,105 @@ fun FeedModernItem(feed: Feed, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable { onClick() },
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(2.dp)
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(4.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f))
     ) {
         Column {
-            feed.imageUrl?.let {
-                AsyncImage(
-                    model = it,
-                    contentDescription = null,
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(192.dp)
+            ) {
+                feed.imageUrl?.let {
+                    AsyncImage(
+                        model = it,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+
+                // Dark gradient overlay
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp),
-                    contentScale = ContentScale.Crop
+                        .fillMaxSize()
+                        .background(
+                            androidx.compose.ui.graphics.Brush.verticalGradient(
+                                colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.3f), Color.Black.copy(alpha = 0.8f)),
+                                startY = 0f,
+                                endY = Float.POSITIVE_INFINITY
+                            )
+                        )
+                )
+
+                // Category Tag
+                Surface(
+                    color = categoryColor,
+                    shape = RoundedCornerShape(percent = 50),
+                    modifier = Modifier.padding(12.dp).align(Alignment.TopStart)
+                ) {
+                    Text(
+                        text = feed.type.uppercase(),
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                // Title overlay
+                Text(
+                    text = feed.title,
+                    color = Color.White,
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(16.dp),
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
             
             Column(modifier = Modifier.padding(16.dp)) {
-                Surface(
-                    color = categoryColor.copy(alpha = 0.1f),
-                    shape = RoundedCornerShape(4.dp)
-                ) {
-                    Text(
-                        text = feed.type.uppercase(),
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = categoryColor,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-                
-                Spacer(modifier = Modifier.height(12.dp))
-                
-                Text(
-                    text = feed.title,
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold, fontSize = 18.sp),
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    color = Color.Black
-                )
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                
                 Text(
                     text = feed.description,
-                    style = MaterialTheme.typography.bodyMedium.copy(lineHeight = 20.sp),
-                    color = Color.Gray,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
                 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(12.dp))
                 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = androidx.compose.material.icons.Icons.Outlined.ThumbUp,
-                            contentDescription = null,
-                            tint = Color.Gray,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text("2.5K", fontSize = 12.sp, color = Color.Gray)
-                        
-                        Spacer(modifier = Modifier.width(16.dp))
-                        
-                        Icon(
-                            imageVector = androidx.compose.material.icons.Icons.Outlined.Visibility,
-                            contentDescription = null,
-                            tint = Color.Gray,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text("10K", fontSize = 12.sp, color = Color.Gray)
-                    }
-                    
                     Text(
                         text = "2 days ago",
                         fontSize = 12.sp,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = androidx.compose.material.icons.Icons.Outlined.Visibility,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "2.5K views",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
         }

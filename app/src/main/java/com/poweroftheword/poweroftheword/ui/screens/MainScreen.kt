@@ -93,30 +93,30 @@ fun MainScreen() {
             startDestination = Screen.Home.route,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(Screen.Home.route) {
-                val viewModel: HomeViewModel = hiltViewModel()
-                HomeScreen(
-                    viewModel = viewModel,
-                    onVideoClick = { video ->
-                        navController.navigate(Screen.VideoDetail.createRoute(video.id))
-                    },
-                    onFeedClick = { feed ->
-                        navController.navigate(Screen.FeedDetail.createRoute(feed.id))
-                    },
-                    onLiveClick = { url ->
-                        navController.navigate(Screen.VideoPlayer.createRoute(url))
-                    },
-                    onRadioClick = {
-                        navController.navigate(Screen.Radio.route)
-                    },
-                    onSeeAllVideos = {
-                        navController.navigate(Screen.Videos.route)
-                    },
-                    onSeeAllFeeds = {
-                        navController.navigate(Screen.Feed.route)
-                    }
-                )
-            }
+//            composable(Screen.Home.route) {
+//                val viewModel: HomeViewModel = hiltViewModel()
+////                HomeScreen(
+//                    viewModel = viewModel,
+//                    onVideoClick = { video ->
+//                        navController.navigate(Screen.VideoDetail.createRoute(video.id))
+//                    },
+//                    onFeedClick = { feed ->
+//                        navController.navigate(Screen.FeedDetail.createRoute(feed.id))
+//                    },
+//                    onLiveClick = { url ->
+//                        navController.navigate(Screen.VideoPlayer.createRoute(url))
+//                    },
+//                    onRadioClick = {
+//                        navController.navigate(Screen.Radio.route)
+//                    },
+//                    onSeeAllVideos = {
+//                        navController.navigate(Screen.Videos.route)
+//                    },
+//                    onSeeAllFeeds = {
+//                        navController.navigate(Screen.Feed.route)
+//                    }
+//                )
+//            }
             composable(Screen.Videos.route) {
                 val viewModel: VideoListViewModel = hiltViewModel()
                 VideoListScreen(

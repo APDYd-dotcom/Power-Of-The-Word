@@ -28,14 +28,14 @@ class ChurchRepositoryImpl @Inject constructor(
     private val BASE_URL = "https://power.clubtechlac.bi/api"
     private val LANGUAGE_KEY = stringPreferencesKey("language_preference")
 
-    // Static test data for videos
+    // Fixed static data with working YouTube IDs to resolve "Video Unavailable" error
     private val staticVideos = listOf(
         Video(
             id = "1",
-            title = "Faith That Moves Mountains - Sunday Morning Sermon",
-            description = "A powerful message about faith in difficult times.",
-            thumbnailUrl = "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?q=80&w=1000&auto=format&fit=crop",
-            videoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+            title = "Power of the Word - Weekly Message",
+            description = "A powerful message to start your week with faith.",
+            thumbnailUrl = "https://img.youtube.com/vi/q_V6o_KjS3A/maxresdefault.jpg",
+            videoUrl = "https://www.youtube.com/watch?v=q_V6o_KjS3A",
             language = "EN",
             views = 15250,
             likes = 450,
@@ -43,10 +43,10 @@ class ChurchRepositoryImpl @Inject constructor(
         ),
         Video(
             id = "2",
-            title = "The Power of Prayer - Understanding Gods Grace",
-            description = "Understanding God's grace through the power of prayer. Learn how to develop a deeper prayer life and experience breakthrough in every area of your life.",
-            thumbnailUrl = "https://images.unsplash.com/photo-1504052434569-70ad5836ab65?q=80&w=1000&auto=format&fit=crop",
-            videoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+            title = "Morning Prayer and Devotion",
+            description = "Join us for a peaceful morning of prayer.",
+            thumbnailUrl = "https://img.youtube.com/vi/_OBlgSz8sSM/maxresdefault.jpg",
+            videoUrl = "https://www.youtube.com/watch?v=_OBlgSz8sSM",
             language = "EN",
             views = 22100,
             likes = 320,
@@ -54,10 +54,10 @@ class ChurchRepositoryImpl @Inject constructor(
         ),
         Video(
             id = "3",
-            title = "Walking in Victory - Overcoming Lifes Challenges",
-            description = "How to show Christ's love to everyone you meet.",
-            thumbnailUrl = "https://images.unsplash.com/photo-1519834785169-98be25ec3f84?q=80&w=1000&auto=format&fit=crop",
-            videoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+            title = "Walking in Victory",
+            description = "How to overcome challenges through the word.",
+            thumbnailUrl = "https://img.youtube.com/vi/H6U6-368-uE/maxresdefault.jpg",
+            videoUrl = "https://www.youtube.com/watch?v=H6U6-368-uE",
             language = "EN",
             views = 8900,
             likes = 850,

@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.poweroftheword.poweroftheword.ui.screens.MainScreen
+import com.poweroftheword.poweroftheword.ui.screens.home.HomeScreen
 import com.poweroftheword.poweroftheword.ui.theme.PowerOfTheWordTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -40,7 +41,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainScreen()
+                    HomeScreen()
                 }
             }
         }

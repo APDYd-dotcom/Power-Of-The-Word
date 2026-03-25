@@ -32,7 +32,7 @@ fun AboutScreen(onBackClick: () -> Unit) {
     
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = FigmaLightBg
+        color = MaterialTheme.colorScheme.background
     ) {
         Scaffold(
             containerColor = Color.Transparent,
@@ -43,31 +43,31 @@ fun AboutScreen(onBackClick: () -> Unit) {
                             "About",
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp,
-                            color = Color.Black
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     },
                     navigationIcon = {
                         IconButton(onClick = onBackClick) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.Black)
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onBackground)
                         }
                     },
                     actions = {
                         Surface(
                             shape = RoundedCornerShape(4.dp),
                             color = Color.Transparent,
-                            border = androidx.compose.foundation.BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f)),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f)),
                             modifier = Modifier.padding(end = 16.dp)
                         ) {
                             Text(
                                 "EN",
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                                color = Color.Gray,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold
                             )
                         }
                     },
-                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
                 )
             }
         ) { paddingValues ->
@@ -97,12 +97,12 @@ fun AboutScreen(onBackClick: () -> Unit) {
                         text = "Pastor Justin Nitezuwera",
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
-                        color = Color.Black
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                     Text(
                         text = "President & Founder",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
@@ -112,14 +112,14 @@ fun AboutScreen(onBackClick: () -> Unit) {
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onBackground
                 )
                 
                 Card(
                     modifier = Modifier
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                         .fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     shape = RoundedCornerShape(12.dp),
                     elevation = CardDefaults.cardElevation(2.dp)
                 ) {
@@ -142,15 +142,15 @@ fun AboutScreen(onBackClick: () -> Unit) {
                                 Text(
                                     text = pair.first,
                                     fontWeight = FontWeight.Bold,
-                                    color = FigmaBrightBlue
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                                 Text(
                                     text = pair.second,
-                                    color = Color.DarkGray
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                             if (index < programs.size - 1) {
-                                HorizontalDivider(color = Color.LightGray.copy(alpha = 0.3f))
+                                HorizontalDivider(color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f))
                             }
                         }
                     }
@@ -164,7 +164,7 @@ fun AboutScreen(onBackClick: () -> Unit) {
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onBackground
                 )
                 
                 Row(
@@ -173,9 +173,9 @@ fun AboutScreen(onBackClick: () -> Unit) {
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    SocialIcon(icon = "YT", label = "YouTube", color = FigmaRed)
-                    SocialIcon(icon = "FB", label = "Facebook", color = FigmaBrightBlue)
-                    SocialIcon(icon = "WEB", label = "Website", color = Color.Gray)
+                    SocialIcon(icon = "YT", label = "YouTube", color = MaterialTheme.colorScheme.secondary)
+                    SocialIcon(icon = "FB", label = "Facebook", color = MaterialTheme.colorScheme.primary)
+                    SocialIcon(icon = "WEB", label = "Website", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
 
                 Spacer(modifier = Modifier.height(40.dp))

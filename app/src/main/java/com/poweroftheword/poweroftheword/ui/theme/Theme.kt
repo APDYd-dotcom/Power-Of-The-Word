@@ -17,27 +17,31 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = FigmaBrightBlue,
-    secondary = FigmaRed,
-    tertiary = Color(0xFFFFD600),
-    background = FigmaDarkNavy,
-    surface = Color(0xFF252B38), // Slightly lighter navy for cards
-    onPrimary = Color.White,
+    primary = WebPrimaryDark,
+    secondary = WebRed,
+    tertiary = WebAccentDark,
+    background = WebBackgroundDark,
+    surface = WebCardDark,
+    onPrimary = WebBackgroundLight,
     onSecondary = Color.White,
-    onBackground = Color.White,
-    onSurface = Color.White
+    onBackground = WebTextDark,
+    onSurface = WebTextDark,
+    surfaceVariant = WebCardDark,
+    onSurfaceVariant = WebGrayText
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = FigmaBrightBlue,
-    secondary = FigmaRed,
-    tertiary = Color(0xFFFFD600),
-    background = FigmaLightBg,
-    surface = Color.White,
+    primary = WebPrimaryLight,
+    secondary = WebRed,
+    tertiary = WebAccentLight,
+    background = WebBackgroundLight,
+    surface = WebCardLight,
     onPrimary = Color.White,
     onSecondary = Color.White,
-    onBackground = Color(0xFF1E232E),
-    onSurface = Color(0xFF1E232E)
+    onBackground = WebTextLight,
+    onSurface = WebTextLight,
+    surfaceVariant = WebCardLight,
+    onSurfaceVariant = WebGrayText
 )
 
 @Composable

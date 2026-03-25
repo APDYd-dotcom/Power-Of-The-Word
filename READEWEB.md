@@ -1,0 +1,1 @@
+file:///home/apdy/WEB/Power%20of%20the%20word/README.md

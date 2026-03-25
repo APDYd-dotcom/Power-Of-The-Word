@@ -2,6 +2,29 @@ package com.poweroftheword.poweroftheword.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
+// Web App Theme Colors (Light)
+val WebBackgroundLight = Color(0xFFF9FAFB) // gray-50
+val WebPrimaryLight = Color(0xFF030213)
+val WebMutedLight = Color(0xFFECECF0)
+val WebAccentLight = Color(0xFFE9EBEF)
+val WebTextLight = Color(0xFF000000)
+val WebCardLight = Color(0xFFFFFFFF)
+val WebIconBgLight = Color(0xFFFFFFFF)
+
+// Web App Theme Colors (Dark)
+val WebBackgroundDark = Color(0xFF18181B)
+val WebPrimaryDark = Color(0xFFFAFAFA)
+val WebMutedDark = Color(0xFF27272A)
+val WebAccentDark = Color(0xFF3F3F46)
+val WebTextDark = Color(0xFFF3F4F6)
+val WebCardDark = Color(0xFF1F2937)
+val WebIconBgDark = Color(0xFF374151)
+
+// Shared Web App Colors
+val WebDestructive = Color(0xFFD4183D)
+val WebRed = Color(0xFFD32F2F)
+val WebGrayText = Color(0xFF9E9E9E)
+
 // YouTube and Kanguka style colors
 val Red80 = Color(0xFFFF897D)
 val Red40 = Color(0xFFFF0000) // YouTube Red

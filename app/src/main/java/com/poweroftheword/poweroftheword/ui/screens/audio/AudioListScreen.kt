@@ -52,36 +52,36 @@ fun AudioListScreen(
 
     Scaffold(
         topBar = {
-            Column(modifier = Modifier.background(Color.White)) {
+            Column(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
                 TopAppBar(
                     title = {
                         Text(
                             "Archives",
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp,
-                            color = Color.Black
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     },
                     actions = {
                         Surface(
                             color = Color.Transparent,
                             shape = RoundedCornerShape(4.dp),
-                            border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f)),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f)),
                             modifier = Modifier.padding(end = 8.dp)
                         ) {
                             Text(
                                 "EN",
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                                color = Color.Gray,
+                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold
                             )
                         }
                         IconButton(onClick = { /* Search */ }) {
-                            Icon(Icons.Default.Search, contentDescription = null, tint = Color.Black)
+                            Icon(Icons.Default.Search, contentDescription = null, tint = MaterialTheme.colorScheme.onBackground)
                         }
                     },
-                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
                 )
 
                 // Date Filter Selector
@@ -90,8 +90,8 @@ fun AudioListScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 8.dp),
                     shape = RoundedCornerShape(8.dp),
-                    border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f)),
-                    color = Color.White
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.onBackground.copy(alpha = 0.1f)),
+                    color = MaterialTheme.colorScheme.surface
                 ) {
                     Row(
                         modifier = Modifier
@@ -101,7 +101,7 @@ fun AudioListScreen(
                         Icon(
                             Icons.Default.DateRange,
                             contentDescription = null,
-                            tint = Color.Gray,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(20.dp)
                         )
                         Spacer(modifier = Modifier.width(12.dp))
@@ -109,33 +109,33 @@ fun AudioListScreen(
                             text = "January",
                             modifier = Modifier.weight(1f),
                             fontSize = 15.sp,
-                            color = Color.DarkGray
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Icon(
                             Icons.Default.KeyboardArrowDown,
                             contentDescription = null,
-                            tint = Color.Gray
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Spacer(modifier = Modifier.width(12.dp))
-                        VerticalDivider(modifier = Modifier.height(20.dp), color = Color.LightGray)
+                        VerticalDivider(modifier = Modifier.height(20.dp), color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f))
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
                             text = "2026",
                             fontSize = 15.sp,
-                            color = Color.DarkGray
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Icon(
                             Icons.Default.KeyboardArrowDown,
                             contentDescription = null,
-                            tint = Color.Gray
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
-                HorizontalDivider(color = Color.LightGray.copy(alpha = 0.3f))
+                HorizontalDivider(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.1f))
             }
         }
     ) { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues).fillMaxSize().background(Color.White)) {
+        Box(modifier = Modifier.padding(paddingValues).fillMaxSize().background(MaterialTheme.colorScheme.background)) {
             if (isLoading && audios.isEmpty()) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             } else if (audios.isEmpty()) {
@@ -143,7 +143,7 @@ fun AudioListScreen(
                     text = "No audio sermons found.",
                     modifier = Modifier.align(Alignment.Center),
                     style = MaterialTheme.typography.bodyLarge,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
                 )
             } else {
                 LazyColumn(
@@ -215,9 +215,9 @@ fun AudioPlayerComponent(context: Context, @RawRes audioResId: Int, title: Strin
             .height(210.dp)
             .padding(12.dp),
         elevation = CardDefaults.cardElevation(4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         shape = RoundedCornerShape(20.dp),
-        border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.2f))
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.18f))
     ) {
         Column(
             modifier = Modifier
@@ -228,18 +228,18 @@ fun AudioPlayerComponent(context: Context, @RawRes audioResId: Int, title: Strin
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Audio Wave Visualizer Placeholder in a white square
+                // Audio Wave Visualizer Background matching web IconBg
                 Box(
                     modifier = Modifier
                         .size(60.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(Color.White),
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Default.GraphicEq,
                         contentDescription = null,
-                        tint = com.poweroftheword.poweroftheword.ui.theme.FigmaRed,
+                        tint = MaterialTheme.colorScheme.secondary,
                         modifier = Modifier.size(32.dp)
                     )
                 }
@@ -260,7 +260,7 @@ fun AudioPlayerComponent(context: Context, @RawRes audioResId: Int, title: Strin
                     shape = CircleShape,
                     contentPadding = PaddingValues(0.dp),
                     modifier = Modifier.size(54.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = com.poweroftheword.poweroftheword.ui.theme.FigmaRed)
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
                 ) {
                     Icon(
                         imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
@@ -287,14 +287,14 @@ fun AudioPlayerComponent(context: Context, @RawRes audioResId: Int, title: Strin
                         modifier = Modifier
                             .height(6.dp)
                             .fillMaxWidth()
-                            .background(Color.LightGray.copy(alpha = 0.3f), shape = CircleShape)
+                            .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f), shape = CircleShape)
                     ) {
                         val progressFraction = if (duration > 0f) (position / duration) else 0f
                         Box(
                             modifier = Modifier
                                 .height(6.dp)
                                 .fillMaxWidth(progressFraction)
-                                .background(com.poweroftheword.poweroftheword.ui.theme.FigmaRed, shape = CircleShape)
+                                .background(MaterialTheme.colorScheme.secondary, shape = CircleShape)
                         )
                     }
                 },
@@ -303,8 +303,8 @@ fun AudioPlayerComponent(context: Context, @RawRes audioResId: Int, title: Strin
                         modifier = Modifier
                             .size(18.dp)
                             .shadow(1.dp, CircleShape)
-                            .background(Color.White, CircleShape)
-                            .border(2.dp, com.poweroftheword.poweroftheword.ui.theme.FigmaRed, CircleShape)
+                            .background(MaterialTheme.colorScheme.surface, CircleShape)
+                            .border(2.5f.dp, MaterialTheme.colorScheme.secondary, CircleShape)
                     )
                 }
             )
@@ -313,8 +313,8 @@ fun AudioPlayerComponent(context: Context, @RawRes audioResId: Int, title: Strin
                 modifier = Modifier.fillMaxWidth().padding(top = 2.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = formatTime(position), style = MaterialTheme.typography.bodySmall, color = Color.Gray, fontSize = 11.sp)
-                Text(text = formatTime(duration), style = MaterialTheme.typography.bodySmall, color = Color.Gray, fontSize = 11.sp)
+                Text(text = formatTime(position), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp)
+                Text(text = formatTime(duration), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp)
             }
 
             Spacer(modifier = Modifier.weight(1f))
@@ -326,14 +326,15 @@ fun AudioPlayerComponent(context: Context, @RawRes audioResId: Int, title: Strin
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = title,
-                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = desc,
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
@@ -343,7 +344,7 @@ fun AudioPlayerComponent(context: Context, @RawRes audioResId: Int, title: Strin
                         Icon(
                             imageVector = Icons.Outlined.ThumbUp,
                             contentDescription = "Like",
-                            tint = Color.Black.copy(alpha = 0.7f),
+                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f),
                             modifier = Modifier.size(22.dp)
                         )
                     }
@@ -368,7 +369,7 @@ fun AudioPlayerComponent(context: Context, @RawRes audioResId: Int, title: Strin
                         Icon(
                             imageVector = Icons.Default.Share,
                             contentDescription = "Share",
-                            tint = Color.Black.copy(alpha = 0.7f),
+                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f),
                             modifier = Modifier.size(22.dp)
                         )
                     }
@@ -419,9 +420,9 @@ fun AudioCardItem(
             .padding(horizontal = 12.dp, vertical = 6.dp)
             .clickable { onClick() },
         elevation = CardDefaults.cardElevation(2.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.2f))
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
     ) {
         Row(
             modifier = Modifier
@@ -446,13 +447,13 @@ fun AudioCardItem(
                     style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 
                 Text(
                     text = "${audio.date} • 07:00",
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
@@ -460,7 +461,7 @@ fun AudioCardItem(
                 Icon(
                     imageVector = Icons.Outlined.ThumbUp,
                     contentDescription = "Like",
-                    tint = Color.Gray.copy(alpha = 0.6f),
+                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                     modifier = Modifier.size(20.dp)
                 )
             }

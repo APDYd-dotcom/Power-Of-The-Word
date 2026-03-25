@@ -36,7 +36,7 @@ fun RadioScreen(
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = FigmaDarkNavy
+        color = MaterialTheme.colorScheme.background
     ) {
         Scaffold(
             containerColor = Color.Transparent,
@@ -45,7 +45,7 @@ fun RadioScreen(
                     title = {
                         Text(
                             "Radio",
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp
                         )
@@ -54,19 +54,19 @@ fun RadioScreen(
                         Surface(
                             shape = RoundedCornerShape(4.dp),
                             color = Color.Transparent,
-                            border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.3f)),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f)),
                             modifier = Modifier.padding(end = 16.dp)
                         ) {
                             Text(
                                 "EN",
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold
                             )
                         }
                     },
-                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
                 )
             }
         ) { paddingValues ->
@@ -75,7 +75,7 @@ fun RadioScreen(
                 if (isLoading && radioStatus == null) {
                     CircularProgressIndicator(
                         modifier = Modifier.align(Alignment.Center),
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.primary
                     )
                 } else {
                     LazyColumn(
@@ -87,26 +87,29 @@ fun RadioScreen(
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 24.dp),
+                                    .padding(vertical = 24.dp)
+                                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f), RoundedCornerShape(24.dp))
+                                    .padding(vertical = 32.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Surface(
                                     modifier = Modifier.size(120.dp),
-                                    shape = RoundedCornerShape(16.dp),
-                                    color = Color.White.copy(alpha = 0.1f)
+                                    shape = RoundedCornerShape(24.dp),
+                                    color = MaterialTheme.colorScheme.surface,
+                                    shadowElevation = 8.dp
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Radio,
                                         contentDescription = null,
-                                        tint = Color.White,
-                                        modifier = Modifier.padding(24.dp)
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.padding(24.dp).size(64.dp)
                                     )
                                 }
                                 Spacer(modifier = Modifier.height(16.dp))
                                 Text(
                                     text = "Radio",
                                     style = MaterialTheme.typography.headlineMedium,
-                                    color = Color.White,
+                                    color = MaterialTheme.colorScheme.onSurface,
                                     fontWeight = FontWeight.Bold
                                 )
                             }
@@ -115,8 +118,8 @@ fun RadioScreen(
                         item {
                             Text(
                                 text = "ALL",
-                                style = MaterialTheme.typography.titleSmall,
-                                color = Color.White.copy(alpha = 0.6f),
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.onBackground,
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier.padding(vertical = 8.dp)
                             )
@@ -155,9 +158,11 @@ fun RadioStationCard(radio: Radio, onPlayClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(100.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.05f)),
-        shape = RoundedCornerShape(12.dp)
+            .height(110.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(2.dp),
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f))
     ) {
         Row(
             modifier = Modifier
@@ -168,15 +173,15 @@ fun RadioStationCard(radio: Radio, onPlayClick: () -> Unit) {
             // Placeholder for Logo/Thumbnail if exists, else an icon
             Surface(
                 modifier = Modifier
-                    .size(64.dp)
-                    .clip(RoundedCornerShape(8.dp)),
-                color = Color.White.copy(alpha = 0.1f)
+                    .size(80.dp)
+                    .clip(RoundedCornerShape(12.dp)),
+                color = MaterialTheme.colorScheme.surfaceVariant
             ) {
                 Icon(
                     imageVector = Icons.Default.Radio,
                     contentDescription = null,
-                    tint = Color.White.copy(alpha = 0.5f),
-                    modifier = Modifier.padding(16.dp)
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(20.dp)
                 )
             }
 
@@ -186,14 +191,14 @@ fun RadioStationCard(radio: Radio, onPlayClick: () -> Unit) {
                 if (radio.isActive) {
                     Surface(
                         color = FigmaRed,
-                        shape = RoundedCornerShape(4.dp)
+                        shape = RoundedCornerShape(percent = 50)
                     ) {
                         Text(
                             text = "LIVE",
                             color = Color.White,
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
                         )
                     }
                     Spacer(modifier = Modifier.height(4.dp))
@@ -202,7 +207,7 @@ fun RadioStationCard(radio: Radio, onPlayClick: () -> Unit) {
                 Text(
                     text = radio.name,
                     style = MaterialTheme.typography.titleLarge,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold,
                     maxLines = 1,
                     overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
@@ -210,29 +215,29 @@ fun RadioStationCard(radio: Radio, onPlayClick: () -> Unit) {
                 Text(
                     text = "Radio Station",
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.White.copy(alpha = 0.6f)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
             Button(
                 onClick = onPlayClick,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White.copy(alpha = 0.1f),
-                    contentColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 ),
-                shape = RoundedCornerShape(8.dp),
-                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
-                modifier = Modifier.height(36.dp)
+                shape = RoundedCornerShape(12.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                modifier = Modifier.height(44.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.PlayArrow,
                     contentDescription = null,
-                    modifier = Modifier.size(16.dp)
+                    modifier = Modifier.size(20.dp)
                 )
-                Spacer(modifier = Modifier.width(4.dp))
+                Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     "PLAY",
-                    fontSize = 12.sp,
+                    fontSize = 13.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
