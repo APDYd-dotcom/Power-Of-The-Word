@@ -46,6 +46,7 @@ import com.poweroftheword.poweroftheword.R
 import com.poweroftheword.poweroftheword.domain.model.Feed
 import com.poweroftheword.poweroftheword.domain.model.Video
 import com.poweroftheword.poweroftheword.ui.screens.video.VideoCard
+import com.poweroftheword.poweroftheword.ui.screens.video.YoutubeVideoCard
 
 //@OptIn(ExperimentalMaterial3Api::class)
 //@Composable
@@ -473,25 +474,33 @@ fun HomeScreen() {
 
     Column {
 
-        HeroSection()
+        DynamicHero()
 
         LazyColumn {
 
-            item { VideoCard() }
+            item { YoutubeVideoCard(
+                "dQw4w9WgXcQ",
+                "Discover how the words you speak can transform your life...",
+                "12 Views"
+            ) }
 
             item {
                 PostCard(
-                    "The Power of Positive Words",
-                    "Discover how the words you speak can transform your life...",
-                    R.drawable.dailword
+                    title = "The Power of Positive Words",
+                    description = "Discover how the words you speak can transform your life and the lives of those around you...",
+                    imageRes = R.drawable.dailword,
+                    time = "2 days, 3 hours ago",
+                    views = "1,243 views"
                 )
             }
 
             item {
                 PostCard(
-                    "Daily Inspiration for Success",
-                    "Start each day with powerful affirmations...",
-                    R.drawable.dailword
+                    title = "The Power of Positive Words",
+                    description = "Discover how the words you speak can transform your life and the lives of those around you...",
+                    imageRes = R.drawable.dailword1,
+                    time = "2 days, 3 hours ago",
+                    views = "1,243 views"
                 )
             }
         }

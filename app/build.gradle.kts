@@ -55,6 +55,7 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.runtime)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -111,4 +112,7 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     //splash theme
     implementation("androidx.core:core-splashscreen:1.0.1")
+
+    implementation("androidx.palette:palette-ktx:1.0.0")
+    implementation("io.coil-kt:coil-compose:2.4.0")
 }
