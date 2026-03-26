@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.poweroftheword.poweroftheword.ui.screens.about.SectionTitle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -101,15 +102,15 @@ fun SettingsScreen(
     }
 }
 
-@Composable
-fun SectionTitle(title: String) {
-    Text(
-        text = title,
-        style = MaterialTheme.typography.titleMedium,
-        color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.padding(16.dp)
-    )
-}
+//@Composable
+//fun SectionTitle(title: String) {
+//    Text(
+//        text = title,
+//        style = MaterialTheme.typography.titleMedium,
+//        color = MaterialTheme.colorScheme.primary,
+//        modifier = Modifier.padding(16.dp)
+//    )
+//}
 
 @Composable
 fun LanguageItem(name: String, selected: Boolean, onClick: () -> Unit) {

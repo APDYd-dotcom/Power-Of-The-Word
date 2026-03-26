@@ -113,7 +113,7 @@ fun FeedModernItem(feed: Feed, onClick: () -> Unit) {
                     .fillMaxWidth()
                     .height(192.dp)
             ) {
-                feed.imageUrl?.let {
+                feed.photo.let {
                     AsyncImage(
                         model = it,
                         contentDescription = null,
@@ -165,7 +165,7 @@ fun FeedModernItem(feed: Feed, onClick: () -> Unit) {
             
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    text = feed.description,
+                    text = feed.title,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 2,

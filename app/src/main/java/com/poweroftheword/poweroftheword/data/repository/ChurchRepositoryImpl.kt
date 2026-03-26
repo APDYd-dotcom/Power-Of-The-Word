@@ -25,7 +25,7 @@ class ChurchRepositoryImpl @Inject constructor(
     private val context: Context
 ) : ChurchRepository {
 
-    private val BASE_URL = "https://power.clubtechlac.bi/api"
+    private val BASE_URL = "https://poweroftheword.bi/api"
     private val LANGUAGE_KEY = stringPreferencesKey("language_preference")
 
     // Fixed static data with working YouTube IDs to resolve "Video Unavailable" error

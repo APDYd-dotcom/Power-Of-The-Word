@@ -163,7 +163,7 @@ fun FeedLargeCard(feed: Feed, onClick: () -> Unit) {
         Column {
             Box(modifier = Modifier.height(192.dp).fillMaxWidth()) {
                 AsyncImage(
-                    model = feed.imageUrl ?: "",
+                    model = feed.photo ?: "",
                     contentDescription = null,
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
@@ -191,7 +191,7 @@ fun FeedLargeCard(feed: Feed, onClick: () -> Unit) {
             }
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    text = feed.description,
+                    text = feed.title,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 2,

@@ -1,15 +1,17 @@
 package com.poweroftheword.poweroftheword.ui.screens
 
-import android.net.http.SslCertificate.saveState
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -40,14 +42,21 @@ import com.poweroftheword.poweroftheword.ui.screens.home.HomeScreen
 import com.poweroftheword.poweroftheword.ui.screens.home.HomeViewModel
 import com.poweroftheword.poweroftheword.ui.screens.horaire.HoraireScreen
 import com.poweroftheword.poweroftheword.ui.screens.horaire.HoraireViewModel
-import com.poweroftheword.poweroftheword.ui.screens.program.ProgramScreen
-import com.poweroftheword.poweroftheword.ui.screens.program.ProgramViewModel
 import com.poweroftheword.poweroftheword.ui.screens.live.LiveScreen
 import com.poweroftheword.poweroftheword.ui.screens.live.LiveViewModel
+import com.poweroftheword.poweroftheword.ui.screens.program.ProgramScreen
+import com.poweroftheword.poweroftheword.ui.screens.program.ProgramViewModel
 import com.poweroftheword.poweroftheword.ui.screens.radio.RadioScreen
 import com.poweroftheword.poweroftheword.ui.screens.radio.RadioViewModel
-import com.poweroftheword.poweroftheword.ui.screens.settings.*
-import com.poweroftheword.poweroftheword.ui.screens.video.*
+import com.poweroftheword.poweroftheword.ui.screens.about.AboutScreen
+import com.poweroftheword.poweroftheword.ui.screens.settings.ContactScreen
+import com.poweroftheword.poweroftheword.ui.screens.settings.SettingsScreen
+import com.poweroftheword.poweroftheword.ui.screens.settings.SettingsViewModel
+import com.poweroftheword.poweroftheword.ui.screens.video.VideoDetailScreen
+import com.poweroftheword.poweroftheword.ui.screens.video.VideoDetailViewModel
+import com.poweroftheword.poweroftheword.ui.screens.video.VideoListScreen
+import com.poweroftheword.poweroftheword.ui.screens.video.VideoListViewModel
+import com.poweroftheword.poweroftheword.ui.screens.video.VideoPlayerScreen
 
 @Composable
 fun MainScreen() {
@@ -186,11 +195,16 @@ fun MainScreen() {
             }
 
             composable(Screen.Donation.route) {
-                DonationScreen()
+                DonationScreen(
+                    onBackClick = { navController.popBackStack() }
+                )
             }
 
             composable(Screen.About.route) {
-                AboutScreen(onBackClick = { navController.popBackStack() })
+                AboutScreen(
+                    onBackClick = { navController.popBackStack() },
+                    onDonationClick = { navController.navigate(Screen.Donation.route) }
+                )
             }
 
             composable(Screen.Contact.route) {
@@ -257,7 +271,7 @@ fun BottomAppBar(navController: NavController) {
             .padding(horizontal = 12.dp, vertical = 8.dp)
             .clip(RoundedCornerShape(20.dp)), //  rounded modern look
 
-        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
+        containerColor = MaterialTheme.colorScheme.background.copy(alpha = 1f),
         tonalElevation = 8.dp
     ) {
 
@@ -310,3 +324,4 @@ fun BottomAppBar(navController: NavController) {
         }
     }
 }
+

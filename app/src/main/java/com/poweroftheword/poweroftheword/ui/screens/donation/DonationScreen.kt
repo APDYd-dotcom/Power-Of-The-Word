@@ -1,95 +1,296 @@
 package com.poweroftheword.poweroftheword.ui.screens.donation
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CreditCard
+import androidx.compose.material.icons.filled.PhoneAndroid
+import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DonationScreen() {
+fun DonationScreen(onBackClick: () -> Unit) {
+
+    var selectedAmount by remember { mutableStateOf<Int?>(null) }
+    var customAmount by remember { mutableStateOf("") }
+    var isMonthly by remember { mutableStateOf(false) }
+    var selectedPayment by remember { mutableStateOf("Card") }
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Donations & Giving") })
+            TopAppBar(
+                title = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(onClick = onBackClick) {
+                            Icon(Icons.Default.ArrowBack, contentDescription = null)
+                        }
+                        Text("Donation")
+                    }
+                })
+
         }
-    ) { paddingValues ->
+    ) { innerPadding ->
+    LazyColumn(modifier = Modifier.padding(innerPadding)) {
+       item {
+           // HERO CARD
+           Box(
+               modifier = Modifier
+                   .fillMaxWidth()
+                   .height(140.dp)
+                   .background(
+                       Brush.horizontalGradient(
+                           listOf(Color(0xFF6A5AE0), Color(0xFFE9408E))
+                       ),
+                       shape = RoundedCornerShape(16.dp)
+                   )
+                   .padding(16.dp)
+           ) {
+               Column {
+                   Text("Support the Ministry", color = Color.White, fontWeight = FontWeight.Bold)
+                   Spacer(modifier = Modifier.height(6.dp))
+                   Text(
+                       "Your generous donation helps spread the Gospel...",
+                       color = Color.White.copy(0.9f)
+                   )
+               }
+           }
+       }
+
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        item {
+            Row(horizontalArrangement = Arrangement.SpaceBetween) {
+            StatCard("5000+", "Lives Touched")
+            StatCard("100+", "Countries")
+            StatCard("24/7", "Broadcasting")
+        }
+        }
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        item {
+            Text("Select Donation Amount", fontWeight = FontWeight.Bold)
+        }
+
+        item {
+            Card(shape = RoundedCornerShape(16.dp)) {
+                Column(modifier = Modifier.padding(16.dp)) {
+
+                    Text("Select Amount", fontWeight = FontWeight.Bold)
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    val amounts = listOf(10, 25, 50, 100, 250, 500)
+
+                    amounts.chunked(3).forEach { row ->
+                        Row {
+                            row.forEach { amount ->
+                                AmountChip(
+                                    amount,
+                                    selected = selectedAmount == amount
+                                ) {
+                                    selectedAmount = amount
+                                    customAmount = ""
+                                }
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    BasicTextField(
+                        value = customAmount,
+                        onValueChange = {
+                            customAmount = it
+                            selectedAmount = null
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                MaterialTheme.colorScheme.surfaceVariant,
+                                RoundedCornerShape(8.dp)
+                            )
+                            .padding(12.dp),
+                        decorationBox = {
+                            if (customAmount.isEmpty()) {
+                                Text("Enter amount", color = Color.Gray)
+                            }
+                            it()
+                        }
+                    )
+                }
+            }
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        item {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Checkbox(checked = isMonthly, onCheckedChange = { isMonthly = it })
+                Text("Make this monthly")
+            }
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        item {
+            Text("Select Payment Method", fontWeight = FontWeight.Bold)
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        item {
+            Card(shape = RoundedCornerShape(16.dp)) {
+                Column(modifier = Modifier.padding(16.dp)) {
+
+                    Text("Payment Method", fontWeight = FontWeight.Bold)
+
+                    PaymentItem("Card", Icons.Default.CreditCard, selectedPayment) {
+                        selectedPayment = "Card"
+                    }
+
+                    PaymentItem("Mobile", Icons.Default.PhoneAndroid, selectedPayment) {
+                        selectedPayment = "Mobile"
+                    }
+
+                    PaymentItem("Bank", Icons.Default.AccountBalance, selectedPayment) {
+                        selectedPayment = "Bank"
+                    }
+                }
+            }
+        }
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        item {
+            Card(shape = RoundedCornerShape(16.dp)) {
+                Column(modifier = Modifier.padding(16.dp)) {
+
+                    Text("Your Donation Supports", fontWeight = FontWeight.Bold)
+
+                    listOf(
+                        "📻 Daily radio broadcasts",
+                        "🎥 Video production",
+                        "❤️ Community outreach",
+                        "📖 Bible study resources"
+                    ).forEach {
+                        Text(it, modifier = Modifier.padding(vertical = 4.dp))
+                    }
+                }
+            }
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        item {
+            Button(
+                onClick = { },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text("Continue")
+            }
+        }
+    }
+
+//        Column(
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .padding(16.dp)
+//        ) {
+//
+//            // 🔁 MONTHLY
+//
+//            // 💳 PAYMENT
+//
+//            // 📌 SUPPORT LIST
+//
+//
+//            Spacer(modifier = Modifier.weight(1f))
+//
+//            // 🔘 BUTTON
+//
+//        }
+    }
+}
+
+
+
+
+
+
+@Composable
+fun StatCard(title: String, subtitle: String) {
+    Card(
+        modifier = Modifier
+            .padding(4.dp)
+            .width(100.dp)
+    ) {
         Column(
-            modifier = Modifier
-                .padding(paddingValues)
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp),
+            modifier = Modifier.padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Icon(
-                imageVector = Icons.Default.Info,
-                contentDescription = null,
-                modifier = Modifier.size(80.dp),
-                tint = MaterialTheme.colorScheme.primary
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-            Text(
-                text = "Support Our Ministry",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "Your contributions help us reach more people with the Power of the Word. Thank you for your generosity.",
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(modifier = Modifier.height(32.dp))
-
-            DonationOption(
-                title = "Tithes & Offerings",
-                description = "General support for the church and its missions."
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            DonationOption(
-                title = "Church Projects",
-                description = "Contribute to specific infrastructure or community projects."
-            )
-            Spacer(modifier = Modifier.height(32.dp))
-
-            Button(
-                onClick = { /* Integrate Payment Gateway SDK here */ },
-                modifier = Modifier.fillMaxWidth(),
-                shape = MaterialTheme.shapes.medium
-            ) {
-                Text("Proceed to Secure Payment", modifier = Modifier.padding(8.dp))
-            }
-            
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "Supported methods: Mobile Money, Credit Cards",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.outline
-            )
+            Text(title, fontWeight = FontWeight.Bold)
+            Text(subtitle, style = MaterialTheme.typography.bodySmall)
         }
     }
 }
 
+
+
 @Composable
-fun DonationOption(title: String, description: String) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+fun PaymentItem(
+    title: String,
+    icon: ImageVector,
+    selected: String,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(text = description, style = MaterialTheme.typography.bodySmall)
+
+        Icon(icon, contentDescription = null)
+
+        Spacer(modifier = Modifier.width(10.dp))
+
+        Text(title, modifier = Modifier.weight(1f))
+
+        if (selected == title) {
+            Icon(Icons.Default.Check, contentDescription = null)
         }
     }
 }

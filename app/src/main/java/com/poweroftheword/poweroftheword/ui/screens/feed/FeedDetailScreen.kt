@@ -63,7 +63,7 @@ fun FeedDetailScreen(
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
             ) {
-                feed.imageUrl?.let {
+                feed.photo?.let {
                     AsyncImage(
                         model = it,
                         contentDescription = null,
@@ -123,7 +123,7 @@ fun FeedDetailScreen(
                         Spacer(modifier = Modifier.height(24.dp))
                         
                         Text(
-                            text = feed.description,
+                            text = feed.title,
                             style = MaterialTheme.typography.bodyLarge.copy(lineHeight = 28.sp),
                             color = Color.DarkGray
                         )

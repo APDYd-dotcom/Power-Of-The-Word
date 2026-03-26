@@ -7,9 +7,9 @@ import kotlinx.serialization.Serializable
 data class Feed(
     val id: String,
     val title: String,
-    val description: String,
-    @SerialName("image_url")
-    val imageUrl: String?,
+    val photo: String,
     val language: String,
-    val type: String // igikorane, itaganzo
+    val type: String,
+    val date: String,
+//    val description: String?
 )

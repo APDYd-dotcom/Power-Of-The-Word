@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.SegmentedButtonDefaults.Icon
@@ -61,7 +63,7 @@ fun SettingsDropdown() {
                 )
             }
 
-            Divider(color = Color.Gray)
+            HorizontalDivider(Modifier, DividerDefaults.Thickness, color = Color.Gray)
 
             //  Dark / Light Mode Toggle
             DropdownMenuItem(
