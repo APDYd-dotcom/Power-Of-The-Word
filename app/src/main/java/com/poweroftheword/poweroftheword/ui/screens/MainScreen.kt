@@ -1,12 +1,24 @@
 package com.poweroftheword.poweroftheword.ui.screens
 
+import android.net.http.SslCertificate.saveState
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
@@ -39,84 +51,45 @@ import com.poweroftheword.poweroftheword.ui.screens.video.*
 
 @Composable
 fun MainScreen() {
+
     val navController = rememberNavController()
-    val bottomNavItems = listOf(
-        Screen.Home,
-        Screen.Videos,
-        Screen.Audios,
-        Screen.Radio,
-        Screen.About,
-        Screen.Feed
-    )
 
-    Scaffold(
-        bottomBar = {
-            val navBackStackEntry by navController.currentBackStackEntryAsState()
-            val currentDestination = navBackStackEntry?.destination
-            
-            val isBottomBarVisible = bottomNavItems.any { it.route == currentDestination?.route }
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
 
-            if (isBottomBarVisible) {
-                NavigationBar(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    contentColor = MaterialTheme.colorScheme.primary
-                ) {
-                    bottomNavItems.forEach { screen ->
-                        NavigationBarItem(
-                            icon = { screen.icon?.let { Icon(it, contentDescription = null) } },
-                            label = { Text(screen.title) },
-                            selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
-                            onClick = {
-                                navController.navigate(screen.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            },
-                            colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = com.poweroftheword.poweroftheword.ui.theme.FigmaBrightBlue,
-                                selectedTextColor = com.poweroftheword.poweroftheword.ui.theme.FigmaBrightBlue,
-                                unselectedIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                                unselectedTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                                indicatorColor = com.poweroftheword.poweroftheword.ui.theme.FigmaBrightBlue.copy(alpha = 0.1f)
-                            )
-                        )
-                    }
-                }
-            }
-        }
-    ) { innerPadding ->
+        //  Main navigation
         NavHost(
             navController = navController,
             startDestination = Screen.Home.route,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(bottom = 70.dp) //  avoid overlap
         ) {
-//            composable(Screen.Home.route) {
-//                val viewModel: HomeViewModel = hiltViewModel()
-////                HomeScreen(
-//                    viewModel = viewModel,
-//                    onVideoClick = { video ->
-//                        navController.navigate(Screen.VideoDetail.createRoute(video.id))
-//                    },
-//                    onFeedClick = { feed ->
-//                        navController.navigate(Screen.FeedDetail.createRoute(feed.id))
-//                    },
-//                    onLiveClick = { url ->
-//                        navController.navigate(Screen.VideoPlayer.createRoute(url))
-//                    },
-//                    onRadioClick = {
-//                        navController.navigate(Screen.Radio.route)
-//                    },
-//                    onSeeAllVideos = {
-//                        navController.navigate(Screen.Videos.route)
-//                    },
-//                    onSeeAllFeeds = {
-//                        navController.navigate(Screen.Feed.route)
-//                    }
-//                )
-//            }
+
+            composable(Screen.Home.route) {
+                val viewModel: HomeViewModel = hiltViewModel()
+                HomeScreen(
+                    viewModel = viewModel,
+                    onVideoClick = { video ->
+                        navController.navigate(Screen.VideoDetail.createRoute(video.id))
+                    },
+                    onFeedClick = { feed ->
+                        navController.navigate(Screen.FeedDetail.createRoute(feed.id))
+                    },
+                    onLiveClick = { url ->
+                        navController.navigate(Screen.VideoPlayer.createRoute(url))
+                    },
+                    onRadioClick = {
+                        navController.navigate(Screen.Radio.route)
+                    },
+                    onSeeAllVideos = {
+                        navController.navigate(Screen.Videos.route)
+                    },
+                    onSeeAllFeeds = {
+                        navController.navigate(Screen.Feed.route)
+                    }
+                )
+            }
+
             composable(Screen.Videos.route) {
                 val viewModel: VideoListViewModel = hiltViewModel()
                 VideoListScreen(
@@ -126,6 +99,7 @@ fun MainScreen() {
                     }
                 )
             }
+
             composable(Screen.Audios.route) {
                 val viewModel: AudioListViewModel = hiltViewModel()
                 AudioListScreen(
@@ -135,6 +109,7 @@ fun MainScreen() {
                     }
                 )
             }
+
             composable(Screen.Live.route) {
                 val viewModel: LiveViewModel = hiltViewModel()
                 LiveScreen(
@@ -144,6 +119,7 @@ fun MainScreen() {
                     }
                 )
             }
+
             composable(Screen.Radio.route) {
                 val viewModel: RadioViewModel = hiltViewModel()
                 RadioScreen(
@@ -153,6 +129,7 @@ fun MainScreen() {
                     }
                 )
             }
+
             composable(Screen.Feed.route) {
                 val viewModel: FeedViewModel = hiltViewModel()
                 FeedScreen(
@@ -162,19 +139,21 @@ fun MainScreen() {
                     }
                 )
             }
+
             composable(
                 route = Screen.FeedDetail.route,
                 arguments = listOf(navArgument("feedId") { type = NavType.StringType })
             ) { backStackEntry ->
                 val feedId = backStackEntry.arguments?.getString("feedId")
                 val viewModel: FeedViewModel = hiltViewModel()
-                val feed = viewModel.feeds.collectAsState().value.find { feed -> feed.id == feedId }
+                val feed = viewModel.feeds.collectAsState().value.find { it.id == feedId }
                 FeedDetailScreen(feed = feed, onBackClick = { navController.popBackStack() })
             }
+
             composable(
                 route = Screen.VideoDetail.route,
                 arguments = listOf(navArgument("videoId") { type = NavType.StringType })
-            ) { 
+            ) {
                 val viewModel: VideoDetailViewModel = hiltViewModel()
                 VideoDetailScreen(
                     viewModel = viewModel,
@@ -184,6 +163,7 @@ fun MainScreen() {
                     }
                 )
             }
+
             composable(Screen.DailyWord.route) {
                 val viewModel: DailyWordViewModel = hiltViewModel()
                 DailyWordScreen(
@@ -191,23 +171,32 @@ fun MainScreen() {
                     onBackClick = { navController.popBackStack() }
                 )
             }
+
             composable(Screen.Horaire.route) {
                 val viewModel: HoraireViewModel = hiltViewModel()
                 HoraireScreen(viewModel = viewModel)
             }
+
             composable(Screen.Programs.route) {
                 val viewModel: ProgramViewModel = hiltViewModel()
-                ProgramScreen(viewModel = viewModel, onBackClick = { navController.popBackStack() })
+                ProgramScreen(
+                    viewModel = viewModel,
+                    onBackClick = { navController.popBackStack() }
+                )
             }
+
             composable(Screen.Donation.route) {
                 DonationScreen()
             }
+
             composable(Screen.About.route) {
                 AboutScreen(onBackClick = { navController.popBackStack() })
             }
+
             composable(Screen.Contact.route) {
                 ContactScreen(onBackClick = { navController.popBackStack() })
             }
+
             composable(Screen.Settings.route) {
                 val viewModel: SettingsViewModel = hiltViewModel()
                 SettingsScreen(
@@ -221,6 +210,7 @@ fun MainScreen() {
                     onNavigateToContact = { navController.navigate(Screen.Contact.route) }
                 )
             }
+
             composable(
                 route = Screen.VideoPlayer.route,
                 arguments = listOf(navArgument("videoUrl") { type = NavType.StringType })
@@ -228,6 +218,95 @@ fun MainScreen() {
                 val videoUrl = backStackEntry.arguments?.getString("videoUrl") ?: ""
                 VideoPlayerScreen(videoUrl = videoUrl)
             }
+        }
+
+
+
+        //  Bottom bar (FLOATING)
+        Box(
+            modifier = Modifier.align(Alignment.BottomCenter)
+        ) {
+            BottomAppBar(navController)
+        }
+    }
+}
+@Composable
+fun BottomAppBar(navController: NavController) {
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+
+    val bottomNavItems = listOf(
+        Screen.Home,
+        Screen.Videos,
+        Screen.Audios,
+        Screen.Radio,
+        Screen.About,
+        Screen.Feed
+    )
+
+    val isBottomBarVisible = bottomNavItems.any {
+        currentDestination?.hierarchy?.any { it.route == it.route } == true
+    }
+
+    if (!isBottomBarVisible) return
+
+    NavigationBar(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 8.dp)
+            .clip(RoundedCornerShape(20.dp)), //  rounded modern look
+
+        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
+        tonalElevation = 8.dp
+    ) {
+
+        bottomNavItems.forEach { screen ->
+
+            val selected = currentDestination?.hierarchy?.any {
+                it.route == screen.route
+            } == true
+
+            NavigationBarItem(
+                selected = selected,
+
+                icon = {
+                    screen.icon?.let {
+                        Icon(
+                            imageVector = it,
+                            contentDescription = screen.title,
+                            modifier = Modifier.size(22.dp)
+                        )
+                    }
+                },
+
+                label = {
+                    Text(
+                        text = screen.title,
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                },
+
+                alwaysShowLabel = false, //  modern style
+
+                onClick = {
+                    navController.navigate(screen.route) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
+
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = MaterialTheme.colorScheme.primary,
+                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                    unselectedIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                    unselectedTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                    indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                )
+            )
         }
     }
 }

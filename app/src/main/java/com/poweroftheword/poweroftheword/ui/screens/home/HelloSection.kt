@@ -51,7 +51,7 @@ fun DynamicHero() {
         ) {
 
             Image(
-                painter = painterResource(R.drawable.dailword1),
+                painter = painterResource(R.drawable.dailword),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
