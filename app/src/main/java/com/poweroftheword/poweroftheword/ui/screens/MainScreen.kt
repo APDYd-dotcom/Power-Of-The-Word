@@ -31,7 +31,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.poweroftheword.poweroftheword.ui.navigation.Screen
-import com.poweroftheword.poweroftheword.ui.screens.audio.AudioListScreen
 import com.poweroftheword.poweroftheword.ui.screens.audio.AudioListViewModel
 import com.poweroftheword.poweroftheword.ui.screens.dailyword.DailyWordScreen
 import com.poweroftheword.poweroftheword.ui.screens.dailyword.DailyWordViewModel
@@ -50,6 +49,7 @@ import com.poweroftheword.poweroftheword.ui.screens.program.ProgramViewModel
 import com.poweroftheword.poweroftheword.ui.screens.radio.RadioScreen
 import com.poweroftheword.poweroftheword.ui.screens.radio.RadioViewModel
 import com.poweroftheword.poweroftheword.ui.screens.about.AboutScreen
+import com.poweroftheword.poweroftheword.ui.screens.audio.AudioListScreen
 import com.poweroftheword.poweroftheword.ui.screens.settings.ContactScreen
 import com.poweroftheword.poweroftheword.ui.screens.settings.SettingsScreen
 import com.poweroftheword.poweroftheword.ui.screens.settings.SettingsViewModel
@@ -115,7 +115,8 @@ fun MainScreen() {
             composable(Screen.Audios.route) {
                 val viewModel: AudioListViewModel = hiltViewModel()
                 AudioListScreen(
-                    viewModel = viewModel
+                    viewModel = viewModel,
+                    context = navController.context
                 )
             }
 

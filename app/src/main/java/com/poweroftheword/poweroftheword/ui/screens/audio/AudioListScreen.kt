@@ -1,5 +1,6 @@
 package com.poweroftheword.poweroftheword.ui.screens.audio
 
+import android.content.Context
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -20,6 +21,7 @@ import androidx.compose.ui.unit.sp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AudioListScreen(
+    context: Context,
     viewModel: AudioListViewModel,
 ) {
     val audios by viewModel.filteredAudios.collectAsState()
@@ -128,6 +130,7 @@ fun AudioListScreen(
 
                     items(audios) { audio ->
                         AudioPlayerComponent(
+                            context = context,
                             audioUrl = audio.file,
                             title = audio.title,
                             desc = audio.date
