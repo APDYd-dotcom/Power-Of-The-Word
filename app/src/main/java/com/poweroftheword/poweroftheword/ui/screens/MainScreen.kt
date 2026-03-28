@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -31,6 +30,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.poweroftheword.poweroftheword.ui.navigation.Screen
+import com.poweroftheword.poweroftheword.ui.screens.about.AboutScreen
+import com.poweroftheword.poweroftheword.ui.screens.audio.AudioListScreen
 import com.poweroftheword.poweroftheword.ui.screens.audio.AudioListViewModel
 import com.poweroftheword.poweroftheword.ui.screens.dailyword.DailyWordScreen
 import com.poweroftheword.poweroftheword.ui.screens.dailyword.DailyWordViewModel
@@ -48,16 +49,12 @@ import com.poweroftheword.poweroftheword.ui.screens.program.ProgramScreen
 import com.poweroftheword.poweroftheword.ui.screens.program.ProgramViewModel
 import com.poweroftheword.poweroftheword.ui.screens.radio.RadioScreen
 import com.poweroftheword.poweroftheword.ui.screens.radio.RadioViewModel
-import com.poweroftheword.poweroftheword.ui.screens.about.AboutScreen
-import com.poweroftheword.poweroftheword.ui.screens.audio.AudioListScreen
 import com.poweroftheword.poweroftheword.ui.screens.settings.ContactScreen
 import com.poweroftheword.poweroftheword.ui.screens.settings.SettingsScreen
 import com.poweroftheword.poweroftheword.ui.screens.settings.SettingsViewModel
 import com.poweroftheword.poweroftheword.ui.screens.video.VideoDetailScreen
-import com.poweroftheword.poweroftheword.ui.screens.video.VideoDetailViewModel
 import com.poweroftheword.poweroftheword.ui.screens.video.VideoListScreen
 import com.poweroftheword.poweroftheword.ui.screens.video.VideoListViewModel
-import com.poweroftheword.poweroftheword.ui.screens.video.VideoPlayerScreen
 
 @Composable
 fun MainScreen() {
@@ -80,7 +77,7 @@ fun MainScreen() {
                 HomeScreen(
                     viewModel = viewModel,
                     onVideoClick = { video ->
-                        navController.navigate(Screen.VideoDetail.createRoute(video.id))
+                        navController.navigate(Screen.VideoDetail.createRoute(video.results[0].id))
                     },
                     onFeedClick = { feed ->
                         navController.navigate(
@@ -107,7 +104,7 @@ fun MainScreen() {
                 VideoListScreen(
                     viewModel = viewModel,
                     onVideoClick = { video ->
-                        navController.navigate(Screen.VideoDetail.createRoute(video.id))
+                        navController.navigate(Screen.VideoDetail.createRoute(video.results[0].id))
                     }
                 )
             }
@@ -165,7 +162,7 @@ fun MainScreen() {
                 route = Screen.VideoDetail.route,
                 arguments = listOf(navArgument("videoId") { type = NavType.StringType })
             ) {
-                val viewModel: VideoDetailViewModel = hiltViewModel()
+                val viewModel: VideoListViewModel = hiltViewModel()
                 VideoDetailScreen(
                     viewModel = viewModel,
                     onBackClick = { navController.popBackStack() },
@@ -228,13 +225,13 @@ fun MainScreen() {
                 )
             }
 
-            composable(
-                route = Screen.VideoPlayer.route,
-                arguments = listOf(navArgument("videoUrl") { type = NavType.StringType })
-            ) { backStackEntry ->
-                val videoUrl = backStackEntry.arguments?.getString("videoUrl") ?: ""
-                VideoPlayerScreen(videoUrl = videoUrl)
-            }
+//            composable(
+//                route = Screen.VideoPlayer.route,
+//                arguments = listOf(navArgument("videoUrl") { type = NavType.StringType })
+//            ) { backStackEntry ->
+//                val videoUrl = backStackEntry.arguments?.getString("videoUrl") ?: ""
+//                VideoPlayerScreen(videoUrl = videoUrl)
+//            }
         }
 
 

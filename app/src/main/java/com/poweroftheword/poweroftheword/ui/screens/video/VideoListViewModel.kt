@@ -1,9 +1,11 @@
 package com.poweroftheword.poweroftheword.ui.screens.video
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.poweroftheword.poweroftheword.domain.model.Video
+import com.poweroftheword.poweroftheword.domain.model.VideoItem
 import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
 import com.poweroftheword.poweroftheword.util.DeviceUtils
 import com.poweroftheword.poweroftheword.util.ShareUtils
@@ -25,15 +27,20 @@ class VideoListViewModel @Inject constructor(
     private val _selectedType = MutableStateFlow<String?>(null)
     val selectedType: StateFlow<String?> = _selectedType.asStateFlow()
 
-    private val _videos = MutableStateFlow<List<Video>>(emptyList())
-    
-    val filteredVideos: StateFlow<List<Video>> = combine(_videos, _searchQuery) { videos, query ->
-        if (query.isBlank()) {
-            videos
-        } else {
-            videos.filter { it.title.contains(query, ignoreCase = true) || it.description.contains(query, ignoreCase = true) }
-        }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    private val _videos = MutableStateFlow<List<VideoItem>>(emptyList())
+    val video: StateFlow<List<VideoItem>> = _videos
+
+    val filteredVideos: StateFlow<List<VideoItem>> =
+        combine(_videos, _searchQuery) { videos, query ->
+            if (query.isBlank()) {
+                videos
+            } else {
+                videos.filter {
+                    it.title.contains(query, true) ||
+                            it.description?.contains(query, true) == true
+                }
+            }
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
@@ -53,22 +60,38 @@ class VideoListViewModel @Inject constructor(
         _selectedType.value = if (_selectedType.value == type) null else type
         loadVideos()
     }
+    init {
+        combine(_selectedType, flowOf(Unit)) { type, _ -> type }
+            .onEach { loadVideos() }
+            .launchIn(viewModelScope)
+    }
 
     fun loadVideos() {
         viewModelScope.launch {
             _isLoading.value = true
             _error.value = null
+
             try {
                 val language = repository.getSavedLanguage().first()
-                val result = repository.getVideos(language, _selectedType.value)
+
+                val result = repository.getVideos(
+                    language = language,
+                    type = _selectedType.value
+                )
+
                 _videos.value = result
+                Log.d("VideoListViewModel", "Loaded ${result.size} videos")
+
             } catch (e: Exception) {
-                _error.value = "Failed to load videos. Please check your connection."
+                _error.value = e.message ?: "Failed to load videos"
+                Log.e("VideoListViewModel", "Failed to load videos", e)
             } finally {
                 _isLoading.value = false
             }
         }
     }
+
+
 
     fun onVideoViewed(videoId: String) {
         viewModelScope.launch {
@@ -94,13 +117,18 @@ class VideoListViewModel @Inject constructor(
         }
     }
 
-    fun shareVideo(video: Video) {
+    fun shareVideo(video: VideoItem) {
         viewModelScope.launch {
             val deviceId = DeviceUtils.getDeviceId(context)
+
             try {
                 repository.shareVideo(video.id, deviceId)
-            } catch (e: Exception) {}
-            ShareUtils.shareText(context, "Check out this sermon: ${video.title}\n${video.videoUrl}")
+            } catch (_: Exception) {}
+
+            ShareUtils.shareText(
+                context,
+                "Check out this sermon:\n${video.title}\n${video.url}"
+            )
         }
     }
 

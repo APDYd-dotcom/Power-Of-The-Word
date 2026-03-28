@@ -13,8 +13,8 @@ import javax.inject.Inject
 data class HomeState(
     val dailyWord: DailyWord? = null,
     val liveStreams: List<Live> = emptyList(),
-    val latestVideos: List<Video> = emptyList(),
-    val latestFeeds: List<FeedItem> = emptyList(), // ✅ FIXED
+    val latestVideos: List<VideoItem> = emptyList(),
+    val latestFeeds: List<FeedItem> = emptyList(),
     val radioStatus: Radio? = null,
     val isLoading: Boolean = false,
     val error: String? = null
@@ -41,7 +41,7 @@ class HomeViewModel @Inject constructor(
 
                 val dailyWord = repository.getDailyWord(language)
                 val liveStreams = repository.getLiveStreams()
-                val latestVideos = repository.getVideos(language).take(5)
+                val latestVideos: List<VideoItem> = repository.getVideos(language)
 
                 // ✅ Now matches HomeState
                 val latestFeeds = repository.getFeeds(language)

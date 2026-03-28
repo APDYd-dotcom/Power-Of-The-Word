@@ -32,52 +32,53 @@ class ChurchRepositoryImpl @Inject constructor(
     private val LANGUAGE_KEY = stringPreferencesKey("language_preference")
 
     // Fixed static data with working YouTube IDs to resolve "Video Unavailable" error
-    private val staticVideos = listOf(
-        Video(
-            id = "1",
-            title = "Power of the Word - Weekly Message",
-            description = "A powerful message to start your week with faith.",
-            thumbnailUrl = "https://img.youtube.com/vi/q_V6o_KjS3A/maxresdefault.jpg",
-            videoUrl = "https://www.youtube.com/watch?v=q_V6o_KjS3A",
-            language = "EN",
-            views = 15250,
-            likes = 450,
-            datePublished = "2023-10-01"
-        ),
-        Video(
-            id = "2",
-            title = "Morning Prayer and Devotion",
-            description = "Join us for a peaceful morning of prayer.",
-            thumbnailUrl = "https://img.youtube.com/vi/_OBlgSz8sSM/maxresdefault.jpg",
-            videoUrl = "https://www.youtube.com/watch?v=_OBlgSz8sSM",
-            language = "EN",
-            views = 22100,
-            likes = 320,
-            datePublished = "2023-10-05"
-        ),
-        Video(
-            id = "3",
-            title = "Walking in Victory",
-            description = "How to overcome challenges through the word.",
-            thumbnailUrl = "https://img.youtube.com/vi/H6U6-368-uE/maxresdefault.jpg",
-            videoUrl = "https://www.youtube.com/watch?v=H6U6-368-uE",
-            language = "EN",
-            views = 8900,
-            likes = 850,
-            datePublished = "2023-10-10"
-        )
-    )
+//    private val staticVideos = listOf(
+//        Video(
+//            id = "1",
+//            title = "Power of the Word - Weekly Message",
+//            description = "A powerful message to start your week with faith.",
+//            thumbnailUrl = "https://img.youtube.com/vi/q_V6o_KjS3A/maxresdefault.jpg",
+//            videoUrl = "https://www.youtube.com/watch?v=q_V6o_KjS3A",
+//            language = "EN",
+//            views = 15250,
+//            likes = 450,
+//            datePublished = "2023-10-01"
+//        ),
+//        Video(
+//            id = "2",
+//            title = "Morning Prayer and Devotion",
+//            description = "Join us for a peaceful morning of prayer.",
+//            thumbnailUrl = "https://img.youtube.com/vi/_OBlgSz8sSM/maxresdefault.jpg",
+//            videoUrl = "https://www.youtube.com/watch?v=_OBlgSz8sSM",
+//            language = "EN",
+//            views = 22100,
+//            likes = 320,
+//            datePublished = "2023-10-05"
+//        ),
+//        Video(
+//            id = "3",
+//            title = "Walking in Victory",
+//            description = "How to overcome challenges through the word.",
+//            thumbnailUrl = "https://img.youtube.com/vi/H6U6-368-uE/maxresdefault.jpg",
+//            videoUrl = "https://www.youtube.com/watch?v=H6U6-368-uE",
+//            language = "EN",
+//            views = 8900,
+//            likes = 850,
+//            datePublished = "2023-10-10"
+//        )
+//    )
 
-    override suspend fun getVideos(language: String, type: String?): List<Video> {
+    override suspend fun getVideos(language: String, type: String?): List<VideoItem> {
         return try {
-            val response: List<Video> = client.get("$BASE_URL/videos/") {
+            val response: Video = client.get("$BASE_URL/video/") {
                 parameter("language", language)
                 type?.let { parameter("type", it) }
             }.body()
-            
-            if (response.isEmpty()) staticVideos else response
+
+            response.results
+
         } catch (e: Exception) {
-            staticVideos
+            emptyList()
         }
     }
 

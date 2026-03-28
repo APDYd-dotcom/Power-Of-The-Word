@@ -46,7 +46,6 @@ import com.poweroftheword.poweroftheword.R
 import com.poweroftheword.poweroftheword.domain.model.Feed
 import com.poweroftheword.poweroftheword.domain.model.FeedItem
 import com.poweroftheword.poweroftheword.domain.model.Video
-import com.poweroftheword.poweroftheword.ui.screens.video.YoutubeVideoCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,11 +75,11 @@ fun HomeScreen(
                     item { DynamicHero(viewModel.state.collectAsState().value.dailyWord) }
 
                     item {
-                        YoutubeVideoCard(
-                            "dQw4w9WgXcQ",
-                            "Discover how the words you speak can transform your life...",
-                            "12 Views"
-                        )
+//                        YoutubeVideoCard(
+//                            "dQw4w9WgXcQ",
+//                            "Discover how the words you speak can transform your life...",
+//                            "12 Views"
+//                        )
                     }
 
                     item {
@@ -123,28 +122,6 @@ fun extractYouTubeVideoId(url: String): String? {
     }
     if (url.matches(Regex("""[A-Za-z0-9_-]{11}"""))) return url
     return null
-}
-
-@Composable
-fun YouTubeLibraryPlayerView(
-    videoId: String,
-    modifier: Modifier = Modifier
-) {
-    val lifecycleOwner = LocalLifecycleOwner.current
-
-    AndroidView(
-        modifier = modifier,
-        factory = { context ->
-            YouTubePlayerView(context).apply {
-                lifecycleOwner.lifecycle.addObserver(this)
-                addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
-                    override fun onReady(youTubePlayer: YouTubePlayer) {
-                        youTubePlayer.cueVideo(videoId, 0f)
-                    }
-                })
-            }
-        }
-    )
 }
 
 @Composable

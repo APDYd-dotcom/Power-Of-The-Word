@@ -73,7 +73,7 @@ fun AudioPlayerComponent(
     var duration by remember { mutableFloatStateOf(0f) }
     var position by remember { mutableFloatStateOf(0f) }
 
-    // 🔥 LOAD AUDIO FROM URL
+    //  LOAD AUDIO FROM URL
     LaunchedEffect(audioUrl) {
         try {
             mediaPlayer.reset()
@@ -90,7 +90,7 @@ fun AudioPlayerComponent(
         }
     }
 
-    // 🔥 UPDATE POSITION
+    //  UPDATE POSITION
     LaunchedEffect(isPlaying) {
         while (isPlaying) {
             if (mediaPlayer.isPlaying) {
@@ -169,7 +169,7 @@ fun AudioPlayerComponent(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // 🔥 CUSTOM SLIDER (UNCHANGED DESIGN)
+            //  CUSTOM SLIDER (UNCHANGED DESIGN)
             Slider(
                 value = position,
                 onValueChange = {

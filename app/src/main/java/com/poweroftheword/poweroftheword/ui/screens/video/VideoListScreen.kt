@@ -25,6 +25,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import com.poweroftheword.poweroftheword.domain.model.Video
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -132,120 +133,16 @@ fun VideoListScreen(
                 LazyColumn(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    items(videos) { video ->
-                        VideoYouTubeItem(
-                            video = video,
-                            onClick = {
-                                viewModel.onVideoViewed(video.id)
-                                onVideoClick(video)
-                            }
+                    items(videos) { item ->
+                        YoutubePlayerComposable(
+                                videoUrl = item.url,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(220.dp)
                         )
+
                     }
                 }
-            }
-        }
-    }
-}
-
-@Composable
-fun VideoYouTubeItem(
-    video: Video,
-    onClick: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(bottom = 20.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(16/9f)
-                .clip(RoundedCornerShape(12.dp))
-        ) {
-            AsyncImage(
-                model = video.thumbnailUrl,
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
-            // Duration Badge
-            Surface(
-                color = Color.Black.copy(alpha = 0.7f),
-                shape = RoundedCornerShape(4.dp),
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(12.dp)
-            ) {
-                Text(
-                    text = "45:15",
-                    color = Color.White,
-                    fontSize = 11.sp,
-                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                    fontWeight = FontWeight.Medium
-                )
-            }
-        }
-
-        Row(
-            modifier = Modifier
-                .padding(top = 12.dp, start = 4.dp, end = 4.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.Top
-        ) {
-            // Channel Avatar
-            AsyncImage(
-                model = "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?q=80&w=100&auto=format&fit=crop",
-                contentDescription = null,
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop
-            )
-            
-            Spacer(modifier = Modifier.width(12.dp))
-            
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = video.title,
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                        lineHeight = 22.sp
-                    ),
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = "Power of the Word",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
-                    )
-                    Text(
-                        text = " • ",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
-                    )
-                    Text(
-                        text = "${video.views} views • 2 days ago",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
-                    )
-                }
-            }
-            
-            IconButton(
-                onClick = { /* Menu */ },
-                modifier = Modifier.size(24.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.MoreVert, 
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
-                )
             }
         }
     }
