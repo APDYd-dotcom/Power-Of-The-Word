@@ -35,7 +35,7 @@ fun SettingsScreen(
         "EN" to "English",
         "FR" to "Français",
         "SW" to "Swahili",
-        "RN" to "Kirundi"
+        "KI" to "Kirundi"
     )
 
     Scaffold(

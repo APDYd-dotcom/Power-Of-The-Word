@@ -9,11 +9,12 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+// ✅ USE FeedItem (NOT Feed)
 data class HomeState(
     val dailyWord: DailyWord? = null,
     val liveStreams: List<Live> = emptyList(),
     val latestVideos: List<Video> = emptyList(),
-    val latestFeeds: List<Feed> = emptyList(),
+    val latestFeeds: List<FeedItem> = emptyList(), // ✅ FIXED
     val radioStatus: Radio? = null,
     val isLoading: Boolean = false,
     val error: String? = null
@@ -34,14 +35,17 @@ class HomeViewModel @Inject constructor(
     fun loadHomeData() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
+
             try {
-                // Get the current language preference first
                 val language = repository.getSavedLanguage().first()
-                
+
                 val dailyWord = repository.getDailyWord(language)
                 val liveStreams = repository.getLiveStreams()
                 val latestVideos = repository.getVideos(language).take(5)
-                val latestFeeds = repository.getFeeds(language).take(3)
+
+                // ✅ Now matches HomeState
+                val latestFeeds = repository.getFeeds(language)
+
                 val radioStatus = repository.getRadioStatus()
 
                 _state.update {
@@ -49,13 +53,19 @@ class HomeViewModel @Inject constructor(
                         dailyWord = dailyWord,
                         liveStreams = liveStreams,
                         latestVideos = latestVideos,
-                        latestFeeds = latestFeeds,
+                        latestFeeds = latestFeeds, // ✅ NO ERROR
                         radioStatus = radioStatus,
                         isLoading = false
                     )
                 }
+
             } catch (e: Exception) {
-                _state.update { it.copy(isLoading = false, error = "Failed to load updates") }
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        error = "Failed to load updates"
+                    )
+                }
             }
         }
     }

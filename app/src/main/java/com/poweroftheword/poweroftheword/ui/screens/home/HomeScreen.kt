@@ -44,6 +44,7 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.Abs
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import com.poweroftheword.poweroftheword.R
 import com.poweroftheword.poweroftheword.domain.model.Feed
+import com.poweroftheword.poweroftheword.domain.model.FeedItem
 import com.poweroftheword.poweroftheword.domain.model.Video
 import com.poweroftheword.poweroftheword.ui.screens.video.YoutubeVideoCard
 
@@ -60,6 +61,7 @@ fun HomeScreen(
 ) {
     val state by viewModel.state.collectAsState()
 
+
     Surface () {
         PullToRefreshBox(
             isRefreshing = state.isLoading,
@@ -71,7 +73,7 @@ fun HomeScreen(
             Column() {
                 LazyColumn {
 
-                    item { DynamicHero() }
+                    item { DynamicHero(viewModel.state.collectAsState().value.dailyWord) }
 
                     item {
                         YoutubeVideoCard(
@@ -146,7 +148,7 @@ fun YouTubeLibraryPlayerView(
 }
 
 @Composable
-fun FeedLargeCard(feed: Feed, onClick: () -> Unit) {
+fun FeedLargeCard(feed: FeedItem, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .padding(horizontal = 20.dp)

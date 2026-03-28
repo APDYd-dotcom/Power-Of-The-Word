@@ -1,9 +1,6 @@
 package com.poweroftheword.poweroftheword.ui.screens.home
 
 import android.content.Context
-import android.graphics.BitmapFactory
-import androidx.annotation.DrawableRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -22,22 +19,28 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.palette.graphics.Palette
-import com.poweroftheword.poweroftheword.R
+import coil.compose.AsyncImage
+import com.poweroftheword.poweroftheword.domain.model.DailyWord
 
 @Composable
-fun DynamicHero() {
+fun DynamicHero(
+    viewModel: DailyWord?
+) {
 
     val context = LocalContext.current
 
     var dominantColor by remember { mutableStateOf(Color.Black) }
     var isDarkMode by remember { mutableStateOf(true) }
     var selectedLang by remember { mutableStateOf("EN - English") }
+//    val state by viewModel
+    val item = viewModel?.results?.firstOrNull()
+
+
 
     LaunchedEffect(Unit) {
-        getDominantColor(context, R.drawable.dailword) {
+        getDominantColorFromUrl(context, item?.photo) {
             dominantColor = it
         }
     }
@@ -50,8 +53,8 @@ fun DynamicHero() {
                 .height(260.dp)
         ) {
 
-            Image(
-                painter = painterResource(R.drawable.dailword),
+            AsyncImage(
+                model = item?.photo,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
@@ -97,6 +100,7 @@ fun DynamicHero() {
                         //  Language dropdown
                         ProLanguageDropdown(
                             selectedLang = selectedLang,
+//                            size = 30,
                             onLangChange = { selectedLang = it }
                         )
 
@@ -114,22 +118,52 @@ fun DynamicHero() {
     }
 }
 
-fun getDominantColor(
+//this ia for Drowable
+//fun getDominantColor(
+//    context: Context,
+//    @DrawableRes imageRes: Int,
+//    onColorReady: (Color) -> Unit
+//) {
+//    val bitmap = BitmapFactory.decodeResource(context.resources, imageRes)
+//
+//    Palette.from(bitmap).generate { palette ->
+//        val color = palette?.dominantSwatch?.rgb ?: Color.Black.toArgb()
+//        onColorReady(Color(color))
+//    }
+//}
+
+suspend fun getDominantColorFromUrl(
     context: Context,
-    @DrawableRes imageRes: Int,
+    imageUrl: String?,
     onColorReady: (Color) -> Unit
 ) {
-    val bitmap = BitmapFactory.decodeResource(context.resources, imageRes)
+    try {
+        val loader = coil.ImageLoader(context)
 
-    Palette.from(bitmap).generate { palette ->
-        val color = palette?.dominantSwatch?.rgb ?: Color.Black.toArgb()
+        val request = coil.request.ImageRequest.Builder(context)
+            .data(imageUrl)
+            .allowHardware(false) // ⚠️ VERY IMPORTANT for Palette
+            .build()
+
+        val result = (loader.execute(request) as coil.request.SuccessResult)
+
+        val bitmap = (result.drawable as android.graphics.drawable.BitmapDrawable).bitmap
+
+        val palette = Palette.from(bitmap).generate()
+        val color = palette.dominantSwatch?.rgb ?: Color.Black.toArgb()
+
         onColorReady(Color(color))
+
+    } catch (e: Exception) {
+        onColorReady(Color.Black)
     }
 }
+
 
 @Composable
 fun ProLanguageDropdown(
     selectedLang: String,
+    size: Int? = null,
     onLangChange: (String) -> Unit
 ) {
 
@@ -142,52 +176,56 @@ fun ProLanguageDropdown(
         "SW - Swahili"
     )
 
-    Box {
-
-        Row(
-            modifier = Modifier
-                .clip(RoundedCornerShape(20.dp))
-                .background(Color.White.copy(alpha = 0.25f))
-                .clickable { expanded = true }
-                .padding(horizontal = 12.dp, vertical = 6.dp),
-            verticalAlignment = Alignment.CenterVertically
+    size?.dp?.let {
+        Box(
+            modifier = Modifier.size(it)
         ) {
 
-            Text(selectedLang, color = Color.White)
+            Row(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(Color.White.copy(alpha = 0.25f))
+                    .clickable { expanded = true }
+                    .padding(horizontal = 12.dp, vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
 
-            Spacer(modifier = Modifier.width(6.dp))
+                Text(selectedLang, color = Color.White)
 
-            Icon(
-                imageVector = Icons.Default.Language,
-                contentDescription = null,
-                tint = Color.White,
-                modifier = Modifier.size(16.dp)
-            )
-        }
+                Spacer(modifier = Modifier.width(6.dp))
 
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier
-                .clip(RoundedCornerShape(16.dp))
-                .background(Color(0xFF1E1E1E))
-        ) {
-
-            languages.forEach { lang ->
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = lang,
-                            color = if (lang == selectedLang)
-                                Color(0xFF66FF99)
-                            else Color.White
-                        )
-                    },
-                    onClick = {
-                        onLangChange(lang)
-                        expanded = false
-                    }
+                Icon(
+                    imageVector = Icons.Default.Language,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(16.dp)
                 )
+            }
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Color(0xFF1E1E1E))
+            ) {
+
+                languages.forEach { lang ->
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = lang,
+                                color = if (lang == selectedLang)
+                                    Color(0xFF66FF99)
+                                else Color.White
+                            )
+                        },
+                        onClick = {
+                            onLangChange(lang)
+                            expanded = false
+                        }
+                    )
+                }
             }
         }
     }

@@ -2,6 +2,7 @@ package com.poweroftheword.poweroftheword.ui.screens.radio
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,6 +13,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,7 +25,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.poweroftheword.poweroftheword.domain.model.Program
 import com.poweroftheword.poweroftheword.domain.model.Radio
-import com.poweroftheword.poweroftheword.ui.theme.FigmaDarkNavy
+import com.poweroftheword.poweroftheword.ui.screens.home.ProLanguageDropdown
+import com.poweroftheword.poweroftheword.ui.screens.home.ThemeToggleButton
 import com.poweroftheword.poweroftheword.ui.theme.FigmaRed
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -33,6 +38,8 @@ fun RadioScreen(
     val radioStatus by viewModel.radioStatus.collectAsState()
    // val radioStations by viewModel.radioStations.collectAsState() // Assuming there's a list in viewModel
     val isLoading by viewModel.isLoading.collectAsState()
+    var selectedLang by remember { mutableStateOf("EN - English") }
+    var isDarkMode by remember { mutableStateOf(true) }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -57,13 +64,22 @@ fun RadioScreen(
                             border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f)),
                             modifier = Modifier.padding(end = 16.dp)
                         ) {
-                            Text(
-                                "EN",
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold
-                            )
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceAround,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                //  Language dropdown
+                                ProLanguageDropdown(
+                                    selectedLang = selectedLang,
+                                    onLangChange = { selectedLang = it }
+                                )
+                                Spacer(modifier = Modifier.width(10.dp))
+                                //  Theme toggle icon ONLY
+                                ThemeToggleButton(
+                                    isDarkMode = isDarkMode,
+                                    onToggle = { isDarkMode = !isDarkMode }
+                                )
+                            }
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)

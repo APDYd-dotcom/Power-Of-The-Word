@@ -5,10 +5,16 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class DailyWord(
-    val id: String,
-    val content: String,
-    @SerialName("image_url")
-    val imageUrl: String,
+    val count: Int,
+    val next: String?,
+    val previous: String?,
+    val results: List<DailyWordItem>
+)
+
+@Serializable
+data class DailyWordItem(
+    val id: Int,
+    val photo: String,
+    val language: String,
     val date: String,
-    val language: String
 )

@@ -1,9 +1,11 @@
 package com.poweroftheword.poweroftheword.data.repository
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.poweroftheword.poweroftheword.R
 import com.poweroftheword.poweroftheword.domain.model.*
 import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
 import io.ktor.client.HttpClient
@@ -17,6 +19,7 @@ import io.ktor.http.contentType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
+import kotlin.collections.emptyList
 
 private val Context.dataStore by preferencesDataStore(name = "settings")
 
@@ -65,37 +68,6 @@ class ChurchRepositoryImpl @Inject constructor(
         )
     )
 
-    // Static test data for audios
-    private val staticAudios = listOf(
-        Audio(
-            id = "1",
-            title = "GUSENGA BIHINDURA IBINTU",
-            audioUrl = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-            date = "30-05-2025",
-            language = "EN",
-            listens = 1250,
-            likes = 3100
-        ),
-        Audio(
-            id = "2",
-            title = "Power of the Word - Morning Devotion",
-            audioUrl = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
-            date = "31 January 2026",
-            language = "EN",
-            listens = 890,
-            likes = 450
-        ),
-        Audio(
-            id = "3",
-            title = "Walking in the Spirit",
-            audioUrl = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
-            date = "29 January 2026",
-            language = "EN",
-            listens = 2100,
-            likes = 850
-        )
-    )
-
     override suspend fun getVideos(language: String, type: String?): List<Video> {
         return try {
             val response: List<Video> = client.get("$BASE_URL/videos/") {
@@ -117,36 +89,38 @@ class ChurchRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getAudioSermons(language: String): List<Audio> {
+    override suspend fun getAudio(language: String): List<AudioItem> {
         return try {
-            val response: List<Audio> = client.get("$BASE_URL/audio/") {
+            val response: Audio = client.get("$BASE_URL/audio/") {
                 parameter("language", language)
             }.body()
-            if (response.isEmpty()) staticAudios else response
-        } catch (e: Exception) {
-            staticAudios
-        }
-    }
 
-    override suspend fun getFeeds(language: String, type: String?): List<Feed> {
-        return try {
-            client.get("$BASE_URL/feeds/") {
-                parameter("language", language)
-                type?.let { parameter("type", it) }
-            }.body()
+            response.results // ✅ return only items
+
         } catch (e: Exception) {
             emptyList()
         }
     }
 
-    override suspend fun getDailyWord(language: String): DailyWord? {
+    override suspend fun getFeeds(language: String): List<FeedItem> {
         return try {
-            client.get("$BASE_URL/dailyword/") {
-                parameter("language", language)
+            val response: Feed = client.post("$BASE_URL/getfeed/") {
+//                parameter("language", language)
+                contentType(ContentType.Application.Json)
+                setBody(language)
+                Log.e("getFeeds", "getFeeds: $language")
             }.body()
+
+            response.results
         } catch (e: Exception) {
-            null
+            emptyList()
         }
+    }
+
+    override suspend fun getDailyWord(language: String): DailyWord {
+        return client.get("$BASE_URL/dailyword/") {
+            parameter("language", language)
+        }.body()
     }
 
     override suspend fun getRadioStatus(): Radio? {

@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -82,7 +83,9 @@ fun MainScreen() {
                         navController.navigate(Screen.VideoDetail.createRoute(video.id))
                     },
                     onFeedClick = { feed ->
-                        navController.navigate(Screen.FeedDetail.createRoute(feed.id))
+                        navController.navigate(
+                            Screen.FeedDetail.createRoute(feed.results[0].id.toString())
+                        )
                     },
                     onLiveClick = { url ->
                         navController.navigate(Screen.VideoPlayer.createRoute(url))
@@ -112,10 +115,7 @@ fun MainScreen() {
             composable(Screen.Audios.route) {
                 val viewModel: AudioListViewModel = hiltViewModel()
                 AudioListScreen(
-                    viewModel = viewModel,
-                    onAudioClick = { audio ->
-                        navController.navigate(Screen.VideoPlayer.createRoute(audio.audioUrl))
-                    }
+                    viewModel = viewModel
                 )
             }
 
@@ -144,7 +144,7 @@ fun MainScreen() {
                 FeedScreen(
                     viewModel = viewModel,
                     onFeedClick = { feed ->
-                        navController.navigate(Screen.FeedDetail.createRoute(feed.id))
+                        navController.navigate(Screen.FeedDetail.createRoute(feed.id.toString()))
                     }
                 )
             }
@@ -155,7 +155,8 @@ fun MainScreen() {
             ) { backStackEntry ->
                 val feedId = backStackEntry.arguments?.getString("feedId")
                 val viewModel: FeedViewModel = hiltViewModel()
-                val feed = viewModel.feeds.collectAsState().value.find { it.id == feedId }
+                val feeds by viewModel.feeds.collectAsState()
+                val feed = feeds.find { it.id == feedId?.toInt() }
                 FeedDetailScreen(feed = feed, onBackClick = { navController.popBackStack() })
             }
 
@@ -201,9 +202,10 @@ fun MainScreen() {
             }
 
             composable(Screen.About.route) {
-                AboutScreen(
+                AboutScreen( 
                     onBackClick = { navController.popBackStack() },
-                    onDonationClick = { navController.navigate(Screen.Donation.route) }
+                    onDonationClick = { navController.navigate(Screen.Donation.route) },
+                    onSettingsClick = { navController.navigate(Screen.Settings.route) }
                 )
             }
 
@@ -324,4 +326,3 @@ fun BottomAppBar(navController: NavController) {
         }
     }
 }
-

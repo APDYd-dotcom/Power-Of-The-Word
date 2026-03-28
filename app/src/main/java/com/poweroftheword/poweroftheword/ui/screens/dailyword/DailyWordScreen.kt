@@ -30,8 +30,9 @@ fun DailyWordScreen(
     viewModel: DailyWordViewModel,
     onBackClick: () -> Unit = {}
 ) {
-    val dailyWord by viewModel.dailyWord.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
+
+    val state by viewModel.state.collectAsState()
+    val item = state.data?.results?.firstOrNull()
 
     Scaffold(
         topBar = {
@@ -51,9 +52,9 @@ fun DailyWordScreen(
         }
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
-            if (isLoading && dailyWord == null) {
+            if (state.isLoading && item == null) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            } else if (dailyWord == null) {
+            } else if (item == null) {
                 Text(
                     text = "No daily word available.",
                     modifier = Modifier.align(Alignment.Center),
@@ -68,7 +69,7 @@ fun DailyWordScreen(
                 ) {
                     Box(modifier = Modifier.fillMaxWidth().height(400.dp)) {
                         AsyncImage(
-                            model = dailyWord!!.imageUrl,
+                            model = item.photo,
                             contentDescription = null,
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop
@@ -84,14 +85,14 @@ fun DailyWordScreen(
                                     )
                                 )
                         )
-                        
+
                         Column(
                             modifier = Modifier
                                 .align(Alignment.BottomStart)
                                 .padding(24.dp)
                         ) {
                             Text(
-                                text = dailyWord!!.date,
+                                text = item!!.date,
                                 style = MaterialTheme.typography.labelLarge,
                                 color = Color.White.copy(alpha = 0.8f)
                             )
@@ -104,10 +105,10 @@ fun DailyWordScreen(
                             )
                         }
                     }
-                    
+
                     Column(modifier = Modifier.padding(24.dp)) {
                         Text(
-                            text = dailyWord!!.content,
+                            text = item.language,
                             style = MaterialTheme.typography.bodyLarge.copy(
                                 fontSize = 18.sp,
                                 lineHeight = 30.sp,
@@ -115,23 +116,23 @@ fun DailyWordScreen(
                             ),
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f)
                         )
-                        
+
                         Spacer(modifier = Modifier.height(48.dp))
-                        
+
                         HorizontalDivider(
                             modifier = Modifier.width(60.dp),
                             thickness = 4.dp,
                             color = MaterialTheme.colorScheme.primary
                         )
-                        
+
                         Spacer(modifier = Modifier.height(16.dp))
-                        
+
                         Text(
                             text = "Be blessed and share this word with someone today.",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                         )
-                        
+
                         Spacer(modifier = Modifier.height(32.dp))
                     }
                 }

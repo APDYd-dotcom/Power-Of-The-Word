@@ -30,7 +30,11 @@ import com.poweroftheword.poweroftheword.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AboutScreen(onBackClick: () -> Unit, onDonationClick: () -> Unit) {
+fun AboutScreen(
+    onBackClick: () -> Unit,
+    onDonationClick: () -> Unit,
+    onSettingsClick: () -> Unit
+) {
 
     val scrollState = rememberScrollState()
 
@@ -165,7 +169,7 @@ fun AboutScreen(onBackClick: () -> Unit, onDonationClick: () -> Unit) {
             ContactItem(icon = R.drawable.youtube,size = 45, text = "YouTube Power of the word")
 
 // ⚙️ SYSTEM ACTIONS (icons)
-            ContactItem(iconVector = Icons.Default.Email, text = "info@poweroftheword.com")
+            ContactItem(iconVector = Icons.Default.Email, onClik = { onSettingsClick() }, text = "info@poweroftheword.com")
             ContactItem(iconVector = Icons.Default.Favorite, onClik = { onDonationClick() }, text = "Donate to Power of the Word")
             ContactItem(iconVector = Icons.Default.MenuBook, text = "The Power of the Word Story")
             Spacer(modifier = Modifier.height(40.dp))
