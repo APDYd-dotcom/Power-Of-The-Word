@@ -133,11 +133,6 @@ fun AudioListScreen(
                             desc = audio.date
                         )
                     }
-                    
-//                    // Dynamic items from viewModel
-//                    items(audios) { audio ->
-//                        AudioCardItem(audio = audio, onClick = { onAudioClick(audio) })
-//                    }
                 }
             }
         }
