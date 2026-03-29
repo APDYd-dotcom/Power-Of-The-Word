@@ -233,6 +233,27 @@ fun DonationScreen(onBackClick: () -> Unit) {
 
             item { Spacer(Modifier.height(16.dp)) }
 
+// 🔥 DYNAMIC PAYMENT DETAILS
+            item {
+                when (selectedPayment) {
+
+                    "Bank Transfer" -> BankDetailsCard()
+
+                    "Lumicash" -> LumicashCard()
+
+                    "Ecocash" -> EcocashCard()
+
+                    "Bankobu" -> BankobuCard()
+
+                    "Ihela" -> IhelaCard()
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+
             // BUTTON
             item {
                 val finalAmount = selectedAmount ?: customAmount.toIntOrNull()
@@ -252,6 +273,9 @@ fun DonationScreen(onBackClick: () -> Unit) {
                         color = Color.White
                     )
                 }
+            }
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
@@ -344,6 +368,266 @@ fun StatCard(
         ) {
             Text(value, color = color, fontWeight = FontWeight.Bold, fontSize = 18.sp)
             Text(label, fontSize = 12.sp, color = Color.Gray)
+        }
+    }
+}
+
+
+
+@Composable
+fun BankDetailsCard() {
+    GradientBorderCard(borderColor = Color(0xFF3D74F6)) {
+        Column {
+            Text("Bank Transfer Details", color = Color.White, fontWeight = FontWeight.Bold)
+
+            Spacer(Modifier.height(12.dp))
+
+            InfoRow("Bank Name:", "First National Bank")
+            InfoRow("Account Name:", "Power of the Word Ministry")
+            InfoRow("Account Number:", "1234567890")
+            InfoRow("SWIFT Code:", "FNBXXX123")
+        }
+    }
+}
+
+
+
+
+@Composable
+fun LumicashCard() {
+    GradientBorderCard(borderColor = Color(0xFFFF6A00)) {
+
+        Column {
+            PaymentHeader("Lumicash Payment", Color(0xFFFF6A00))
+
+            Spacer(Modifier.height(12.dp))
+
+            InfoBox("+257 79 XX XX XX", "Lumicash Number")
+            InfoBox("Power of the Word", "Account Name")
+
+            InstructionBox(
+                steps = listOf(
+                    "Dial *155# on your phone",
+                    "Select Send Money",
+                    "Enter number above",
+                    "Enter amount and confirm",
+                    "Keep SMS receipt"
+                ),
+                color = Color(0xFF5A2A1A)
+            )
+        }
+    }
+}
+
+
+
+@Composable
+fun EcocashCard() {
+    GradientBorderCard(borderColor = Color(0xFF00C853)) {
+
+        Column {
+            PaymentHeader("Ecocash Payment", Color(0xFF00C853))
+
+            Spacer(Modifier.height(12.dp))
+
+            InfoBox("+257 71 XX XX XX", "Ecocash Number")
+            InfoBox("Power of the Word", "Account Name")
+
+            InstructionBox(
+                listOf(
+                    "Dial *144#",
+                    "Select Send Money",
+                    "Enter number",
+                    "Enter PIN",
+                    "Save confirmation SMS"
+                ),
+                color = Color(0xFF0F3D2E)
+            )
+        }
+    }
+}
+
+
+@Composable
+fun BankobuCard() {
+    GradientBorderCard(borderColor = Color(0xFF2962FF)) {
+
+        Column {
+            PaymentHeader("Bankobu Payment", Color(0xFF2962FF))
+
+            Spacer(Modifier.height(12.dp))
+
+            InfoBox("+257 76 XX XX XX", "Bankobu Account")
+            InfoBox("Power of the Word Ministry", "Account Name")
+
+            InstructionBox(
+                listOf(
+                    "Dial *365#",
+                    "Select Transfer",
+                    "Enter account number",
+                    "Enter amount",
+                    "Confirm PIN"
+                ),
+                color = Color(0xFF1A2F5A)
+            )
+        }
+    }
+}
+
+
+@Composable
+fun IhelaCard() {
+    GradientBorderCard(borderColor = Color(0xFF8E44AD)) {
+
+        Column {
+            PaymentHeader("Ihela Payment", Color(0xFF8E44AD))
+
+            Spacer(Modifier.height(12.dp))
+
+            InfoBox("+257 22 XX XX XX", "Ihela Number")
+            InfoBox("Power of the Word", "Account Name")
+
+            InstructionBox(
+                listOf(
+                    "Dial *505#",
+                    "Select Send Money",
+                    "Enter number",
+                    "Enter amount",
+                    "Keep reference"
+                ),
+                color = Color(0xFF3A1F4F)
+            )
+        }
+    }
+}
+
+
+@Composable
+fun InfoRow(label: String, value: String) {
+    Row(modifier = Modifier.padding(vertical = 4.dp)) {
+        Text(label, color = Color.Gray)
+        Spacer(Modifier.width(6.dp))
+        Text(value, fontWeight = FontWeight.Medium, color = Color.White)
+    }
+}
+
+
+
+@Composable
+fun InfoBox(value: String, label: String) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color(0xFF2A3142), RoundedCornerShape(12.dp))
+            .padding(12.dp)
+    ) {
+        Column {
+            Text(label, color = Color.Gray, fontSize = 12.sp)
+            Text(value, color = Color.White, fontWeight = FontWeight.Bold)
+        }
+    }
+
+    Spacer(Modifier.height(10.dp))
+}
+
+
+@Composable
+fun InstructionBox(steps: List<String>) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color(0xFF2A3142), RoundedCornerShape(12.dp))
+            .padding(12.dp)
+    ) {
+        Column {
+            Text("Instructions:", fontWeight = FontWeight.Bold, color = Color.White)
+
+            Spacer(Modifier.height(6.dp))
+
+            steps.forEachIndexed { index, step ->
+                Text(
+                    "${index + 1}. $step",
+                    fontSize = 12.sp,
+                    color = Color.LightGray
+                )
+            }
+        }
+    }
+}
+
+
+
+
+@Composable
+fun GradientBorderCard(
+    borderColor: Color,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                brush = Brush.linearGradient(
+                    listOf(borderColor, borderColor.copy(alpha = 0.3f))
+                ),
+                shape = RoundedCornerShape(18.dp)
+            )
+            .padding(1.5.dp) // border thickness
+    ) {
+        Column(
+            modifier = Modifier
+                .background(Color(0xFF1E2635), RoundedCornerShape(18.dp))
+                .padding(16.dp)
+        ) {
+            content()
+        }
+    }
+}
+
+
+@Composable
+fun PaymentHeader(title: String, color: Color) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+
+        Box(
+            modifier = Modifier
+                .size(42.dp)
+                .background(color, RoundedCornerShape(12.dp)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(Icons.Default.CreditCard, null, tint = Color.White)
+        }
+
+        Spacer(Modifier.width(12.dp))
+
+        Text(title, color = Color.White, fontWeight = FontWeight.Bold)
+    }
+}
+
+
+@Composable
+fun InstructionBox(
+    steps: List<String>,
+    color: Color
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color, RoundedCornerShape(12.dp))
+            .padding(12.dp)
+    ) {
+        Column {
+            Text("Instructions:", color = Color.White, fontWeight = FontWeight.Bold)
+
+            Spacer(Modifier.height(6.dp))
+
+            steps.forEachIndexed { i, step ->
+                Text(
+                    "${i + 1}. $step",
+                    color = Color.LightGray,
+                    fontSize = 12.sp
+                )
+            }
         }
     }
 }
