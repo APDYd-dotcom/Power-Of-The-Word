@@ -107,6 +107,9 @@ fun AudioPlayerComponent(
             .padding(12.dp),
         elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF2A3442)
+        ),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.18f))
     ) {
         Column(
@@ -125,13 +128,13 @@ fun AudioPlayerComponent(
                     modifier = Modifier
                         .size(60.dp)
                         .clip(RoundedCornerShape(10.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant),
+                        .background(MaterialTheme.colorScheme.background),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Default.GraphicEq,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.secondary,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(32.dp)
                     )
                 }
@@ -155,7 +158,7 @@ fun AudioPlayerComponent(
                     contentPadding = PaddingValues(0.dp),
                     modifier = Modifier.size(54.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary
+                        containerColor = MaterialTheme.colorScheme.primary
                     )
                 ) {
                     Icon(
@@ -210,7 +213,7 @@ fun AudioPlayerComponent(
                             .background(MaterialTheme.colorScheme.surface, CircleShape)
                             .border(
                                 2.5f.dp,
-                                MaterialTheme.colorScheme.secondary,
+                                MaterialTheme.colorScheme.primary,
                                 CircleShape
                             )
                     )

@@ -17,32 +17,66 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = WebPrimaryDark,
+    primary = FigmaBrightBlue,        // 🔵 PLAY button
     secondary = WebRed,
-    tertiary = WebAccentDark,
-    background = WebBackgroundDark,
-    surface = WebCardDark,
-    onPrimary = WebBackgroundLight,
-    onSecondary = Color.White,
-    onBackground = WebTextDark,
-    onSurface = WebTextDark,
-    surfaceVariant = WebCardDark,
-    onSurfaceVariant = WebGrayText
-)
+    tertiary = FigmaPurple,
 
-private val LightColorScheme = lightColorScheme(
-    primary = WebPrimaryLight,
-    secondary = WebRed,
-    tertiary = WebAccentLight,
-    background = WebBackgroundLight,
-    surface = WebCardLight,
+    background = FigmaDarkNavy,       // 🌑 main background
+    surface = Color(0xFF252B3B),      // 📦 cards (slightly lighter)
+    surfaceVariant = Color(0xFF2E3445),
+
     onPrimary = Color.White,
     onSecondary = Color.White,
-    onBackground = WebTextLight,
-    onSurface = WebTextLight,
-    surfaceVariant = WebCardLight,
-    onSurfaceVariant = WebGrayText
+
+    onBackground = Color(0xFFE5E7EB), // text
+    onSurface = Color(0xFFE5E7EB),
+    onSurfaceVariant = FigmaGray
 )
+
+//private val DarkColorScheme = darkColorScheme(
+//    primary = WebPrimaryDark,
+//    secondary = WebRed,
+//    tertiary = WebAccentDark,
+//    background = WebBackgroundDark,
+//    surface = WebCardDark,
+//    onPrimary = WebBackgroundLight,
+//    onSecondary = Color.White,
+//    onBackground = WebTextDark,
+//    onSurface = WebTextDark,
+//    surfaceVariant = WebCardDark,
+//    onSurfaceVariant = WebGrayText
+//)
+
+private val LightColorScheme = lightColorScheme(
+    primary = FigmaBrightBlue,
+    secondary = FigmaGreen,
+    tertiary = FigmaPurple,
+
+    background = FigmaLightBg,
+    surface = Color.White,
+    surfaceVariant = Color(0xFFF1F3F5),
+
+    onPrimary = Color.White,
+    onSecondary = Color.White,
+
+    onBackground = Color.Black,
+    onSurface = Color.Black,
+    onSurfaceVariant = FigmaGray
+)
+
+//private val LightColorScheme = lightColorScheme(
+//    primary = WebPrimaryLight,
+//    secondary = WebRed,
+//    tertiary = WebAccentLight,
+//    background = WebBackgroundLight,
+//    surface = WebCardLight,
+//    onPrimary = Color.White,
+//    onSecondary = Color.White,
+//    onBackground = WebTextLight,
+//    onSurface = WebTextLight,
+//    surfaceVariant = WebCardLight,
+//    onSurfaceVariant = WebGrayText
+//)
 
 @Composable
 fun PowerOfTheWordTheme(

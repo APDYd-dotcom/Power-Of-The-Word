@@ -1,8 +1,8 @@
 package com.poweroftheword.poweroftheword.ui.screens.radio
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,24 +10,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Radio
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.poweroftheword.poweroftheword.domain.model.Program
 import com.poweroftheword.poweroftheword.domain.model.Radio
-import com.poweroftheword.poweroftheword.ui.screens.home.ProLanguageDropdown
-import com.poweroftheword.poweroftheword.ui.screens.home.ThemeToggleButton
-import com.poweroftheword.poweroftheword.ui.theme.FigmaRed
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,14 +29,26 @@ fun RadioScreen(
     onPlayClick: (Radio) -> Unit
 ) {
     val radioStatus by viewModel.radioStatus.collectAsState()
-   // val radioStations by viewModel.radioStations.collectAsState() // Assuming there's a list in viewModel
     val isLoading by viewModel.isLoading.collectAsState()
-    var selectedLang by remember { mutableStateOf("EN - English") }
-    var isDarkMode by remember { mutableStateOf(true) }
 
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
+    // Fake list (replace with real API later)
+    val radioList = remember {
+        listOf(
+            Radio("1", "RFI", "", "", "", true),
+            Radio("2", "Gospel FM", "", "", "", false),
+            Radio("3", "Praise Radio", "", "", "", false),
+            Radio("4", "Classic FM", "", "", "", true)
+        )
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    listOf(Color(0xFF1F2A3A), Color(0xFF0D1B2A), Color(0xFF0D1B2A), MaterialTheme.colorScheme.background)
+                )
+            )
     ) {
         Scaffold(
             containerColor = Color.Transparent,
@@ -52,116 +57,83 @@ fun RadioScreen(
                     title = {
                         Text(
                             "Radio",
-                            color = MaterialTheme.colorScheme.onBackground,
+                            color = Color.White,
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp
                         )
                     },
-                    actions = {
-                        Surface(
-                            shape = RoundedCornerShape(4.dp),
-                            color = Color.Transparent,
-                            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f)),
-                            modifier = Modifier.padding(end = 16.dp)
-                        ) {
-                            Row(
-                                horizontalArrangement = Arrangement.SpaceAround,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                //  Language dropdown
-                                ProLanguageDropdown(
-                                    selectedLang = selectedLang,
-                                    onLangChange = { selectedLang = it }
-                                )
-                                Spacer(modifier = Modifier.width(10.dp))
-                                //  Theme toggle icon ONLY
-                                ThemeToggleButton(
-                                    isDarkMode = isDarkMode,
-                                    onToggle = { isDarkMode = !isDarkMode }
-                                )
-                            }
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent
+                    )
                 )
             }
-        ) { paddingValues ->
-            Box(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
-//                if (isLoading && radioStatus == null && radioStations.isEmpty()) {
-                if (isLoading && radioStatus == null) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center),
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                } else {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        item {
-                            Column(
+        ) { padding ->
+
+            if (isLoading && radioStatus == null) {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = Color.White)
+                }
+            } else {
+
+                LazyColumn(
+                    modifier = Modifier
+                        .padding(padding)
+                        .fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+
+                    // 🔷 HEADER
+                    item {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 24.dp, bottom = 16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+
+                            Box(
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 24.dp)
-                                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f), RoundedCornerShape(24.dp))
-                                    .padding(vertical = 32.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally
+                                    .size(140.dp)
+                                    .clip(RoundedCornerShape(24.dp))
+                                    .background(Color(0xFF2A3442)),
+                                contentAlignment = Alignment.Center
                             ) {
-                                Surface(
-                                    modifier = Modifier.size(120.dp),
-                                    shape = RoundedCornerShape(24.dp),
-                                    color = MaterialTheme.colorScheme.surface,
-                                    shadowElevation = 8.dp
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Radio,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.padding(24.dp).size(64.dp)
-                                    )
-                                }
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Text(
-                                    text = "Radio",
-                                    style = MaterialTheme.typography.headlineMedium,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    fontWeight = FontWeight.Bold
+                                Icon(
+                                    Icons.Default.Radio,
+                                    contentDescription = null,
+                                    tint = Color(0xFF4DA3FF),
+                                    modifier = Modifier.size(64.dp)
                                 )
                             }
-                        }
 
-                        item {
+                            Spacer(Modifier.height(16.dp))
+
                             Text(
-                                text = "ALL",
-                                style = MaterialTheme.typography.titleMedium,
-                                color = MaterialTheme.colorScheme.onBackground,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(vertical = 8.dp)
+                                "Radio",
+                                color = Color.White,
+                                fontSize = 22.sp,
+                                fontWeight = FontWeight.Bold
                             )
                         }
+                    }
 
-                        // Use combined list or radioStatus + stations
-                        val allRadios = mutableListOf<Radio>()
-                        
-                        // Static test radio
-                        allRadios.add(
-                            Radio(
-                                id = "test_radio",
-                                name = "Test Radio Station",
-                                streamUrl = "https://stream.radio/test", // Placeholder
-                                isActive = true,
-                                startHour = "00:00",
-                                endHour = "23:59"
-                            )
+                    // 🔷 TITLE
+                    item {
+                        Text(
+                            "ALL",
+                            color = Color.LightGray,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold
                         )
+                    }
 
-                        radioStatus?.let { allRadios.add(it) }
-//                        allRadios.addAll(radioStations)
-
-                        items(allRadios.distinctBy { it.id }) { radio ->
-                            RadioStationCard(radio = radio, onPlayClick = { onPlayClick(radio) })
-                        }
+                    // 🔷 LIST
+                    items(radioList) { radio ->
+                        RadioStationCard(
+                            radio = radio,
+                            onPlayClick = { onPlayClick(radio) }
+                        )
                     }
                 }
             }
@@ -169,16 +141,23 @@ fun RadioScreen(
     }
 }
 
+
+
+
 @Composable
-fun RadioStationCard(radio: Radio, onPlayClick: () -> Unit) {
+fun RadioStationCard(
+    radio: Radio,
+    onPlayClick: () -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(110.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(2.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f))
+            .height(95.dp),
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF2A3442)
+        ),
+        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.05f))
     ) {
         Row(
             modifier = Modifier
@@ -186,92 +165,78 @@ fun RadioStationCard(radio: Radio, onPlayClick: () -> Unit) {
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Placeholder for Logo/Thumbnail if exists, else an icon
-            Surface(
-                modifier = Modifier
-                    .size(80.dp)
-                    .clip(RoundedCornerShape(12.dp)),
-                color = MaterialTheme.colorScheme.surfaceVariant
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Radio,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(20.dp)
+
+            // 🎧 IMAGE + LIVE BADGE
+            Box {
+                Box(
+                    modifier = Modifier
+                        .size(70.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color.DarkGray)
                 )
-            }
 
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
                 if (radio.isActive) {
-                    Surface(
-                        color = FigmaRed,
-                        shape = RoundedCornerShape(percent = 50)
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .offset(x = 6.dp, y = (-6).dp)
+                            .clip(RoundedCornerShape(50))
+                            .background(Color.Red)
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
                     ) {
                         Text(
-                            text = "LIVE",
+                            "LIVE",
                             color = Color.White,
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.Bold
                         )
                     }
-                    Spacer(modifier = Modifier.height(4.dp))
                 }
-                
+            }
+
+            Spacer(Modifier.width(12.dp))
+
+            // TEXT
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = radio.name,
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = Color.White,
                     fontWeight = FontWeight.Bold,
+                    fontSize = 15.sp,
                     maxLines = 1,
-                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis
                 )
+
                 Text(
-                    text = "Radio Station",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    "Radio Station",
+                    color = Color.Gray,
+                    fontSize = 12.sp
                 )
             }
 
+            // PLAY BUTTON
             Button(
                 onClick = onPlayClick,
+                shape = RoundedCornerShape(50),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
+                    containerColor = Color(0xFF2F6BFF)
                 ),
-                shape = RoundedCornerShape(12.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                modifier = Modifier.height(44.dp)
+                contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.PlayArrow,
+                    Icons.Default.PlayArrow,
                     contentDescription = null,
-                    modifier = Modifier.size(20.dp)
+                    tint = Color.White,
+                    modifier = Modifier.size(18.dp)
                 )
-                Spacer(modifier = Modifier.width(6.dp))
+                Spacer(Modifier.width(4.dp))
                 Text(
                     "PLAY",
-                    fontSize = 13.sp,
+                    color = Color.White,
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
-        }
-    }
-}
-
-@Composable
-fun ProgramItem(program: Program) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = program.title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
-            Text(text = "${program.day} | ${program.startHour} - ${program.endHour}", style = MaterialTheme.typography.labelMedium)
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(text = program.description, style = MaterialTheme.typography.bodySmall)
         }
     }
 }
