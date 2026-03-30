@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Radio
 import androidx.compose.material3.*
@@ -25,20 +26,23 @@ import com.poweroftheword.poweroftheword.domain.model.Radio
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RadioScreen(
-    viewModel: RadioViewModel,
-    onPlayClick: (Radio) -> Unit
+    viewModel: RadioViewModel
 ) {
     val radioStatus by viewModel.radioStatus.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val currentlyPlayingId by viewModel.currentlyPlayingId.collectAsState()
+    val isPlaying by viewModel.isPlaying.collectAsState()
 
-    // Fake list (replace with real API later)
-    val radioList = remember {
-        listOf(
-            Radio("1", "RFI", "", "", "", true),
-            Radio("2", "Gospel FM", "", "", "", false),
-            Radio("3", "Praise Radio", "", "", "", false),
-            Radio("4", "Classic FM", "", "", "", true)
+    // Filtered list to avoid duplicates if radioStatus is also in the list
+    val radioList = remember(radioStatus) {
+        val staticList = listOf(
+            Radio("1", "RFI", "https://rfimonde64k.ice.infomaniak.ch/rfimonde-64.mp3", "00:00", "23:59", true),
+            Radio("2", "Gospel FM", "", "00:00", "23:59", false),
+            Radio("3", "Praise Radio", "", "00:00", "23:59", false),
+            Radio("4", "Classic FM", "", "00:00", "23:59", true)
         )
+        // If we have a real radioStatus from API, we could prepend or replace
+        radioStatus?.let { listOf(it) + staticList.filter { s -> s.id != it.id } } ?: staticList
     }
 
     Box(
@@ -121,7 +125,7 @@ fun RadioScreen(
                     // 🔷 TITLE
                     item {
                         Text(
-                            "ALL",
+                            "ALL STATIONS",
                             color = Color.LightGray,
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Bold
@@ -132,7 +136,9 @@ fun RadioScreen(
                     items(radioList) { radio ->
                         RadioStationCard(
                             radio = radio,
-                            onPlayClick = { onPlayClick(radio) }
+                            isCurrentlyPlaying = radio.id == currentlyPlayingId,
+                            isPlaying = isPlaying,
+                            onPlayClick = { viewModel.togglePlay(radio) }
                         )
                     }
                 }
@@ -141,12 +147,11 @@ fun RadioScreen(
     }
 }
 
-
-
-
 @Composable
 fun RadioStationCard(
     radio: Radio,
+    isCurrentlyPlaying: Boolean,
+    isPlaying: Boolean,
     onPlayClick: () -> Unit
 ) {
     Card(
@@ -172,8 +177,16 @@ fun RadioStationCard(
                     modifier = Modifier
                         .size(70.dp)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(Color.DarkGray)
-                )
+                        .background(Color.DarkGray),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        Icons.Default.Radio,
+                        contentDescription = null,
+                        tint = Color.White.copy(alpha = 0.2f),
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
 
                 if (radio.isActive) {
                     Box(
@@ -208,8 +221,8 @@ fun RadioStationCard(
                 )
 
                 Text(
-                    "Radio Station",
-                    color = Color.Gray,
+                    if (isCurrentlyPlaying) "Currently playing" else "Radio Station",
+                    color = if (isCurrentlyPlaying) Color(0xFF4DA3FF) else Color.Gray,
                     fontSize = 12.sp
                 )
             }
@@ -219,19 +232,19 @@ fun RadioStationCard(
                 onClick = onPlayClick,
                 shape = RoundedCornerShape(50),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF2F6BFF)
+                    containerColor = if (isCurrentlyPlaying && isPlaying) Color.Red.copy(alpha = 0.8f) else Color(0xFF2F6BFF)
                 ),
                 contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp)
             ) {
                 Icon(
-                    Icons.Default.PlayArrow,
+                    imageVector = if (isCurrentlyPlaying && isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
                     contentDescription = null,
                     tint = Color.White,
                     modifier = Modifier.size(18.dp)
                 )
                 Spacer(Modifier.width(4.dp))
                 Text(
-                    "PLAY",
+                    text = if (isCurrentlyPlaying && isPlaying) "PAUSE" else "PLAY",
                     color = Color.White,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold

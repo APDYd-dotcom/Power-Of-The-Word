@@ -1,7 +1,11 @@
 package com.poweroftheword.poweroftheword.ui.screens.radio
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.exoplayer.ExoPlayer
 import com.poweroftheword.poweroftheword.domain.model.Program
 import com.poweroftheword.poweroftheword.domain.model.Radio
 import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
@@ -14,8 +18,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RadioViewModel @Inject constructor(
-    private val repository: ChurchRepository
-) : ViewModel() {
+    private val repository: ChurchRepository,
+    application: Application
+) : AndroidViewModel(application) {
 
     private val _radioStatus = MutableStateFlow<Radio?>(null)
     val radioStatus: StateFlow<Radio?> = _radioStatus.asStateFlow()
@@ -26,8 +31,21 @@ class RadioViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+    private val _currentlyPlayingId = MutableStateFlow<String?>(null)
+    val currentlyPlayingId: StateFlow<String?> = _currentlyPlayingId.asStateFlow()
+
+    private val _isPlaying = MutableStateFlow(false)
+    val isPlaying: StateFlow<Boolean> = _isPlaying.asStateFlow()
+
+    private val exoPlayer = ExoPlayer.Builder(application).build()
+
     init {
         loadRadioData()
+        exoPlayer.addListener(object : Player.Listener {
+            override fun onIsPlayingChanged(isPlaying: Boolean) {
+                _isPlaying.value = isPlaying
+            }
+        })
     }
 
     fun loadRadioData() {
@@ -42,5 +60,28 @@ class RadioViewModel @Inject constructor(
                 _isLoading.value = false
             }
         }
+    }
+
+    fun togglePlay(radio: Radio) {
+        if (_currentlyPlayingId.value == radio.id) {
+            if (_isPlaying.value) {
+                exoPlayer.pause()
+            } else {
+                exoPlayer.play()
+            }
+        } else {
+            exoPlayer.stop()
+            exoPlayer.clearMediaItems()
+            val mediaItem = MediaItem.fromUri(radio.streamUrl)
+            exoPlayer.setMediaItem(mediaItem)
+            exoPlayer.prepare()
+            exoPlayer.play()
+            _currentlyPlayingId.value = radio.id
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        exoPlayer.release()
     }
 }

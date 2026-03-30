@@ -55,7 +55,6 @@ import com.poweroftheword.poweroftheword.ui.screens.settings.SettingsViewModel
 import com.poweroftheword.poweroftheword.ui.screens.video.VideoDetailScreen
 import com.poweroftheword.poweroftheword.ui.screens.video.VideoListScreen
 import com.poweroftheword.poweroftheword.ui.screens.video.VideoListViewModel
-
 @Composable
 fun MainScreen() {
 
@@ -130,10 +129,7 @@ fun MainScreen() {
             composable(Screen.Radio.route) {
                 val viewModel: RadioViewModel = hiltViewModel()
                 RadioScreen(
-                    viewModel = viewModel,
-                    onPlayClick = { radio ->
-                        navController.navigate(Screen.VideoPlayer.createRoute(radio.streamUrl))
-                    }
+                    viewModel = viewModel
                 )
             }
 
@@ -225,13 +221,13 @@ fun MainScreen() {
                 )
             }
 
-//            composable(
-//                route = Screen.VideoPlayer.route,
-//                arguments = listOf(navArgument("videoUrl") { type = NavType.StringType })
-//            ) { backStackEntry ->
-//                val videoUrl = backStackEntry.arguments?.getString("videoUrl") ?: ""
-//                VideoPlayerScreen(videoUrl = videoUrl)
-//            }
+            composable(
+                route = Screen.VideoPlayer.route,
+                arguments = listOf(navArgument("videoUrl") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val videoUrl = backStackEntry.arguments?.getString("videoUrl") ?: ""
+//                VideoPlayerScreen(videoUrl = videoUrl, onBackClick = { navController.popBackStack() })
+            }
         }
 
 
