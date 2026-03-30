@@ -77,7 +77,7 @@ fun AudioPlayerComponent(
     LaunchedEffect(audioUrl) {
         try {
             mediaPlayer.reset()
-            mediaPlayer.setDataSource(audioUrl)
+            mediaPlayer.setDataSource( "https://poweroftheword.bi${audioUrl}")
 
             mediaPlayer.setOnPreparedListener {
                 isPrepared = true

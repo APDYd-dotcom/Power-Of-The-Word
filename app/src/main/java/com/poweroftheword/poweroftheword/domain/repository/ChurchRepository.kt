@@ -19,9 +19,9 @@ interface ChurchRepository {
     suspend fun likeVideo(videoId: String, deviceId: String)
     suspend fun shareVideo(videoId: String, deviceId: String)
     
-    suspend fun recordAudioListen(audioId: String, deviceId: String)
-    suspend fun likeAudio(audioId: String, deviceId: String)
-    suspend fun shareAudio(audioId: String, deviceId: String)
+    suspend fun recordAudioListen(audioId: Int, deviceId: String)
+    suspend fun likeAudio(audioId: Int, deviceId: String)
+    suspend fun shareAudio(audioId: Int, deviceId: String)
 
     suspend fun registerLiveViewer(liveId: String, deviceId: String)
 

@@ -96,13 +96,24 @@ class ChurchRepositoryImpl @Inject constructor(
 
     override suspend fun getAudio(language: String): List<AudioItem> {
         return try {
-            val response: Audio = client.get("$BASE_URL/audio/") {
-                parameter("language", language)
-            }.body()
+            Log.e("getAudio", "Language: $language")
+            val response: String = client.get("$BASE_URL/getaudio/") {
+                setBody(
+                    TextContent(
+                        "language=$language",
+                        ContentType.Application.FormUrlEncoded
+                    )
+                )
+            }.bodyAsText()
 
-            response.results // ✅ return only items
+            val res = Json {
+                ignoreUnknownKeys = true
+            }.decodeFromString<Audio>(response)
+            Log.e("getAudio", "Response: $res")
+            res.audios
 
         } catch (e: Exception) {
+            Log.e("getAudio", "Error: ${e.message}", e)
             emptyList()
         }
     }
@@ -192,7 +203,7 @@ class ChurchRepositoryImpl @Inject constructor(
         } catch (e: Exception) {}
     }
 
-    override suspend fun recordAudioListen(audioId: String, deviceId: String) {
+    override suspend fun recordAudioListen(audioId: Int, deviceId: String) {
         try {
             client.post("$BASE_URL/listenaudio/") {
                 contentType(ContentType.Application.Json)
@@ -201,7 +212,7 @@ class ChurchRepositoryImpl @Inject constructor(
         } catch (e: Exception) {}
     }
 
-    override suspend fun likeAudio(audioId: String, deviceId: String) {
+    override suspend fun likeAudio(audioId: Int, deviceId: String) {
         try {
             client.post("$BASE_URL/likeaudio/") {
                 contentType(ContentType.Application.Json)
@@ -210,7 +221,7 @@ class ChurchRepositoryImpl @Inject constructor(
         } catch (e: Exception) {}
     }
 
-    override suspend fun shareAudio(audioId: String, deviceId: String) {
+    override suspend fun shareAudio(audioId: Int, deviceId: String) {
         try {
             client.post("$BASE_URL/shareaudio/") {
                 contentType(ContentType.Application.Json)

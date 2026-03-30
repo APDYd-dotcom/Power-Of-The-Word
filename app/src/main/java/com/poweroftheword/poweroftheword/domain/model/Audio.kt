@@ -5,15 +5,12 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Audio(
-    val count: Int,
-    val next: String?,
-    val previous: String?,
-    val results: List<AudioItem>
+    val audios: List<AudioItem>
 )
 
 @Serializable
 data class AudioItem(
-    val id: String,
+    val id: Int,
     val title: String,
     val file: String,
     val language: String,
@@ -21,7 +18,7 @@ data class AudioItem(
     @SerialName("visible_date") val visibleDate: String?,
     @SerialName("visible_time") val visibleTime: String?,
     val status: String,
-    val listens: Int = 0,
-    val likes: Int = 0,
-    val shares: Int = 0
+    val listens: Int? = 0,
+    val likes: Int? = 0,
+    val shares: Int? = 0
 )

@@ -50,7 +50,7 @@ class AudioListViewModel @Inject constructor(
         _searchQuery.value = query
     }
 
-    private fun loadAudios() {
+    fun loadAudios() {
         viewModelScope.launch {
             _isLoading.value = true
 
@@ -70,14 +70,14 @@ class AudioListViewModel @Inject constructor(
         }
     }
 
-    fun onAudioListened(audioId: String) {
+    fun onAudioListened(audioId: Int) {
         viewModelScope.launch {
             val deviceId = DeviceUtils.getDeviceId(context)
             repository.recordAudioListen(audioId, deviceId)
         }
     }
 
-    fun likeAudio(audioId: String) {
+    fun likeAudio(audioId: Int) {
         viewModelScope.launch {
             val deviceId = DeviceUtils.getDeviceId(context)
             repository.likeAudio(audioId, deviceId)
