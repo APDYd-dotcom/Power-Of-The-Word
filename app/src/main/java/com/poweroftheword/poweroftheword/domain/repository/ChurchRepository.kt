@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface ChurchRepository {
     // Media Fetching
-    suspend fun getVideos(language: String, type: String? = null): List<VideoItem>
+    suspend fun getVideos(language: String): List<VideoItem>
     suspend fun getLiveStreams(): List<Live>
     suspend fun getAudio(language: String): List<AudioItem>
     suspend fun getFeeds(language: String): List<FeedItem>

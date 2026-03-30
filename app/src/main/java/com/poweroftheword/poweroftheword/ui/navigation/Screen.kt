@@ -27,7 +27,7 @@ sealed class Screen(val route: String, val title: String = "", val icon: ImageVe
     }
 
     object VideoDetail : Screen("video_detail/{videoId}") {
-        fun createRoute(videoId: String) = "video_detail/$videoId"
+        fun createRoute(videoId: Int) = "video_detail/$videoId"
     }
 
     object FeedDetail : Screen("feed_detail/{feedId}") {

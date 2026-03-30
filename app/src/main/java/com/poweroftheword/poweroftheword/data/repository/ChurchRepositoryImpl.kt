@@ -72,16 +72,26 @@ class ChurchRepositoryImpl @Inject constructor(
 //        )
 //    )
 
-    override suspend fun getVideos(language: String, type: String?): List<VideoItem> {
+    override suspend fun getVideos(language: String): List<VideoItem> {
         return try {
-            val response: Video = client.get("$BASE_URL/video/") {
-                parameter("language", language)
-                type?.let { parameter("type", it) }
-            }.body()
+            Log.e("getVideos", "Language: $language")
+            val response: String = client.get("$BASE_URL/getvideo/") {
+                setBody(
+                    TextContent(
+                        "language=$language",
+                        ContentType.Application.FormUrlEncoded
+                    )
+                )
+            }.bodyAsText()
 
-            response.results
+            val res = Json {
+                ignoreUnknownKeys = true
+            }.decodeFromString<Video>(response)
+            Log.e("getVideos", "Response: $res")
+            res.videos
 
         } catch (e: Exception) {
+            Log.e("getVideos", "Error: ${e.message}", e)
             emptyList()
         }
     }

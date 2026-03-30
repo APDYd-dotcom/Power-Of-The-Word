@@ -76,7 +76,7 @@ fun MainScreen() {
                 HomeScreen(
                     viewModel = viewModel,
                     onVideoClick = { video ->
-                        navController.navigate(Screen.VideoDetail.createRoute(video.results[0].id))
+                        navController.navigate(Screen.VideoDetail.createRoute(video.videos[0].id))
                     },
                     onFeedClick = { feed ->
                         navController.navigate(
@@ -103,7 +103,7 @@ fun MainScreen() {
                 VideoListScreen(
                     viewModel = viewModel,
                     onVideoClick = { video ->
-                        navController.navigate(Screen.VideoDetail.createRoute(video.results[0].id))
+                        navController.navigate(Screen.VideoDetail.createRoute(video.id))
                     }
                 )
             }
@@ -164,7 +164,8 @@ fun MainScreen() {
                     onBackClick = { navController.popBackStack() },
                     onVideoClick = { video ->
                         navController.navigate(Screen.VideoDetail.createRoute(video.id))
-                    }
+                    },
+                    videoId = viewModel.filteredVideos.collectAsState().value.firstOrNull()?.id.toString()
                 )
             }
 
@@ -221,13 +222,13 @@ fun MainScreen() {
                 )
             }
 
-            composable(
-                route = Screen.VideoPlayer.route,
-                arguments = listOf(navArgument("videoUrl") { type = NavType.StringType })
-            ) { backStackEntry ->
-                val videoUrl = backStackEntry.arguments?.getString("videoUrl") ?: ""
-//                VideoPlayerScreen(videoUrl = videoUrl, onBackClick = { navController.popBackStack() })
-            }
+//            composable(
+//                route = Screen.VideoPlayer.route,
+//                arguments = listOf(navArgument("videoUrl") { type = NavType.StringType })
+//            ) { backStackEntry ->
+//                val videoUrl = backStackEntry.arguments?.getString("videoUrl") ?: ""
+////                VideoPlayerScreen(videoUrl = videoUrl, onBackClick = { navController.popBackStack() })
+//            }
         }
 
 

@@ -1,6 +1,7 @@
 package com.poweroftheword.poweroftheword.ui.screens.video
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -20,19 +21,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
-import com.poweroftheword.poweroftheword.domain.model.Video
+import coil.request.ImageRequest
+import com.poweroftheword.poweroftheword.R
+import com.poweroftheword.poweroftheword.domain.model.VideoItem
+import com.poweroftheword.poweroftheword.util.extractYoutubeId
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VideoListScreen(
     viewModel: VideoListViewModel,
-    onVideoClick: (Video) -> Unit
+    onVideoClick: (VideoItem) -> Unit
 ) {
     val videos by viewModel.filteredVideos.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -75,7 +80,6 @@ fun VideoListScreen(
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
                 )
 
-                // Filter chips like YouTube's top bar
                 LazyRow(
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -89,10 +93,8 @@ fun VideoListScreen(
                             shape = RoundedCornerShape(20.dp),
                             border = null,
                             colors = FilterChipDefaults.filterChipColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                                labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                selectedContainerColor = MaterialTheme.colorScheme.primary,
-                                selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                                containerColor = if (selectedType == null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+                                labelColor = if (selectedType == null) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         )
                     }
@@ -104,8 +106,6 @@ fun VideoListScreen(
                             shape = RoundedCornerShape(20.dp),
                             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)),
                             colors = FilterChipDefaults.filterChipColors(
-                                containerColor = MaterialTheme.colorScheme.surface,
-                                labelColor = MaterialTheme.colorScheme.onSurface,
                                 selectedContainerColor = MaterialTheme.colorScheme.primary,
                                 selectedLabelColor = MaterialTheme.colorScheme.onPrimary
                             )
@@ -134,15 +134,130 @@ fun VideoListScreen(
                     modifier = Modifier.fillMaxSize()
                 ) {
                     items(videos) { item ->
-                        YoutubePlayerComposable(
-                                videoUrl = item.url,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(220.dp)
+                        VideoCard(
+                            video = item,
+                            onClick = { onVideoClick(item) }
                         )
-
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun VideoCard(
+    video: VideoItem,
+    onClick: () -> Unit
+) {
+    val context = LocalContext.current
+    val videoId = extractYoutubeId(video.url) ?: ""
+    val thumbnailUrl = "https://img.youtube.com/vi/$videoId/hqdefault.jpg"
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .background(MaterialTheme.colorScheme.background)
+            .padding(bottom = 16.dp)
+    ) {
+        // Thumbnail Section
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(16f / 9f)
+        ) {
+            AsyncImage(
+                model = ImageRequest.Builder(context)
+                    .data("https://img.youtube.com/vi/$videoId/maxresdefault.jpg")
+                    .crossfade(true)
+                    .error(R.drawable.logo)
+                    .build(),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+            
+            Surface(
+                color = Color.Black.copy(alpha = 0.8f),
+                shape = RoundedCornerShape(4.dp),
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(8.dp)
+            ) {
+                Text(
+                    text = "12:30", // Placeholder duration
+                    color = Color.White,
+                    fontSize = 12.sp,
+                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+
+        // Info Section
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.Top
+        ) {
+            // Channel Logo from Drawable
+            Image(
+                painter = painterResource(id = R.drawable.logo),
+                contentDescription = "Channel Logo",
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(Color.LightGray),
+                contentScale = ContentScale.Crop
+            )
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                // Title
+                Text(
+                    text = video.title,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    lineHeight = 20.sp
+                )
+                
+                Spacer(modifier = Modifier.height(2.dp))
+
+                // Channel Name & Meta
+                Text(
+                    text = "Power of the Word • ${video.views ?: 0} views • ${video.date}",
+                    fontSize = 13.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                // Description
+                Text(
+                    text = video.description ?: "",
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    lineHeight = 16.sp
+                )
+            }
+
+            IconButton(onClick = { /* Show options */ }) {
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(20.dp)
+                )
             }
         }
     }
