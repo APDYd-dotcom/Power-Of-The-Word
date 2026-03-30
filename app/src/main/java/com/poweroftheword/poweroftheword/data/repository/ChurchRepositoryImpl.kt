@@ -14,10 +14,14 @@ import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
+import io.ktor.http.content.TextContent
 import io.ktor.http.contentType
+import io.ktor.http.formUrlEncode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 import kotlin.collections.emptyList
 
@@ -105,15 +109,26 @@ class ChurchRepositoryImpl @Inject constructor(
 
     override suspend fun getFeeds(language: String): List<FeedItem> {
         return try {
-            val response: Feed = client.post("$BASE_URL/getfeed/") {
-//                parameter("language", language)
-                contentType(ContentType.Application.Json)
-                setBody(language)
-                Log.e("getFeeds", "getFeeds: $language")
-            }.body()
 
-            response.results
+            val rawResponse: String = client.get("$BASE_URL/getfeed/") {
+                setBody(
+                    TextContent(
+                        "language=$language",
+                        ContentType.Application.FormUrlEncoded
+                    )
+                )
+            }.bodyAsText()
+
+            Log.e("getFeeds", "RAW: $rawResponse")
+
+            val response = Json {
+                ignoreUnknownKeys = true
+            }.decodeFromString<Feed>(rawResponse)
+
+            response.feeds
+
         } catch (e: Exception) {
+            Log.e("getFeeds", "Error: ${e.message}", e)
             emptyList()
         }
     }

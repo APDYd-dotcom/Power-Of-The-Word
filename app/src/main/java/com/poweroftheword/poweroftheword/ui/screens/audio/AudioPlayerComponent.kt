@@ -199,7 +199,7 @@ fun AudioPlayerComponent(
                                 .height(6.dp)
                                 .fillMaxWidth(progress)
                                 .background(
-                                    MaterialTheme.colorScheme.secondary,
+                                    MaterialTheme.colorScheme.primary,
                                     CircleShape
                                 )
                         )

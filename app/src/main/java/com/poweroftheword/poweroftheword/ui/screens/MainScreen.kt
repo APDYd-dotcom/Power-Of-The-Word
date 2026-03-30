@@ -81,7 +81,7 @@ fun MainScreen() {
                     },
                     onFeedClick = { feed ->
                         navController.navigate(
-                            Screen.FeedDetail.createRoute(feed.results[0].id.toString())
+                            Screen.FeedDetail.createRoute(feed.feeds[0].id)
                         )
                     },
                     onLiveClick = { url ->
@@ -142,7 +142,7 @@ fun MainScreen() {
                 FeedScreen(
                     viewModel = viewModel,
                     onFeedClick = { feed ->
-                        navController.navigate(Screen.FeedDetail.createRoute(feed.id.toString()))
+                        navController.navigate(Screen.FeedDetail.createRoute(feed.id))
                     }
                 )
             }

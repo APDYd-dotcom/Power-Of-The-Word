@@ -49,7 +49,7 @@ fun FeedItemCard(
             ) {
 
                 AsyncImage(
-                    model = feed.photo ?: "",
+                    model = "https://poweroftheword.bi${ feed.photo}",
                     contentDescription = null,
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop

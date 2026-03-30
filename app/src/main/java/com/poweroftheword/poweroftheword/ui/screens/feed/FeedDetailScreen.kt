@@ -87,7 +87,7 @@ fun FeedDetailScreen(
 
             // 🔥 IMAGE HEADER
             AsyncImage(
-                model = feed.photo ?: "",
+                model = "https://poweroftheword.bi${ feed.photo}",
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxWidth()

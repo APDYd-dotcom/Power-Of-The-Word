@@ -75,6 +75,7 @@ class FeedViewModel @Inject constructor(
                         error = e.message ?: "Failed to initialize"
                     )
                 }
+                Log.e("FeedVM", "Error: ${e.message}")
                 _isLoading.value = false
             }
         }

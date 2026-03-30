@@ -31,6 +31,6 @@ sealed class Screen(val route: String, val title: String = "", val icon: ImageVe
     }
 
     object FeedDetail : Screen("feed_detail/{feedId}") {
-        fun createRoute(feedId: String) = "feed_detail/$feedId"
+        fun createRoute(feedId: Int) = "feed_detail/$feedId"
     }
 }
