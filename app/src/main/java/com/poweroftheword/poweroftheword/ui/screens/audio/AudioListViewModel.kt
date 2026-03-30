@@ -13,7 +13,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.util.Calendar
 import javax.inject.Inject
+
 @HiltViewModel
 class AudioListViewModel @Inject constructor(
     private val repository: ChurchRepository,
@@ -26,19 +28,24 @@ class AudioListViewModel @Inject constructor(
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
+    private val _selectedMonth = MutableStateFlow(Calendar.getInstance().get(Calendar.MONTH))
+    val selectedMonth: StateFlow<Int> = _selectedMonth.asStateFlow()
+
+    private val _selectedYear = MutableStateFlow(Calendar.getInstance().get(Calendar.YEAR))
+    val selectedYear: StateFlow<Int> = _selectedYear.asStateFlow()
+
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
     //  FILTERED LIST
     val filteredAudios: StateFlow<List<AudioItem>> =
-        combine(_audios, _searchQuery) { audios, query ->
-            if (query.isBlank()) {
-                audios
-            } else {
-                audios.filter {
-                    it.title.contains(query, true) ||
-                            it.date.contains(query)
-                }
+        combine(_audios, _searchQuery, _selectedMonth, _selectedYear) { audios, query, month, year ->
+            val monthName = getMonthName(month)
+            audios.filter { audio ->
+                val matchesQuery = query.isBlank() || audio.title.contains(query, true)
+                val matchesDate = audio.date.contains(year.toString()) && 
+                                 (audio.date.contains(monthName, true) || audio.date.contains(String.format("%02d", month + 1)))
+                matchesQuery && matchesDate
             }
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
@@ -48,6 +55,11 @@ class AudioListViewModel @Inject constructor(
 
     fun onSearchQueryChange(query: String) {
         _searchQuery.value = query
+    }
+
+    fun onDateChange(month: Int, year: Int) {
+        _selectedMonth.value = month
+        _selectedYear.value = year
     }
 
     fun loadAudios() {
@@ -67,6 +79,24 @@ class AudioListViewModel @Inject constructor(
             } finally {
                 _isLoading.value = false
             }
+        }
+    }
+
+    private fun getMonthName(month: Int): String {
+        return when (month) {
+            0 -> "January"
+            1 -> "February"
+            2 -> "March"
+            3 -> "April"
+            4 -> "May"
+            5 -> "June"
+            6 -> "July"
+            7 -> "August"
+            8 -> "September"
+            9 -> "October"
+            10 -> "November"
+            11 -> "December"
+            else -> ""
         }
     }
 

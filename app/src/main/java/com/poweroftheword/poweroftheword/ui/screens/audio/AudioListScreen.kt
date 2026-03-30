@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -25,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,6 +36,18 @@ fun AudioListScreen(
 ) {
     val audios by viewModel.filteredAudios.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val selectedMonth by viewModel.selectedMonth.collectAsState()
+    val selectedYear by viewModel.selectedYear.collectAsState()
+
+    var showMonthMenu by remember { mutableStateOf(false) }
+    var showYearMenu by remember { mutableStateOf(false) }
+
+    val months = listOf(
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    )
+    val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+    val years = (2025..currentYear).toList()
 
     Scaffold(
         topBar = {
@@ -100,33 +114,80 @@ fun AudioListScreen(
                             modifier = Modifier.size(20.dp)
                         )
                         Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            text = "January",
-                            modifier = Modifier.weight(1f),
-                            fontSize = 15.sp,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Icon(
-                            Icons.Default.KeyboardArrowDown,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
+                        
+                        // Month Dropdown
+                        Box {
+                            Row(
+                                modifier = Modifier.clickable { showMonthMenu = true },
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = months[selectedMonth],
+                                    fontSize = 15.sp,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Icon(
+                                    Icons.Default.KeyboardArrowDown,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            DropdownMenu(
+                                expanded = showMonthMenu,
+                                onDismissRequest = { showMonthMenu = false }
+                            ) {
+                                months.forEachIndexed { index, month ->
+                                    DropdownMenuItem(
+                                        text = { Text(month) },
+                                        onClick = {
+                                            viewModel.onDateChange(index, selectedYear)
+                                            showMonthMenu = false
+                                        }
+                                    )
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.weight(1f))
+                        
                         VerticalDivider(
                             modifier = Modifier.height(20.dp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
                         )
                         Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            text = "2026",
-                            fontSize = 15.sp,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Icon(
-                            Icons.Default.KeyboardArrowDown,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                        
+                        // Year Dropdown
+                        Box {
+                            Row(
+                                modifier = Modifier.clickable { showYearMenu = true },
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = selectedYear.toString(),
+                                    fontSize = 15.sp,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Icon(
+                                    Icons.Default.KeyboardArrowDown,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            DropdownMenu(
+                                expanded = showYearMenu,
+                                onDismissRequest = { showYearMenu = false }
+                            ) {
+                                years.forEach { year ->
+                                    DropdownMenuItem(
+                                        text = { Text(year.toString()) },
+                                        onClick = {
+                                            viewModel.onDateChange(selectedMonth, year)
+                                            showYearMenu = false
+                                        }
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
                 HorizontalDivider(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.1f))
@@ -171,8 +232,9 @@ fun AudioListScreen(
                         AudioPlayerComponent(
                             context = context,
                             audioUrl = audio.file,
-                            title = audio.title,
-                            desc = audio.date
+                            date =  audio.date,
+                            time = audio.visibleTime ?: "04:00h",
+                            title = audio.title
                         )
                     }
                 }

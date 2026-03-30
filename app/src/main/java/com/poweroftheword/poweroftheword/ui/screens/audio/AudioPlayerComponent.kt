@@ -6,17 +6,7 @@ import android.media.MediaPlayer
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -25,25 +15,9 @@ import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.ThumbUp
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Slider
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,6 +28,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.poweroftheword.poweroftheword.util.formatTime
+import com.poweroftheword.poweroftheword.util.formatDate
 import kotlinx.coroutines.delay
 
 
@@ -61,9 +36,10 @@ import kotlinx.coroutines.delay
 @Composable
 fun AudioPlayerComponent(
     context: Context,
-    audioUrl: String, // ✅ now URL instead of raw
-    title: String,
-    desc: String
+    audioUrl: String,
+    date: String,
+    time: String,
+    title: String
 ) {
     val mediaPlayer = remember { MediaPlayer() }
 
@@ -120,7 +96,8 @@ fun AudioPlayerComponent(
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
 
                 // ICON BOX (UNCHANGED)
@@ -138,8 +115,22 @@ fun AudioPlayerComponent(
                         modifier = Modifier.size(32.dp)
                     )
                 }
+            Column {
+                Text(
+                    text = formatDate(date),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = Color.White
+                )
+                Text(
+                    text = formatTime(time),
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(top = 2.dp),
+                    fontSize = 12.sp,
+                    color = Color.White
+                )
+            }
 
-                Spacer(modifier = Modifier.weight(1f))
 
                 // PLAY BUTTON (UNCHANGED)
                 Button(
@@ -244,7 +235,6 @@ fun AudioPlayerComponent(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
-                    Text(desc, fontSize = 12.sp)
                 }
 
                 // LIKE BUTTON
