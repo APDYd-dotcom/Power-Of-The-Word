@@ -22,9 +22,9 @@ sealed class Screen(val route: String, val title: String = "", val icon: ImageVe
     object Contact : Screen("contact", "Contact Us", Icons.Default.Call)
     object Settings : Screen("settings", "Settings", Icons.Default.Settings)
     
-    object VideoPlayer : Screen("video_player/{videoUrl}") {
-        fun createRoute(videoUrl: String) = "video_player/${java.net.URLEncoder.encode(videoUrl, "UTF-8")}"
-    }
+//    object VideoPlayer : Screen("video_player/{videoUrl}") {
+//        fun createRoute(videoUrl: String) = "video_player/${java.net.URLEncoder.encode(videoUrl, "UTF-8")}"
+//    }
 
     object VideoDetail : Screen("video_detail/{videoId}") {
         fun createRoute(videoId: Int) = "video_detail/$videoId"

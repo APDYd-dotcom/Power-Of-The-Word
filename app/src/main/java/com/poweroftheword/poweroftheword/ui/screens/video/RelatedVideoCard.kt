@@ -9,17 +9,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.poweroftheword.poweroftheword.R
 import com.poweroftheword.poweroftheword.domain.model.VideoItem
+import com.poweroftheword.poweroftheword.util.extractYoutubeId
 
 @Composable
 fun RelatedVideoCard(
     video: VideoItem,
     onClick: () -> Unit
 ) {
+    val context = LocalContext.current
+    val videoId = extractYoutubeId(video.url) ?: ""
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -28,7 +34,11 @@ fun RelatedVideoCard(
     ) {
 
         AsyncImage(
-            model = video.url,
+            model = ImageRequest.Builder(context)
+                .data("https://img.youtube.com/vi/$videoId/maxresdefault.jpg")
+                .crossfade(true)
+                .error(R.drawable.logo)
+                .build(),
             contentDescription = null,
             modifier = Modifier
                 .size(140.dp, 80.dp)

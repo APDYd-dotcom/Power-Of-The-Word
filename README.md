@@ -87,3 +87,55 @@ This project is developed for the **Power of the Word Ministry**. All rights res
 
 ## 👨‍💻 Author
 Built with ❤️ by the Power of the Word Development Team.
+
+pip install google-api-python-client
+
+from googleapiclient.discovery import build
+import isodate # Optional: to parse ISO 8601 duration (pip install isodate)
+
+YOUTUBE_API_KEY = 'YOUR_API_KEY_HERE'
+youtube = build('youtube', 'v3', developerKey=YOUTUBE_API_KEY)
+
+def get_youtube_video_details(video_id):
+# 1. Fetch Video Details (Duration)
+video_response = youtube.videos().list(
+part='contentDetails,snippet',
+id=video_id
+).execute()
+
+    if not video_response['items']:
+        return None
+
+    video_item = video_response['items'][0]
+    duration_iso = video_item['contentDetails']['duration'] # e.g., PT12M30S
+    channel_id = video_item['snippet']['channelId']
+
+    # 2. Fetch Channel Details (Logo)
+    channel_response = youtube.channels().list(
+        part='snippet',
+        id=channel_id
+    ).execute()
+
+    channel_logo = channel_response['items'][0]['snippet']['thumbnails']['default']['url']
+
+    return {
+        'duration': duration_iso, # You can parse this to '12:30'
+        'channel_logo': channel_logo
+    }
+
+
+
+class VideoSerializer(serializers.ModelSerializer):
+duration = serializers.SerializerMethodField()
+channel_logo = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Video
+        fields = ['id', 'title', 'url', 'duration', 'channel_logo', ...]
+
+    def get_duration(self, obj):
+        # Implementation to call utility and cache result
+        return "12:30" 
+
+    def get_channel_logo(self, obj):
+        return "https://yt3.ggpht.com/..."

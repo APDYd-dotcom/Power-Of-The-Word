@@ -76,15 +76,13 @@ fun MainScreen() {
                 HomeScreen(
                     viewModel = viewModel,
                     onVideoClick = { video ->
-                        navController.navigate(Screen.VideoDetail.createRoute(video.videos[0].id))
+                        navController.navigate(Screen.VideoDetail.createRoute(video.id))
                     },
                     onFeedClick = { feed ->
-                        navController.navigate(
-                            Screen.FeedDetail.createRoute(feed.feeds[0].id)
-                        )
+                        navController.navigate(Screen.FeedDetail.createRoute(feed.id))
                     },
                     onLiveClick = { url ->
-                        navController.navigate(Screen.VideoPlayer.createRoute(url))
+//                        navController.navigate(Screen.VideoPlayer.createRoute(url))
                     },
                     onRadioClick = {
                         navController.navigate(Screen.Radio.route)
@@ -121,7 +119,7 @@ fun MainScreen() {
                 LiveScreen(
                     viewModel = viewModel,
                     onLiveClick = { live ->
-                        navController.navigate(Screen.VideoPlayer.createRoute(live.streamUrl))
+//                        navController.navigate(Screen.VideoPlayer.createRoute(live.streamUrl))
                     }
                 )
             }

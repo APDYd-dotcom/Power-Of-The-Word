@@ -67,8 +67,8 @@ fun DynamicHero(
                     .background(
                         Brush.verticalGradient(
                             listOf(
-                                dominantColor.copy(alpha = 0.7f),
-                                Color.Black.copy(alpha = 0.25f)
+                                dominantColor.copy(alpha = 0.1f),
+                                Color.Black.copy(alpha = 0.1f)
                             )
                         )
                     )

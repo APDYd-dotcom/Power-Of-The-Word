@@ -53,8 +53,6 @@ fun YoutubePlayerComposable(
     DisposableEffect(videoId) {
         val embedUrl = "https://www.youtube.com/embed/$videoId?rel=0&modestbranding=1&autoplay=1&enablejsapi=1"
 
-        // YouTube recommends identifying your app via the Referer header.
-        // Using your package name as the domain is the standard for Android apps.
         val headers = mapOf(
             "Referer" to "https://com.poweroftheword.poweroftheword",
             "Origin" to "https://www.youtube.com"
