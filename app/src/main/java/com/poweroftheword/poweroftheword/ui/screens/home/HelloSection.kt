@@ -81,8 +81,8 @@ fun DynamicHero(
                     .background(
                         Brush.verticalGradient(
                             listOf(
-                                dominantColor.copy(alpha = 0.7f),
-                                Color.Black.copy(alpha = 0.25f)
+                                dominantColor.copy(alpha = 0.1f),
+                                Color.Black.copy(alpha = 0.1f)
                             )
                         )
                     )
@@ -93,8 +93,6 @@ fun DynamicHero(
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
-
-                Spacer(modifier = Modifier.statusBarsPadding())
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
