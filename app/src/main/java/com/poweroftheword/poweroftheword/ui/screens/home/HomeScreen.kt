@@ -62,7 +62,11 @@ fun HomeScreen(
                     .fillMaxSize()
             ) {
                 item { 
-                    DynamicHero(state.dailyWord) 
+                    DynamicHero(
+                        dailyWord = state.dailyWord,
+                        currentLanguage = state.currentLanguage,
+                        onLanguageChange = { viewModel.changeLanguage(it) }
+                    )
                 }
 
                 if (state.latestVideos.isNotEmpty()) {

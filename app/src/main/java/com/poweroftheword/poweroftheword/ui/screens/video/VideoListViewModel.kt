@@ -38,7 +38,7 @@ class VideoListViewModel @Inject constructor(
                 
                 matchesQuery && matchesType
             }
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyAsList())
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
@@ -47,7 +47,10 @@ class VideoListViewModel @Inject constructor(
     val error: StateFlow<String?> = _error.asStateFlow()
 
     init {
-        loadVideos()
+        // Observe language changes and reload videos
+        repository.getSavedLanguage()
+            .onEach { loadVideos() }
+            .launchIn(viewModelScope)
     }
 
     fun onSearchQueryChange(query: String) {
@@ -67,7 +70,7 @@ class VideoListViewModel @Inject constructor(
                 val language = repository.getSavedLanguage().first()
                 val result = repository.getVideos(language)
                 _videos.value = result.shuffled() // Melange the videos
-                Log.d("VideoListViewModel", "Loaded ${result.size} videos")
+                Log.d("VideoListViewModel", "Loaded ${result.size} videos for $language")
             } catch (e: Exception) {
                 _error.value = e.message ?: "Failed to load videos"
                 Log.e("VideoListViewModel", "Failed to load videos", e)
@@ -76,8 +79,6 @@ class VideoListViewModel @Inject constructor(
             }
         }
     }
-
-    private fun <T> emptyAsList(): List<T> = emptyList()
 
     fun onVideoViewed(videoId: String) {
         viewModelScope.launch {

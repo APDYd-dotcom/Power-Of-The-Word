@@ -50,7 +50,10 @@ class AudioListViewModel @Inject constructor(
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     init {
-        loadAudios()
+        // Observe language changes and reload audios
+        repository.getSavedLanguage()
+            .onEach { loadAudios() }
+            .launchIn(viewModelScope)
     }
 
     fun onSearchQueryChange(query: String) {
@@ -72,7 +75,7 @@ class AudioListViewModel @Inject constructor(
 
                 _audios.value = result.flatMap { listOf(it) }
 
-                Log.d("AudioVM", "Loaded: $result")
+                Log.d("AudioVM", "Loaded audios for $language")
 
             } catch (e: Exception) {
                 Log.e("AudioVM", "Error", e)

@@ -17,7 +17,8 @@ data class HomeState(
     val latestFeeds: List<FeedItem> = emptyList(),
     val radioStatus: Radio? = null,
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val currentLanguage: String = "EN"
 )
 
 @HiltViewModel
@@ -29,7 +30,20 @@ class HomeViewModel @Inject constructor(
     val state: StateFlow<HomeState> = _state.asStateFlow()
 
     init {
-        loadHomeData()
+        // Observe language changes and reload data
+        repository.getSavedLanguage()
+            .onEach { lang ->
+                _state.update { it.copy(currentLanguage = lang) }
+                loadHomeData()
+            }
+            .launchIn(viewModelScope)
+    }
+
+    fun changeLanguage(langCode: String) {
+        viewModelScope.launch {
+            repository.saveLanguage(langCode)
+            // loadHomeData() will be triggered by the flow observer in init
+        }
     }
 
     fun loadHomeData() {
@@ -42,10 +56,7 @@ class HomeViewModel @Inject constructor(
                 val dailyWord = repository.getDailyWord(language)
                 val liveStreams = repository.getLiveStreams()
                 val latestVideos: List<VideoItem> = repository.getVideos(language)
-
-                // ✅ Now matches HomeState
                 val latestFeeds = repository.getFeeds(language)
-
                 val radioStatus = repository.getRadioStatus()
 
                 _state.update {
@@ -53,7 +64,7 @@ class HomeViewModel @Inject constructor(
                         dailyWord = dailyWord,
                         liveStreams = liveStreams,
                         latestVideos = latestVideos,
-                        latestFeeds = latestFeeds, // ✅ NO ERROR
+                        latestFeeds = latestFeeds,
                         radioStatus = radioStatus,
                         isLoading = false
                     )

@@ -30,7 +30,9 @@ import com.poweroftheword.poweroftheword.domain.model.DailyWord
 
 @Composable
 fun DynamicHero(
-    viewModel: DailyWord?
+    dailyWord: DailyWord?,
+    currentLanguage: String,
+    onLanguageChange: (String) -> Unit
 ) {
 
     val context = LocalContext.current
@@ -38,8 +40,7 @@ fun DynamicHero(
 
     var dominantColor by remember { mutableStateOf(Color.Black) }
     var isDarkMode by remember { mutableStateOf(true) }
-    var selectedLang by remember { mutableStateOf("EN - English") }
-    val item = viewModel?.results?.firstOrNull()
+    val item = dailyWord?.results?.firstOrNull()
 
     if (!view.isInEditMode) {
         SideEffect {
@@ -51,8 +52,10 @@ fun DynamicHero(
     }
 
     LaunchedEffect(item?.photo) {
-        getDominantColorFromUrl(context, item?.photo) {
-            dominantColor = it
+        if (item?.photo != null) {
+            getDominantColorFromUrl(context, item.photo) {
+                dominantColor = it
+            }
         }
     }
 
@@ -110,15 +113,15 @@ fun DynamicHero(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
 
-                        //  Language dropdown
+                        //  Language dropdown connected to ViewModel
                         ProLanguageDropdown(
-                            selectedLang = selectedLang,
-                            onLangChange = { selectedLang = it }
+                            selectedLang = currentLanguage,
+                            onLangChange = onLanguageChange
                         )
 
                         Spacer(modifier = Modifier.width(8.dp))
 
-                        //  Theme toggle icon ONLY
+                        //  Theme toggle icon
                         ThemeToggleButton(
                             isDarkMode = isDarkMode,
                             onToggle = { isDarkMode = !isDarkMode }
@@ -161,63 +164,64 @@ suspend fun getDominantColorFromUrl(
 @Composable
 fun ProLanguageDropdown(
     selectedLang: String,
-    size: Int? = null,
     onLangChange: (String) -> Unit
 ) {
 
     var expanded by remember { mutableStateOf(false) }
 
     val languages = listOf(
-        "EN - English",
-        "KI - Kirundi",
-        "FR - Français",
-        "SW - Swahili"
+        "EN" to "English",
+        "KI" to "Kirundi",
+        "FR" to "Français",
+        "SW" to "Swahili"
     )
 
-    Row(
-        modifier = Modifier
-            .clip(RoundedCornerShape(20.dp))
-            .background(Color.White.copy(alpha = 0.25f))
-            .clickable { expanded = true }
-            .padding(horizontal = 12.dp, vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+    Box {
+        Row(
+            modifier = Modifier
+                .clip(RoundedCornerShape(20.dp))
+                .background(Color.White.copy(alpha = 0.25f))
+                .clickable { expanded = true }
+                .padding(horizontal = 12.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
 
-        Text(selectedLang, color = Color.White)
+            Text(selectedLang, color = Color.White)
 
-        Spacer(modifier = Modifier.width(6.dp))
+            Spacer(modifier = Modifier.width(6.dp))
 
-        Icon(
-            imageVector = Icons.Default.Language,
-            contentDescription = null,
-            tint = Color.White,
-            modifier = Modifier.size(16.dp)
-        )
-    }
-
-    DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = { expanded = false },
-        modifier = Modifier
-            .clip(RoundedCornerShape(16.dp))
-            .background(Color(0xFF1E1E1E))
-    ) {
-
-        languages.forEach { lang ->
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        text = lang,
-                        color = if (lang == selectedLang)
-                            Color(0xFF66FF99)
-                        else Color.White
-                    )
-                },
-                onClick = {
-                    onLangChange(lang)
-                    expanded = false
-                }
+            Icon(
+                imageVector = Icons.Default.Language,
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier.size(16.dp)
             )
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier
+                .clip(RoundedCornerShape(16.dp))
+                .background(Color(0xFF1E1E1E))
+        ) {
+
+            languages.forEach { (code, name) ->
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = name,
+                            color = if (code == selectedLang)
+                                Color(0xFF66FF99)
+                            else Color.White
+                        )
+                    },
+                    onClick = {
+                        onLangChange(code)
+                        expanded = false
+                    }
+                )
+            }
         }
     }
 }
