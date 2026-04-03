@@ -49,7 +49,7 @@ fun HomeScreen(
 ) {
     val state by viewModel.state.collectAsState()
 
-    Scaffold() { innerPadding ->
+    Surface {
         PullToRefreshBox(
             isRefreshing = state.isLoading,
             onRefresh = { viewModel.loadHomeData() },
@@ -60,7 +60,6 @@ fun HomeScreen(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding)
             ) {
                 item { 
                     DynamicHero(state.dailyWord) 
