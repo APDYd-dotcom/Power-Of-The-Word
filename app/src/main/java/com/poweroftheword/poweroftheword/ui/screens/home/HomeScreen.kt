@@ -62,9 +62,6 @@ fun HomeScreen(
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                item {
-                    Spacer(modifier = Modifier.statusBarsPadding())
-                }
                 item { 
                     DynamicHero(
                         dailyWord = state.dailyWord,

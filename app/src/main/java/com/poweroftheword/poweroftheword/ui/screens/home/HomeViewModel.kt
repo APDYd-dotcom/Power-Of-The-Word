@@ -53,7 +53,7 @@ class HomeViewModel @Inject constructor(
             try {
                 val language = repository.getSavedLanguage().first()
 
-                val dailyWord = repository.getDailyWord(language)
+                val dailyWordItems = repository.getDailyWord(language)
                 val liveStreams = repository.getLiveStreams()
                 val latestVideos: List<VideoItem> = repository.getVideos(language)
                 val latestFeeds = repository.getFeeds(language)
@@ -61,7 +61,7 @@ class HomeViewModel @Inject constructor(
 
                 _state.update {
                     it.copy(
-                        dailyWord = dailyWord,
+                        dailyWord = DailyWord(dailyWordItems),
                         liveStreams = liveStreams,
                         latestVideos = latestVideos,
                         latestFeeds = latestFeeds,

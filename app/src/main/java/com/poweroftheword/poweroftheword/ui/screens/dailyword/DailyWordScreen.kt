@@ -23,6 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.poweroftheword.poweroftheword.BuildConfig
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,7 +33,7 @@ fun DailyWordScreen(
 ) {
 
     val state by viewModel.state.collectAsState()
-    val item = state.data?.results?.firstOrNull()
+    val item = state.data?.firstOrNull()
 
     Scaffold(
         topBar = {
@@ -69,7 +70,7 @@ fun DailyWordScreen(
                 ) {
                     Box(modifier = Modifier.fillMaxWidth().height(400.dp)) {
                         AsyncImage(
-                            model = item.photo,
+                            model = "${BuildConfig.BASE_URL}${item.photo}",
                             contentDescription = null,
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop

@@ -27,6 +27,7 @@ import androidx.core.view.WindowCompat
 import androidx.palette.graphics.Palette
 import coil.compose.AsyncImage
 import com.poweroftheword.poweroftheword.domain.model.DailyWord
+import com.poweroftheword.poweroftheword.BuildConfig
 
 @Composable
 fun DynamicHero(
@@ -40,7 +41,7 @@ fun DynamicHero(
 
     var dominantColor by remember { mutableStateOf(Color.Black) }
     var isDarkMode by remember { mutableStateOf(true) }
-    val item = dailyWord?.results?.firstOrNull()
+    val item = dailyWord?.dailywords?.firstOrNull()
 
     if (!view.isInEditMode) {
         SideEffect {
@@ -53,7 +54,7 @@ fun DynamicHero(
 
     LaunchedEffect(item?.photo) {
         if (item?.photo != null) {
-            getDominantColorFromUrl(context, item.photo) {
+            getDominantColorFromUrl(context, "${BuildConfig.BASE_URL}${item.photo}") {
                 dominantColor = it
             }
         }
@@ -68,7 +69,7 @@ fun DynamicHero(
         ) {
 
             AsyncImage(
-                model = item?.photo,
+                model = "${BuildConfig.BASE_URL}${item?.photo}",
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
@@ -93,6 +94,7 @@ fun DynamicHero(
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
+                Spacer(modifier = Modifier.height(16.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),

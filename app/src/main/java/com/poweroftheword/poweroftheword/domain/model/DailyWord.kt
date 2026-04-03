@@ -5,10 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class DailyWord(
-    val count: Int,
-    val next: String?,
-    val previous: String?,
-    val results: List<DailyWordItem>
+    val dailywords: List<DailyWordItem>
 )
 
 @Serializable

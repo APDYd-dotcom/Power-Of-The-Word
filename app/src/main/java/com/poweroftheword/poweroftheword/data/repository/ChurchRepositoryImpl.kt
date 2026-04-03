@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.poweroftheword.poweroftheword.R
+import com.poweroftheword.poweroftheword.BuildConfig
 import com.poweroftheword.poweroftheword.domain.model.*
 import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
 import io.ktor.client.HttpClient
@@ -32,7 +32,7 @@ class ChurchRepositoryImpl @Inject constructor(
     private val context: Context
 ) : ChurchRepository {
 
-    private val BASE_URL = "https://poweroftheword.bi/api"
+    private val BASE_URL = BuildConfig.BASE_URLAPI
     private val LANGUAGE_KEY = stringPreferencesKey("language_preference")
 
 
@@ -118,10 +118,31 @@ class ChurchRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getDailyWord(language: String): DailyWord {
-        return client.get("$BASE_URL/dailyword/") {
-            parameter("language", language)
-        }.body()
+    override suspend fun getDailyWord(language: String): List<DailyWordItem> {
+        Log.e("getDailyWord", "Language: $language")
+        return try {
+            val response: String = client.get("$BASE_URL/getdailyword/") {
+                setBody(
+                    TextContent(
+                        "language=$language",
+                        ContentType.Application.FormUrlEncoded
+                    )
+                )
+            }.bodyAsText()
+
+            Log.e("getDailyWord", "Response: $response")
+
+            val res = Json {
+                ignoreUnknownKeys = true
+            }.decodeFromString<DailyWord>(response)
+            res.dailywords
+            Log.e("getDailyWord", "Response: $res")
+            res.dailywords
+
+        } catch (e: Exception) {
+            Log.e("getDailyWord", "Error: ${e.message}", e)
+            emptyList()
+        }
     }
 
     override suspend fun getRadioStatus(): Radio? {
