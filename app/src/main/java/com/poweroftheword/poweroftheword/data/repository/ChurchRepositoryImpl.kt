@@ -135,7 +135,6 @@ class ChurchRepositoryImpl @Inject constructor(
             val res = Json {
                 ignoreUnknownKeys = true
             }.decodeFromString<DailyWord>(response)
-            res.dailywords
             Log.e("getDailyWord", "Response: $res")
             res.dailywords
 
@@ -145,11 +144,16 @@ class ChurchRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getRadioStatus(): Radio? {
+    override suspend fun getRadioStatus(): List<Radio> {
         return try {
-            client.get("$BASE_URL/radio/").body()
+            val response: String = client.get("$BASE_URL/radio/").bodyAsText()
+            val res = Json {
+                ignoreUnknownKeys = true
+            }.decodeFromString<RadioResponse>(response)
+            res.results
         } catch (e: Exception) {
-            null
+            Log.e("getRadioStatus", "Error: ${e.message}", e)
+            emptyList()
         }
     }
 

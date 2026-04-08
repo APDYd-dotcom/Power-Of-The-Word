@@ -34,16 +34,16 @@ fun RadioScreen(
     val isPlaying by viewModel.isPlaying.collectAsState()
 
     // Filtered list to avoid duplicates if radioStatus is also in the list
-    val radioList = remember(radioStatus) {
-        val staticList = listOf(
-            Radio("1", "RFI", "https://rfimonde64k.ice.infomaniak.ch/rfimonde-64.mp3", "00:00", "23:59", true),
-            Radio("2", "Gospel FM", "", "00:00", "23:59", false),
-            Radio("3", "Praise Radio", "", "00:00", "23:59", false),
-            Radio("4", "Classic FM", "", "00:00", "23:59", true)
-        )
-        // If we have a real radioStatus from API, we could prepend or replace
-        radioStatus?.let { listOf(it) + staticList.filter { s -> s.id != it.id } } ?: staticList
-    }
+//    val radioList = remember(radioStatus) {
+//        val staticList = listOf(
+//            Radio("1", "RFI", "https://rfimonde64k.ice.infomaniak.ch/rfimonde-64.mp3", "00:00", "23:59", true),
+//            Radio("2", "Gospel FM", "", "00:00", "23:59", false),
+//            Radio("3", "Praise Radio", "", "00:00", "23:59", false),
+//            Radio("4", "Classic FM", "", "00:00", "23:59", true)
+//        )
+//        // If we have a real radioStatus from API, we could prepend or replace
+//        radioStatus?.let { listOf(it) + staticList.filter { s -> s.id != it.id } } ?: staticList
+//    }
 
     Box(
         modifier = Modifier
@@ -133,7 +133,7 @@ fun RadioScreen(
                     }
 
                     // 🔷 LIST
-                    items(radioList) { radio ->
+                    items(radioStatus) { radio ->
                         RadioStationCard(
                             radio = radio,
                             isCurrentlyPlaying = radio.id == currentlyPlayingId,

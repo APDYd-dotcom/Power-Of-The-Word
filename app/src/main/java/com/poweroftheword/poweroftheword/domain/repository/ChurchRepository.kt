@@ -10,7 +10,7 @@ interface ChurchRepository {
     suspend fun getAudio(language: String): List<AudioItem>
     suspend fun getFeeds(language: String): List<FeedItem>
     suspend fun getDailyWord(language: String): List<DailyWordItem>
-    suspend fun getRadioStatus(): Radio?
+    suspend fun getRadioStatus(): List<Radio>
     suspend fun getPrograms(): List<Program>
     suspend fun getHoraire(language: String): List<Horaire>
     

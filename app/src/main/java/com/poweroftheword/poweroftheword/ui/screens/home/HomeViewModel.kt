@@ -57,7 +57,7 @@ class HomeViewModel @Inject constructor(
                 val liveStreams = repository.getLiveStreams()
                 val latestVideos: List<VideoItem> = repository.getVideos(language)
                 val latestFeeds = repository.getFeeds(language)
-                val radioStatus = repository.getRadioStatus()
+//                val radioStatus = repository.getRadioStatus()
 
                 _state.update {
                     it.copy(
@@ -65,7 +65,7 @@ class HomeViewModel @Inject constructor(
                         liveStreams = liveStreams,
                         latestVideos = latestVideos,
                         latestFeeds = latestFeeds,
-                        radioStatus = radioStatus,
+//                        radioStatus = radioStatus,
                         isLoading = false
                     )
                 }

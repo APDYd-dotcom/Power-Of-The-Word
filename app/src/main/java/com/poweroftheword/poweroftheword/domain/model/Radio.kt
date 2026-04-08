@@ -4,11 +4,18 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
+data class RadioResponse(
+    val count: Int,
+    val next: String? = null,
+    val previous: String? = null,
+    val results: List<Radio>
+)
+
+@Serializable
 data class Radio(
-    val id: String,
+    val id: Int,
     val name: String,
-    @SerialName("stream_url")
-    val streamUrl: String,
+    val url: String,
     @SerialName("start_hour")
     val startHour: String,
     @SerialName("end_hour")

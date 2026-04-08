@@ -1,6 +1,7 @@
 package com.poweroftheword.poweroftheword.ui.screens.radio
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.collections.emptyList
 
 @HiltViewModel
 class RadioViewModel @Inject constructor(
@@ -22,8 +24,8 @@ class RadioViewModel @Inject constructor(
     application: Application
 ) : AndroidViewModel(application) {
 
-    private val _radioStatus = MutableStateFlow<Radio?>(null)
-    val radioStatus: StateFlow<Radio?> = _radioStatus.asStateFlow()
+    private val _radioStatus = MutableStateFlow<List<Radio>>(emptyList())
+    val radioStatus: StateFlow<List<Radio>> = _radioStatus.asStateFlow()
 
     private val _programs = MutableStateFlow<List<Program>>(emptyList())
     val programs: StateFlow<List<Program>> = _programs.asStateFlow()
@@ -31,8 +33,8 @@ class RadioViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    private val _currentlyPlayingId = MutableStateFlow<String?>(null)
-    val currentlyPlayingId: StateFlow<String?> = _currentlyPlayingId.asStateFlow()
+    private val _currentlyPlayingId = MutableStateFlow<Int?>(null)
+    val currentlyPlayingId: StateFlow<Int?> = _currentlyPlayingId.asStateFlow()
 
     private val _isPlaying = MutableStateFlow(false)
     val isPlaying: StateFlow<Boolean> = _isPlaying.asStateFlow()
@@ -53,9 +55,10 @@ class RadioViewModel @Inject constructor(
             _isLoading.value = true
             try {
                 _radioStatus.value = repository.getRadioStatus()
+                Log.e("RadioViewModel", "Radio Status: ${_radioStatus.value}")
                 _programs.value = repository.getPrograms()
             } catch (e: Exception) {
-                // Handle error
+                Log.e("RadioViewModel Error", "Error loading radio data", e)
             } finally {
                 _isLoading.value = false
             }
@@ -72,7 +75,7 @@ class RadioViewModel @Inject constructor(
         } else {
             exoPlayer.stop()
             exoPlayer.clearMediaItems()
-            val mediaItem = MediaItem.fromUri(radio.streamUrl)
+            val mediaItem = MediaItem.fromUri(radio.url)
             exoPlayer.setMediaItem(mediaItem)
             exoPlayer.prepare()
             exoPlayer.play()
