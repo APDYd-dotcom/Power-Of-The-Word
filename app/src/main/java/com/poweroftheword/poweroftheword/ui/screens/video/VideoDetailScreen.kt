@@ -119,8 +119,9 @@ fun VideoDetailScreen(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         ActionChip(
-                            icon = Icons.Outlined.ThumbUp,
+                            icon = if (currentVideo.isLiked) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp,
                             label = "${currentVideo.likes ?: 0}",
+                            tint = if (currentVideo.isLiked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                             onClick = { viewModel.likeVideo(currentVideo.id.toString()) }
                         )
                         ActionChip(
@@ -229,6 +230,7 @@ fun VideoDetailScreen(
 fun ActionChip(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     label: String,
+    tint: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     onClick: () -> Unit
 ) {
     Surface(
@@ -242,9 +244,9 @@ fun ActionChip(
             modifier = Modifier.padding(horizontal = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(icon, null, modifier = Modifier.size(18.dp))
+            Icon(icon, null, modifier = Modifier.size(18.dp), tint = tint)
             Spacer(modifier = Modifier.width(6.dp))
-            Text(label, fontSize = 13.sp, fontWeight = FontWeight.Medium)
+            Text(label, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = tint)
         }
     }
 }

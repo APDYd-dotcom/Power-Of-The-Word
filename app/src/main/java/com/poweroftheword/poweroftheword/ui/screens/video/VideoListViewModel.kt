@@ -27,10 +27,15 @@ class VideoListViewModel @Inject constructor(
     val selectedType: StateFlow<String?> = _selectedType.asStateFlow()
 
     private val _videos = MutableStateFlow<List<VideoItem>>(emptyList())
+    
+    // Track liked IDs locally to simulate YouTube behavior
+    private val _likedVideoIds = MutableStateFlow<Set<String>>(emptySet())
 
     val filteredVideos: StateFlow<List<VideoItem>> =
-        combine(_videos, _searchQuery, _selectedType) { videos, query, type ->
-            videos.filter { video ->
+        combine(_videos, _searchQuery, _selectedType, _likedVideoIds) { videos, query, type, likedIds ->
+            videos.map { video ->
+                video.copy(isLiked = likedIds.contains(video.id.toString()))
+            }.filter { video ->
                 val matchesQuery = query.isBlank() || 
                                   video.title.contains(query, true) || 
                                   video.description?.contains(query, true) == true
@@ -47,10 +52,10 @@ class VideoListViewModel @Inject constructor(
     val error: StateFlow<String?> = _error.asStateFlow()
 
     init {
-        // Observe language changes and reload videos
         repository.getSavedLanguage()
             .onEach { loadVideos() }
             .launchIn(viewModelScope)
+            // Note: In a real app, you'd load liked IDs from DataStore here
     }
 
     fun onSearchQueryChange(query: String) {
@@ -65,39 +70,43 @@ class VideoListViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.value = true
             _error.value = null
-
             try {
                 val language = repository.getSavedLanguage().first()
                 val result = repository.getVideos(language)
-                _videos.value = result.shuffled() // Melange the videos
-                Log.d("VideoListViewModel", "Loaded ${result.size} videos for $language")
+                _videos.value = result
             } catch (e: Exception) {
                 _error.value = e.message ?: "Failed to load videos"
-                Log.e("VideoListViewModel", "Failed to load videos", e)
             } finally {
                 _isLoading.value = false
             }
         }
     }
 
-    fun onVideoViewed(videoId: String) {
-        viewModelScope.launch {
-            val deviceId = DeviceUtils.getDeviceId(context)
-            try {
-                repository.recordVideoView(videoId, deviceId)
-            } catch (e: Exception) {
-                // Silent fail for analytics
-            }
-        }
-    }
-
     fun likeVideo(videoId: String) {
+        // Prevent multiple likes (YouTube Logic)
+        if (_likedVideoIds.value.contains(videoId)) return
+
+        val currentVideos = _videos.value
+        val videoIndex = currentVideos.indexOfFirst { it.id.toString() == videoId }
+        
+        if (videoIndex != -1) {
+            // Optimistic Update
+            _likedVideoIds.value = _likedVideoIds.value + videoId
+            val video = currentVideos[videoIndex]
+            val updatedVideo = video.copy(likes = (video.likes ?: 0) + 1, isLiked = true)
+            val updatedList = currentVideos.toMutableList()
+            updatedList[videoIndex] = updatedVideo
+            _videos.value = updatedList
+        }
+
         viewModelScope.launch {
             val deviceId = DeviceUtils.getDeviceId(context)
             try {
                 repository.likeVideo(videoId, deviceId)
-                loadVideos()
             } catch (e: Exception) {
+                // Revert on failure
+                _likedVideoIds.value = _likedVideoIds.value - videoId
+                _videos.value = currentVideos
                 _error.value = "Failed to like video."
             }
         }
@@ -106,18 +115,8 @@ class VideoListViewModel @Inject constructor(
     fun shareVideo(video: VideoItem) {
         viewModelScope.launch {
             val deviceId = DeviceUtils.getDeviceId(context)
-            try {
-                repository.shareVideo(video.id.toString(), deviceId)
-            } catch (_: Exception) {}
-
-            ShareUtils.shareText(
-                context,
-                "Check out this sermon:\n${video.title}\n${video.url}"
-            )
+            try { repository.shareVideo(video.id.toString(), deviceId) } catch (_: Exception) {}
+            ShareUtils.shareText(context, "Check out this sermon:\n${video.title}\n${video.url}")
         }
-    }
-
-    fun clearError() {
-        _error.value = null
     }
 }

@@ -193,7 +193,8 @@ class ChurchRepositoryImpl @Inject constructor(
 
     override suspend fun recordVideoView(videoId: String, deviceId: String) {
         try {
-            client.post("$BASE_URL/viewvideo/") {
+            Log.e("recordVideoView", "videoId: $videoId, deviceId: $deviceId")
+            client.post("$BASE_URL/addviewvideo/") {
                 contentType(ContentType.Application.Json)
                 setBody(mapOf("video" to videoId, "device_id" to deviceId))
             }
@@ -202,11 +203,14 @@ class ChurchRepositoryImpl @Inject constructor(
 
     override suspend fun likeVideo(videoId: String, deviceId: String) {
         try {
-            client.post("$BASE_URL/likevideo/") {
+            Log.e("likeVideo", "videoId: $videoId, deviceId: $deviceId")
+            client.post("$BASE_URL/addlikevideo/") {
                 contentType(ContentType.Application.Json)
                 setBody(mapOf("video" to videoId, "device_id" to deviceId))
             }
-        } catch (e: Exception) {}
+        } catch (e: Exception) {
+            Log.e("likeVideo", "Error: ${e.message}", e)
+        }
     }
 
     override suspend fun shareVideo(videoId: String, deviceId: String) {

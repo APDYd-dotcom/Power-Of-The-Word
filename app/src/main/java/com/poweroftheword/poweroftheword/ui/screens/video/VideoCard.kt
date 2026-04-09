@@ -45,11 +45,11 @@ import com.poweroftheword.poweroftheword.util.extractYoutubeId
 @Composable
 fun VideoCard(
     video: VideoItem,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onLikeClick: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val videoId = extractYoutubeId(video.url) ?: ""
-//    val thumbnailUrl = "https://img.youtube.com/vi/$videoId/hqdefault.jpg"
 
     Column(
         modifier = Modifier

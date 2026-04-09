@@ -1,7 +1,5 @@
 package com.poweroftheword.poweroftheword.domain.model
 
-import com.google.common.reflect.TypeResolver
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -19,5 +17,6 @@ data class VideoItem(
     val language: String,
     val views: Int? = 0,
     val likes: Int? = 0,
-    val date: String
+    val date: String,
+    val isLiked: Boolean = false
 )

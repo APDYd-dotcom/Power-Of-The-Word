@@ -1,10 +1,13 @@
 package com.poweroftheword.poweroftheword.ui.screens.home
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.poweroftheword.poweroftheword.domain.model.*
 import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
+import com.poweroftheword.poweroftheword.util.DeviceUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,7 +26,8 @@ data class HomeState(
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: ChurchRepository
+    private val repository: ChurchRepository,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HomeState())
@@ -77,6 +81,18 @@ class HomeViewModel @Inject constructor(
                         error = "Failed to load updates"
                     )
                 }
+            }
+        }
+    }
+
+    fun likeVideo(videoId: String) {
+        viewModelScope.launch {
+            val deviceId = DeviceUtils.getDeviceId(context)
+            try {
+                repository.likeVideo(videoId, deviceId)
+                loadHomeData()
+            } catch (e: Exception) {
+                _state.update { it.copy(error = "Failed to like video.") }
             }
         }
     }
