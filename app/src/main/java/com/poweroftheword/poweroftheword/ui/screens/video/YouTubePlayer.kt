@@ -16,14 +16,16 @@ import com.poweroftheword.poweroftheword.util.extractYoutubeId
 @Composable
 fun YoutubePlayerComposable(
     videoUrl: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onVideoStarted: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val videoId = remember(videoUrl) { extractYoutubeId(videoUrl) }
+    var hasRecordedView by remember(videoUrl) { mutableStateOf(false) }
 
     if (videoId == null) return
 
-    // 1. Initialize the WebView with strict security settings
+    // Initialize the WebView with strict security settings
     val webView = remember {
         WebView(context).apply {
             layoutParams = ViewGroup.LayoutParams(
@@ -37,19 +39,26 @@ fun YoutubePlayerComposable(
                 loadWithOverviewMode = true
                 useWideViewPort = true
                 mediaPlaybackRequiresUserGesture = false
-
-                // Hardening: Prevent the WebView from accessing local system files
                 allowFileAccess = false
                 allowContentAccess = false
                 mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
             }
 
-            webViewClient = WebViewClient()
+            webViewClient = object : WebViewClient() {
+                override fun onPageFinished(view: WebView?, url: String?) {
+                    super.onPageFinished(view, url)
+                    // When the page is loaded, we count it as a view start
+                    if (!hasRecordedView) {
+                        onVideoStarted()
+                        hasRecordedView = true
+                    }
+                }
+            }
             webChromeClient = WebChromeClient()
         }
     }
 
-    // 2. Load the URL with Custom Headers for YouTube Validation
+    // Load the URL
     DisposableEffect(videoId) {
         val embedUrl = "https://www.youtube.com/embed/$videoId?rel=0&modestbranding=1&autoplay=1&enablejsapi=1"
 
@@ -62,11 +71,11 @@ fun YoutubePlayerComposable(
 
         onDispose {
             webView.stopLoading()
-            webView.loadUrl("about:blank") // Stop audio immediately on exit
+            webView.loadUrl("about:blank")
         }
     }
 
-    // 3. Display the view in Compose
+    // Display the view in Compose
     AndroidView(
         modifier = modifier,
         factory = { webView }

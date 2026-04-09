@@ -55,7 +55,6 @@ class VideoListViewModel @Inject constructor(
         repository.getSavedLanguage()
             .onEach { loadVideos() }
             .launchIn(viewModelScope)
-            // Note: In a real app, you'd load liked IDs from DataStore here
     }
 
     fun onSearchQueryChange(query: String) {
@@ -82,15 +81,25 @@ class VideoListViewModel @Inject constructor(
         }
     }
 
+    fun onVideoViewed(videoId: String) {
+        viewModelScope.launch {
+            val deviceId = DeviceUtils.getDeviceId(context)
+            try {
+                repository.recordVideoView(videoId, deviceId)
+                Log.d("VideoListViewModel", "View recorded for video $videoId")
+            } catch (e: Exception) {
+                Log.e("VideoListViewModel", "Failed to record view", e)
+            }
+        }
+    }
+
     fun likeVideo(videoId: String) {
-        // Prevent multiple likes (YouTube Logic)
         if (_likedVideoIds.value.contains(videoId)) return
 
         val currentVideos = _videos.value
         val videoIndex = currentVideos.indexOfFirst { it.id.toString() == videoId }
         
         if (videoIndex != -1) {
-            // Optimistic Update
             _likedVideoIds.value = _likedVideoIds.value + videoId
             val video = currentVideos[videoIndex]
             val updatedVideo = video.copy(likes = (video.likes ?: 0) + 1, isLiked = true)
@@ -104,7 +113,6 @@ class VideoListViewModel @Inject constructor(
             try {
                 repository.likeVideo(videoId, deviceId)
             } catch (e: Exception) {
-                // Revert on failure
                 _likedVideoIds.value = _likedVideoIds.value - videoId
                 _videos.value = currentVideos
                 _error.value = "Failed to like video."

@@ -85,7 +85,10 @@ fun VideoDetailScreen(
                     videoUrl = currentVideo.url,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(220.dp)
+                        .height(220.dp),
+                    onVideoStarted = {
+                        viewModel.onVideoViewed(currentVideo.id.toString())
+                    }
                 )
             }
 

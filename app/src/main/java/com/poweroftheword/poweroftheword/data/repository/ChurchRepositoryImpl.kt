@@ -38,7 +38,7 @@ class ChurchRepositoryImpl @Inject constructor(
 
     override suspend fun getVideos(language: String): List<VideoItem> {
         return try {
-            Log.e("getVideos", "Language: $language")
+            Log.d("ChurchRepo", "getVideos | Language: $language")
             val response: String = client.get("$BASE_URL/getvideo/") {
                 setBody(
                     TextContent(
@@ -51,26 +51,30 @@ class ChurchRepositoryImpl @Inject constructor(
             val res = Json {
                 ignoreUnknownKeys = true
             }.decodeFromString<Video>(response)
-            Log.e("getVideos", "Response: $res")
+            Log.d("ChurchRepo", "getVideos | Found ${res.videos.size} videos")
             res.videos
 
         } catch (e: Exception) {
-            Log.e("getVideos", "Error: ${e.message}", e)
+            Log.e("ChurchRepo", "getVideos | Error: ${e.message}", e)
             emptyList()
         }
     }
 
     override suspend fun getLiveStreams(): List<Live> {
         return try {
-            client.get("$BASE_URL/live/").body()
+            Log.d("ChurchRepo", "getLiveStreams | Fetching...")
+            val result: List<Live> = client.get("$BASE_URL/live/").body()
+            Log.d("ChurchRepo", "getLiveStreams | Found ${result.size} streams")
+            result
         } catch (e: Exception) {
+            Log.e("ChurchRepo", "getLiveStreams | Error: ${e.message}")
             emptyList()
         }
     }
 
     override suspend fun getAudio(language: String): List<AudioItem> {
         return try {
-            Log.e("getAudio", "Language: $language")
+            Log.d("ChurchRepo", "getAudio | Language: $language")
             val response: String = client.get("$BASE_URL/getaudio/") {
                 setBody(
                     TextContent(
@@ -83,18 +87,18 @@ class ChurchRepositoryImpl @Inject constructor(
             val res = Json {
                 ignoreUnknownKeys = true
             }.decodeFromString<Audio>(response)
-            Log.e("getAudio", "Response: $res")
+            Log.d("ChurchRepo", "getAudio | Found ${res.audios.size} audios")
             res.audios
 
         } catch (e: Exception) {
-            Log.e("getAudio", "Error: ${e.message}", e)
+            Log.e("ChurchRepo", "getAudio | Error: ${e.message}")
             emptyList()
         }
     }
 
     override suspend fun getFeeds(language: String): List<FeedItem> {
         return try {
-
+            Log.d("ChurchRepo", "getFeeds | Language: $language")
             val rawResponse: String = client.get("$BASE_URL/getfeed/") {
                 setBody(
                     TextContent(
@@ -104,23 +108,21 @@ class ChurchRepositoryImpl @Inject constructor(
                 )
             }.bodyAsText()
 
-            Log.e("getFeeds", "RAW: $rawResponse")
-
             val response = Json {
                 ignoreUnknownKeys = true
             }.decodeFromString<Feed>(rawResponse)
-
+            Log.d("ChurchRepo", "getFeeds | Found ${response.feeds.size} items")
             response.feeds
 
         } catch (e: Exception) {
-            Log.e("getFeeds", "Error: ${e.message}", e)
+            Log.e("ChurchRepo", "getFeeds | Error: ${e.message}")
             emptyList()
         }
     }
 
     override suspend fun getDailyWord(language: String): List<DailyWordItem> {
-        Log.e("getDailyWord", "Language: $language")
         return try {
+            Log.d("ChurchRepo", "getDailyWord | Language: $language")
             val response: String = client.get("$BASE_URL/getdailyword/") {
                 setBody(
                     TextContent(
@@ -130,36 +132,36 @@ class ChurchRepositoryImpl @Inject constructor(
                 )
             }.bodyAsText()
 
-            Log.e("getDailyWord", "Response: $response")
-
             val res = Json {
                 ignoreUnknownKeys = true
             }.decodeFromString<DailyWord>(response)
-            Log.e("getDailyWord", "Response: $res")
+            Log.d("ChurchRepo", "getDailyWord | Found ${res.dailywords.size} items")
             res.dailywords
 
         } catch (e: Exception) {
-            Log.e("getDailyWord", "Error: ${e.message}", e)
+            Log.e("ChurchRepo", "getDailyWord | Error: ${e.message}")
             emptyList()
         }
     }
 
     override suspend fun getRadioStatus(): List<Radio> {
         return try {
+            Log.d("ChurchRepo", "getRadioStatus | Fetching...")
             val response: String = client.get("$BASE_URL/radio/").bodyAsText()
             val res = Json {
                 ignoreUnknownKeys = true
             }.decodeFromString<RadioResponse>(response)
+            Log.d("ChurchRepo", "getRadioStatus | Status: ${res.results.size}")
             res.results
         } catch (e: Exception) {
-            Log.e("getRadioStatus", "Error: ${e.message}", e)
+            Log.e("ChurchRepo", "getRadioStatus | Error: ${e.message}")
             emptyList()
         }
     }
 
     override suspend fun getPrograms(language: String): List<Program> {
         return try {
-            Log.e("getPrograms", "Language: $language")
+            Log.d("ChurchRepo", "getPrograms | Language: $language")
             val response: String = client.get("$BASE_URL/getprogram/"){
                 setBody(
                     TextContent(
@@ -172,90 +174,114 @@ class ChurchRepositoryImpl @Inject constructor(
             val res = Json {
                 ignoreUnknownKeys = true
             }.decodeFromString<ProgramResponse>(response)
-            Log.e("getPrograms", "Response: $res")
+            Log.d("ChurchRepo", "getPrograms | Found ${res.programs.size} programs")
             res.programs
 
         } catch (e: Exception) {
-            Log.e("getPrograms", "Error: ${e.message}", e)
+            Log.e("ChurchRepo", "getPrograms | Error: ${e.message}")
             emptyList()
         }
     }
 
     override suspend fun getHoraire(language: String): List<Horaire> {
         return try {
-            client.get("$BASE_URL/horaire/") {
+            Log.d("ChurchRepo", "getHoraire | Language: $language")
+            val result: List<Horaire> = client.get("$BASE_URL/horaire/") {
                 parameter("language", language)
             }.body()
+            Log.d("ChurchRepo", "getHoraire | Found ${result.size} entries")
+            result
         } catch (e: Exception) {
+            Log.e("ChurchRepo", "getHoraire | Error: ${e.message}")
             emptyList()
         }
     }
 
     override suspend fun recordVideoView(videoId: String, deviceId: String) {
         try {
-            Log.e("recordVideoView", "videoId: $videoId, deviceId: $deviceId")
-            client.post("$BASE_URL/addviewvideo/") {
+            Log.d("ChurchRepo", "recordVideoView | videoId: $videoId, deviceId: $deviceId")
+            val response = client.post("$BASE_URL/addviewvideo/") {
                 contentType(ContentType.Application.Json)
                 setBody(mapOf("video" to videoId, "device_id" to deviceId))
             }
-        } catch (e: Exception) {}
+            Log.d("ChurchRepo", "recordVideoView | Success: ${response.status}")
+        } catch (e: Exception) {
+            Log.e("ChurchRepo", "recordVideoView | Error: ${e.message}")
+        }
     }
 
     override suspend fun likeVideo(videoId: String, deviceId: String) {
         try {
-            Log.e("likeVideo", "videoId: $videoId, deviceId: $deviceId")
-            client.post("$BASE_URL/addlikevideo/") {
+            Log.d("ChurchRepo", "likeVideo | videoId: $videoId, deviceId: $deviceId")
+            val response = client.post("$BASE_URL/addlikevideo/") {
                 contentType(ContentType.Application.Json)
                 setBody(mapOf("video" to videoId, "device_id" to deviceId))
             }
+            Log.d("ChurchRepo", "likeVideo | Success: ${response.status}")
         } catch (e: Exception) {
-            Log.e("likeVideo", "Error: ${e.message}", e)
+            Log.e("ChurchRepo", "likeVideo | Error: ${e.message}", e)
         }
     }
 
     override suspend fun shareVideo(videoId: String, deviceId: String) {
         try {
-            client.post("$BASE_URL/sharevideo/") {
+            Log.d("ChurchRepo", "shareVideo | videoId: $videoId, deviceId: $deviceId")
+            val response = client.post("$BASE_URL/sharevideo/") {
                 contentType(ContentType.Application.Json)
                 setBody(mapOf("video" to videoId, "video_id" to videoId, "device_id" to deviceId))
             }
-        } catch (e: Exception) {}
+            Log.d("ChurchRepo", "shareVideo | Success: ${response.status}")
+        } catch (e: Exception) {
+            Log.e("ChurchRepo", "shareVideo | Error: ${e.message}")
+        }
     }
 
     override suspend fun recordAudioListen(audioId: Int, deviceId: String) {
         try {
+            Log.d("ChurchRepo", "recordAudioListen | audioId: $audioId")
             client.post("$BASE_URL/listenaudio/") {
                 contentType(ContentType.Application.Json)
                 setBody(mapOf("audio" to audioId, "device_id" to deviceId))
             }
-        } catch (e: Exception) {}
+        } catch (e: Exception) {
+            Log.e("ChurchRepo", "recordAudioListen | Error: ${e.message}")
+        }
     }
 
     override suspend fun likeAudio(audioId: Int, deviceId: String) {
         try {
+            Log.d("ChurchRepo", "likeAudio | audioId: $audioId")
             client.post("$BASE_URL/likeaudio/") {
                 contentType(ContentType.Application.Json)
                 setBody(mapOf("audio" to audioId, "device_id" to deviceId))
             }
-        } catch (e: Exception) {}
+        } catch (e: Exception) {
+            Log.e("ChurchRepo", "likeAudio | Error: ${e.message}")
+        }
     }
 
     override suspend fun shareAudio(audioId: Int, deviceId: String) {
         try {
+            Log.d("ChurchRepo", "shareAudio | audioId: $audioId")
             client.post("$BASE_URL/shareaudio/") {
                 contentType(ContentType.Application.Json)
                 setBody(mapOf("audio" to audioId, "device_id" to deviceId))
             }
-        } catch (e: Exception) {}
+        } catch (e: Exception) {
+            Log.e("ChurchRepo", "shareAudio | Error: ${e.message}")
+        }
     }
 
     override suspend fun registerLiveViewer(liveId: String, deviceId: String) {
         try {
+            Log.d("ChurchRepo", "registerLiveViewer | liveId: $liveId")
             client.post("$BASE_URL/viewlive/") {
                 contentType(ContentType.Application.Json)
                 setBody(mapOf("live" to liveId, "device_id" to deviceId))
             }
-        } catch (e: Exception) {}
+        } catch (e: Exception) {
+            Log.e("ChurchRepo", "registerLiveViewer | Error: ${e.message}")
+        }
     }
 
     override fun getSavedLanguage(): Flow<String> {
