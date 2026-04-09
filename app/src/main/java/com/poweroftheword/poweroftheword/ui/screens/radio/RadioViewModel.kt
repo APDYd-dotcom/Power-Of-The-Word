@@ -14,6 +14,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.collections.emptyList
@@ -54,9 +55,10 @@ class RadioViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.value = true
             try {
+                val language = repository.getSavedLanguage().first()
                 _radioStatus.value = repository.getRadioStatus()
                 Log.e("RadioViewModel", "Radio Status: ${_radioStatus.value}")
-                _programs.value = repository.getPrograms()
+                _programs.value = repository.getPrograms(language)
             } catch (e: Exception) {
                 Log.e("RadioViewModel Error", "Error loading radio data", e)
             } finally {

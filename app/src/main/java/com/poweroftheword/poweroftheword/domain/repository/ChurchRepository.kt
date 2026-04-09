@@ -11,7 +11,7 @@ interface ChurchRepository {
     suspend fun getFeeds(language: String): List<FeedItem>
     suspend fun getDailyWord(language: String): List<DailyWordItem>
     suspend fun getRadioStatus(): List<Radio>
-    suspend fun getPrograms(): List<Program>
+    suspend fun getPrograms(language: String): List<Program>
     suspend fun getHoraire(language: String): List<Horaire>
     
     // Interactions

@@ -157,10 +157,26 @@ class ChurchRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getPrograms(): List<Program> {
+    override suspend fun getPrograms(language: String): List<Program> {
         return try {
-            client.get("$BASE_URL/programs/").body()
+            Log.e("getPrograms", "Language: $language")
+            val response: String = client.get("$BASE_URL/getprogram/"){
+                setBody(
+                    TextContent(
+                        "language=$language",
+                        ContentType.Application.FormUrlEncoded
+                    )
+                )
+            }.bodyAsText()
+
+            val res = Json {
+                ignoreUnknownKeys = true
+            }.decodeFromString<ProgramResponse>(response)
+            Log.e("getPrograms", "Response: $res")
+            res.programs
+
         } catch (e: Exception) {
+            Log.e("getPrograms", "Error: ${e.message}", e)
             emptyList()
         }
     }

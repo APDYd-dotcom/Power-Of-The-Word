@@ -4,8 +4,13 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
+data class ProgramResponse(
+    val programs: List<Program>
+)
+
+@Serializable
 data class Program(
-    val id: String,
+    val id: Int,
     val title: String,
     val description: String,
     val day: String,

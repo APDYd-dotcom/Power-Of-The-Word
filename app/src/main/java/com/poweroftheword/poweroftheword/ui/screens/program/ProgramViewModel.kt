@@ -1,5 +1,6 @@
 package com.poweroftheword.poweroftheword.ui.screens.program
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.poweroftheword.poweroftheword.domain.model.Program
@@ -8,6 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -33,10 +35,13 @@ class ProgramViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                _programs.value = repository.getPrograms()
+                val language = repository.getSavedLanguage().first()
+                _programs.value = repository.getPrograms(language)
+                Log.e("ProgramViewModel", "Programs loaded successfully, _programs.value: ${_programs.value}")
                 _error.value = null
             } catch (e: Exception) {
                 _error.value = "Failed to load programs"
+                Log.e("ProgramViewModel", "Error loading programs", e)
             } finally {
                 _isLoading.value = false
             }
