@@ -124,7 +124,8 @@ fun VideoListScreen(
                         VideoCard(
                             video = item,
                             onClick = { onVideoClick(item) },
-                            onLikeClick = { viewModel.likeVideo(item.id.toString()) }
+                            onLikeClick = { viewModel.likeVideo(item.id.toString()) },
+                            onShareClick = { viewModel.shareVideo(item) }
                         )
                     }
                 }

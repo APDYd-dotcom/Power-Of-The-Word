@@ -17,6 +17,8 @@ interface ChurchRepository {
     // Interactions
     suspend fun recordVideoView(videoId: String, deviceId: String)
     suspend fun likeVideo(videoId: String, deviceId: String)
+
+    suspend fun getlikeVideo(videoId: String, deviceId: String): Fanta
     suspend fun shareVideo(videoId: String, deviceId: String)
     
     suspend fun recordAudioListen(audioId: Int, deviceId: String)

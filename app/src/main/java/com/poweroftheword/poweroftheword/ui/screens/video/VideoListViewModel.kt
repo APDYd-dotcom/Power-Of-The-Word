@@ -10,8 +10,8 @@ import com.poweroftheword.poweroftheword.util.DeviceUtils
 import com.poweroftheword.poweroftheword.util.ShareUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -72,6 +72,24 @@ class VideoListViewModel @Inject constructor(
             try {
                 val language = repository.getSavedLanguage().first()
                 val result = repository.getVideos(language)
+                
+                val deviceId = DeviceUtils.getDeviceId(context)
+                
+                // Fetch liked status for each video in parallel
+                val likedIds = result.map { video ->
+                    async {
+                        try {
+                            if (repository.getlikeVideo(video.id.toString(), deviceId).fanta) {
+                                video.id.toString()
+                            } else null
+                        } catch (e: Exception) {
+                            Log.e("VideoListViewModel", "Failed to check like status for ${video.id}", e)
+                            null
+                        }
+                    }
+                }.awaitAll().filterNotNull().toSet()
+                
+                _likedVideoIds.value = likedIds
                 _videos.value = result
             } catch (e: Exception) {
                 _error.value = e.message ?: "Failed to load videos"
@@ -102,7 +120,7 @@ class VideoListViewModel @Inject constructor(
         if (videoIndex != -1) {
             _likedVideoIds.value = _likedVideoIds.value + videoId
             val video = currentVideos[videoIndex]
-            val updatedVideo = video.copy(likes = (video.likes ?: 0) + 1, isLiked = true)
+            val updatedVideo = video.copy(like = (video.like ?: 0) + 1, isLiked = true)
             val updatedList = currentVideos.toMutableList()
             updatedList[videoIndex] = updatedVideo
             _videos.value = updatedList
@@ -116,6 +134,7 @@ class VideoListViewModel @Inject constructor(
                 _likedVideoIds.value = _likedVideoIds.value - videoId
                 _videos.value = currentVideos
                 _error.value = "Failed to like video."
+                Log.e("VideoListViewModel", "Failed to like video", e)
             }
         }
     }

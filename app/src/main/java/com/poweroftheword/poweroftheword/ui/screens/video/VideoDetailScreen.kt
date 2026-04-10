@@ -109,7 +109,7 @@ fun VideoDetailScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                     
                     Text(
-                        text = "${currentVideo.views ?: 0} views • ${currentVideo.date}",
+                        text = "${currentVideo.view ?: 0} views • ${currentVideo.date}",
                         fontSize = 13.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -123,7 +123,7 @@ fun VideoDetailScreen(
                     ) {
                         ActionChip(
                             icon = if (currentVideo.isLiked) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp,
-                            label = "${currentVideo.likes ?: 0}",
+                            label = "${currentVideo.like ?: 0}",
                             tint = if (currentVideo.isLiked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                             onClick = { viewModel.likeVideo(currentVideo.id.toString()) }
                         )

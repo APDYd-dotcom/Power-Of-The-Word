@@ -15,8 +15,8 @@ data class VideoItem(
     val url: String,
     val type: String,
     val language: String,
-    val views: Int? = 0,
-    val likes: Int? = 0,
+    val view: Int? = 0,
+    val like: Int? = 0,
     val date: String,
     val isLiked: Boolean = false
 )

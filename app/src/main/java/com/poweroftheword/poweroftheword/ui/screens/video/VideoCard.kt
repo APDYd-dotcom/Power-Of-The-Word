@@ -17,7 +17,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -46,7 +49,8 @@ import com.poweroftheword.poweroftheword.util.extractYoutubeId
 fun VideoCard(
     video: VideoItem,
     onClick: () -> Unit,
-    onLikeClick: () -> Unit = {}
+    onLikeClick: () -> Unit = {},
+    onShareClick: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val videoId = extractYoutubeId(video.url) ?: ""
@@ -128,7 +132,7 @@ fun VideoCard(
 
                 // Channel Name & Meta
                 Text(
-                    text = "Power of the Word • ${video.views ?: 0} views • ${video.date}",
+                    text = "Power of the Word • ${video.view ?: 0} views • ${video.date}",
                     fontSize = 13.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
@@ -148,13 +152,40 @@ fun VideoCard(
                 )
             }
 
-            IconButton(onClick = { /* Show options */ }) {
-                Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(20.dp)
-                )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    IconButton(onClick = onLikeClick) {
+                        Icon(
+                            imageVector = if (video.isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                            contentDescription = "Like",
+                            tint = if (video.isLiked) Color.Red else MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                    Text(
+                        text = "${video.like ?: 0}",
+                        fontSize = 11.sp,
+                        color = if (video.isLiked) Color.Red else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                IconButton(onClick = onShareClick) {
+                    Icon(
+                        imageVector = Icons.Default.Share,
+                        contentDescription = "Share",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+
+                IconButton(onClick = { /* Show options */ }) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
             }
         }
     }

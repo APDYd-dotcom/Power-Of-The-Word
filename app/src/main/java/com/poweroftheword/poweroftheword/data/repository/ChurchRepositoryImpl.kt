@@ -162,7 +162,7 @@ class ChurchRepositoryImpl @Inject constructor(
     override suspend fun getPrograms(language: String): List<Program> {
         return try {
             Log.d("ChurchRepo", "getPrograms | Language: $language")
-            val response: String = client.get("$BASE_URL/getprogram/"){
+            val response: String = client.get("$BASE_URL/getprogram/") {
                 setBody(
                     TextContent(
                         "language=$language",
@@ -215,7 +215,7 @@ class ChurchRepositoryImpl @Inject constructor(
             Log.d("ChurchRepo", "likeVideo | videoId: $videoId, deviceId: $deviceId")
             val response = client.post("$BASE_URL/addlikevideo/") {
                 contentType(ContentType.Application.Json)
-                setBody(mapOf("video" to videoId, "device_id" to deviceId))
+                setBody(mapOf("video_id" to videoId, "device_id" to deviceId))
             }
             Log.d("ChurchRepo", "likeVideo | Success: ${response.status}")
         } catch (e: Exception) {
@@ -223,10 +223,25 @@ class ChurchRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getlikeVideo(videoId: String, deviceId: String): Fanta {
+        return try {
+            Log.d("ChurchRepo", "getlikeVideo | videoId: $videoId, deviceId: $deviceId")
+            val response = client.post("$BASE_URL/checklike/") {
+                contentType(ContentType.Application.Json)
+                setBody(mapOf("video_id" to videoId, "device_id" to deviceId))
+            }.body<Fanta>()
+            Log.d("ChurchRepo", "getlikeVideo | Success: ${response.fanta}")
+            response
+        } catch (e: Exception) {
+            Log.e("ChurchRepo", "getlikeVideo | Error: ${e.message}", e)
+            Fanta(fanta = false)
+        }
+    }
+
     override suspend fun shareVideo(videoId: String, deviceId: String) {
         try {
             Log.d("ChurchRepo", "shareVideo | videoId: $videoId, deviceId: $deviceId")
-            val response = client.post("$BASE_URL/sharevideo/") {
+            val response = client.post("$BASE_URL/addsharevideo/") {
                 contentType(ContentType.Application.Json)
                 setBody(mapOf("video" to videoId, "video_id" to videoId, "device_id" to deviceId))
             }

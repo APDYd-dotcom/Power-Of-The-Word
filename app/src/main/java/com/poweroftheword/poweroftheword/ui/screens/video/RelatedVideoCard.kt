@@ -66,7 +66,7 @@ fun RelatedVideoCard(
             )
 
             Text(
-                text = "${video.views} views",
+                text = "${video.view} views",
                 style = MaterialTheme.typography.labelSmall,
                 color = Color.Gray
             )

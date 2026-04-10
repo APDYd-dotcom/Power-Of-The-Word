@@ -1,5 +1,6 @@
 package com.poweroftheword.poweroftheword.util
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 
@@ -11,6 +12,9 @@ object ShareUtils {
             type = "text/plain"
         }
         val shareIntent = Intent.createChooser(sendIntent, title)
+        if (context !is Activity) {
+            shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
         context.startActivity(shareIntent)
     }
 }
