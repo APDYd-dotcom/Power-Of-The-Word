@@ -155,15 +155,18 @@ fun MainScreen() {
             composable(
                 route = Screen.VideoDetail.route,
                 arguments = listOf(navArgument("videoId") { type = NavType.StringType })
-            ) {
+            ) { backStackEntry ->
                 val viewModel: VideoListViewModel = hiltViewModel()
+                val videoId = backStackEntry.arguments?.getString("videoId")
+                val videos by viewModel.filteredVideos.collectAsState()
+                val video = videos.find { it.id.toString() == videoId }
                 VideoDetailScreen(
                     viewModel = viewModel,
                     onBackClick = { navController.popBackStack() },
                     onVideoClick = { video ->
                         navController.navigate(Screen.VideoDetail.createRoute(video.id))
                     },
-                    videoId = viewModel.filteredVideos.collectAsState().value.firstOrNull()?.id.toString()
+                    videoId = video?.id.toString()
                 )
             }
 

@@ -16,6 +16,7 @@ data class VideoItem(
     val type: String,
     val language: String,
     val view: Int? = 0,
+    val share: Int? = 0,
     val like: Int? = 0,
     val date: String,
     val isLiked: Boolean = false

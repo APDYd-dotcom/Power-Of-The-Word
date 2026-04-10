@@ -20,5 +20,6 @@ data class AudioItem(
     val status: String,
     val listens: Int? = 0,
     val likes: Int? = 0,
+    val isLiked: Boolean? = false,
     val shares: Int? = 0
 )

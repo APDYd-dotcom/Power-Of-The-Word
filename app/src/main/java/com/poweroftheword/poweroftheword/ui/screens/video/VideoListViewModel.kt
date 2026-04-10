@@ -79,7 +79,7 @@ class VideoListViewModel @Inject constructor(
                 val likedIds = result.map { video ->
                     async {
                         try {
-                            if (repository.getlikeVideo(video.id.toString(), deviceId).fanta) {
+                            if (repository.chackLike(deviceId,video.id.toString()).success.fanta) {
                                 video.id.toString()
                             } else null
                         } catch (e: Exception) {
@@ -129,7 +129,7 @@ class VideoListViewModel @Inject constructor(
         viewModelScope.launch {
             val deviceId = DeviceUtils.getDeviceId(context)
             try {
-                repository.likeVideo(videoId, deviceId)
+                repository.interactions(videoId, deviceId, action ="like")
             } catch (e: Exception) {
                 _likedVideoIds.value = _likedVideoIds.value - videoId
                 _videos.value = currentVideos

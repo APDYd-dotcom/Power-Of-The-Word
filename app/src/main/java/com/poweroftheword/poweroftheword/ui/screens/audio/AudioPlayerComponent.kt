@@ -37,6 +37,9 @@ import kotlinx.coroutines.delay
 fun AudioPlayerComponent(
     context: Context,
     audioUrl: String,
+    viewModel : AudioListViewModel,
+    audioId: Int,
+    isLiked: Boolean,
     date: String,
     time: String,
     title: String
@@ -238,8 +241,13 @@ fun AudioPlayerComponent(
                 }
 
                 // LIKE BUTTON
-                IconButton(onClick = { }) {
-                    Icon(Icons.Outlined.ThumbUp, contentDescription = null)
+                IconButton(onClick = {
+                    viewModel.likeAudio(audioId)
+                }) {
+                    Icon(
+                        Icons.Outlined.ThumbUp,
+                        tint = if (isLiked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                        contentDescription = null)
                 }
 
                 // SHARE BUTTON (FIXED FOR URL)

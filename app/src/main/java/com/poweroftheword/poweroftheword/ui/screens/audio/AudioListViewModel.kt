@@ -11,6 +11,8 @@ import com.poweroftheword.poweroftheword.util.DeviceUtils
 import com.poweroftheword.poweroftheword.util.ShareUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -24,6 +26,10 @@ class AudioListViewModel @Inject constructor(
 
     private val _audios = MutableStateFlow<List<AudioItem>>(emptyList())
     val audios: StateFlow<List<AudioItem>> = _audios.asStateFlow()
+
+    private val _likedAudioIds = MutableStateFlow<Set<String>>(emptySet())
+
+
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
@@ -73,6 +79,25 @@ class AudioListViewModel @Inject constructor(
                 val language = repository.getSavedLanguage().first()
                 val result = repository.getAudio(language)
 
+                val deviceId = DeviceUtils.getDeviceId(context)
+
+                //Fetch liked status for each audio in parallel
+                val likedIds = result.map { audio ->
+                    async {
+                        try {
+                            if(repository.chackLike(deviceId,audio.id.toString(), ).success.fanta)
+                                audio.id.toString()
+                            else
+                                null
+                        } catch (e: Exception) {
+                            Log.e("AudioListViewModel", "Failed to check lij=ke status for ${audio.id}", e)
+                            null
+                        }
+                    }
+
+                }.awaitAll().firstOrNull()?.toSet()
+
+                _likedAudioIds.value - likedIds
                 _audios.value = result.flatMap { listOf(it) }
 
                 Log.d("AudioVM", "Loaded audios for $language")
@@ -113,7 +138,7 @@ class AudioListViewModel @Inject constructor(
     fun likeAudio(audioId: Int) {
         viewModelScope.launch {
             val deviceId = DeviceUtils.getDeviceId(context)
-            repository.likeAudio(audioId, deviceId)
+            repository.interactions(deviceId, audioId = audioId.toString(), action = "like")
         }
     }
 
@@ -121,7 +146,7 @@ class AudioListViewModel @Inject constructor(
         viewModelScope.launch {
             val deviceId = DeviceUtils.getDeviceId(context)
 
-            repository.shareAudio(audio.id, deviceId)
+            repository.interactions(deviceId, audioId = audio.id.toString(), action = "share")
 
             ShareUtils.shareText(
                 context,

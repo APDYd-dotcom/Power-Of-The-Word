@@ -6,7 +6,22 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.poweroftheword.poweroftheword.BuildConfig
-import com.poweroftheword.poweroftheword.domain.model.*
+import com.poweroftheword.poweroftheword.domain.model.Audio
+import com.poweroftheword.poweroftheword.domain.model.AudioItem
+import com.poweroftheword.poweroftheword.domain.model.DailyWord
+import com.poweroftheword.poweroftheword.domain.model.DailyWordItem
+import com.poweroftheword.poweroftheword.domain.model.Fanta
+import com.poweroftheword.poweroftheword.domain.model.Feed
+import com.poweroftheword.poweroftheword.domain.model.FeedItem
+import com.poweroftheword.poweroftheword.domain.model.Horaire
+import com.poweroftheword.poweroftheword.domain.model.InteractionResponse
+import com.poweroftheword.poweroftheword.domain.model.Live
+import com.poweroftheword.poweroftheword.domain.model.Program
+import com.poweroftheword.poweroftheword.domain.model.ProgramResponse
+import com.poweroftheword.poweroftheword.domain.model.Radio
+import com.poweroftheword.poweroftheword.domain.model.RadioResponse
+import com.poweroftheword.poweroftheword.domain.model.Video
+import com.poweroftheword.poweroftheword.domain.model.VideoItem
 import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -18,12 +33,10 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.content.TextContent
 import io.ktor.http.contentType
-import io.ktor.http.formUrlEncode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
-import kotlin.collections.emptyList
 
 private val Context.dataStore by preferencesDataStore(name = "settings")
 
@@ -213,7 +226,7 @@ class ChurchRepositoryImpl @Inject constructor(
     override suspend fun likeVideo(videoId: String, deviceId: String) {
         try {
             Log.d("ChurchRepo", "likeVideo | videoId: $videoId, deviceId: $deviceId")
-            val response = client.post("$BASE_URL/addlikevideo/") {
+            val response = client.post("$BASE_URL/interact/") {
                 contentType(ContentType.Application.Json)
                 setBody(mapOf("video_id" to videoId, "device_id" to deviceId))
             }
@@ -223,6 +236,41 @@ class ChurchRepositoryImpl @Inject constructor(
         }
     }
 
+    //Interactions Api Service
+
+    override suspend fun interactions(
+        deviceId: String,
+        videoId: String?,
+        audioId: String?,
+        feedId: String?,
+        action: String
+    ): InteractionResponse {
+       try {
+            val response = client.post("$BASE_URL/interact/") {
+                contentType(ContentType.Application.Json)
+                setBody(
+                    if (videoId != null)
+                        mapOf("video_id" to videoId, "device_id" to deviceId, "action" to action)
+                    else if (audioId != null)
+                        mapOf("audio_id" to audioId, "device_id" to deviceId, "action" to action)
+                    else if (feedId != null)
+                        mapOf("feed_id" to feedId, "device_id" to deviceId, "action" to action)
+                    else null
+                )
+            }.bodyAsText()
+
+            Log.d("ChurchRepo", "Interactions | Success: $response")
+
+        } catch (e: Exception) {
+            Log.d(
+                "ChurchRepo",
+                "Interactions | VideoId: $videoId, deviceId: $deviceId, audioId: $audioId, feedId: $feedId"
+            )
+            Log.e("ChurchRepo", "Interactions | Error: ${e.message}", e)
+        }
+
+        return TODO("Provide the return value")
+    }
     override suspend fun getlikeVideo(videoId: String, deviceId: String): Fanta {
         return try {
             Log.d("ChurchRepo", "getlikeVideo | videoId: $videoId, deviceId: $deviceId")
@@ -236,6 +284,37 @@ class ChurchRepositoryImpl @Inject constructor(
             Log.e("ChurchRepo", "getlikeVideo | Error: ${e.message}", e)
             Fanta(fanta = false)
         }
+    }
+
+    override suspend fun chackLike(
+        deviceId: String,
+        videoId: String?,
+        audioId: String?,
+        feedId: String?
+    ): InteractionResponse {
+        try {
+
+            val response = client.post( "$BASE_URL/checklike/"){
+                contentType(ContentType.Application.Json)
+                setBody(
+                    if (videoId != null)
+                        mapOf("video_id" to videoId, "device_id" to deviceId)
+                    else if (audioId != null)
+                        mapOf("audio_id" to audioId, "device_id" to deviceId)
+                    else if (feedId != null)
+                        mapOf("feed_id" to feedId, "device_id" to deviceId)
+                    else
+                        null
+                )
+            }.bodyAsText()
+            Log.d("ChurchRepo", "Interactions | VideoId: $videoId, deviceId: $deviceId, audioId: $audioId, feedId: $feedId")
+            Log.d("ChurchRepo", "chackLike | Success: $response")
+
+        } catch (e: Exception){
+            Log.d("ChurchRepo", "CheckLit | VideoId: $videoId,")
+            Log.e("ChurchRepo", "CheckLIke | Error: ${e.message}")
+        }
+        return TODO()
     }
 
     override suspend fun shareVideo(videoId: String, deviceId: String) {

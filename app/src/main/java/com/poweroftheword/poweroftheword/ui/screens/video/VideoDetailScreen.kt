@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.poweroftheword.poweroftheword.R
 import com.poweroftheword.poweroftheword.domain.model.VideoItem
+import com.poweroftheword.poweroftheword.util.formatDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -109,7 +110,7 @@ fun VideoDetailScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                     
                     Text(
-                        text = "${currentVideo.view ?: 0} views • ${currentVideo.date}",
+                        text = "${currentVideo.view ?: 0} views • ${formatDate(currentVideo.date)}",
                         fontSize = 13.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -129,7 +130,7 @@ fun VideoDetailScreen(
                         )
                         ActionChip(
                             icon = Icons.Outlined.Share,
-                            label = "Share",
+                            label = "Share ${currentVideo.share ?: 0}",
                             onClick = { viewModel.shareVideo(currentVideo) }
                         )
                     }
@@ -137,75 +138,75 @@ fun VideoDetailScreen(
             }
 
             // 3. Channel Section
-            item {
-                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp)
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.logo),
-                        contentDescription = "Channel Logo",
-                        modifier = Modifier
-                            .size(40.dp)
-                            .clip(CircleShape)
-                            .background(Color.LightGray),
-                        contentScale = ContentScale.Crop
-                    )
-                    
-                    Spacer(modifier = Modifier.width(12.dp))
-                    
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = "Power of the Word",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 15.sp
-                        )
-                        Text(
-                            text = "Gospel Channel",
-                            fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    
-                    Button(
-                        onClick = { /* Subscribe */ },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary
-                        ),
-                        shape = RoundedCornerShape(20.dp),
-                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp),
-                        modifier = Modifier.height(36.dp)
-                    ) {
-                        Text("Subscribe", fontSize = 13.sp, fontWeight = FontWeight.Bold)
-                    }
-                }
-                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp)
-            }
+//            item {
+//                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp)
+//                Row(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(16.dp),
+//                    verticalAlignment = Alignment.CenterVertically
+//                ) {
+//                    Image(
+//                        painter = painterResource(id = R.drawable.logo),
+//                        contentDescription = "Channel Logo",
+//                        modifier = Modifier
+//                            .size(40.dp)
+//                            .clip(CircleShape)
+//                            .background(Color.LightGray),
+//                        contentScale = ContentScale.Crop
+//                    )
+//
+//                    Spacer(modifier = Modifier.width(12.dp))
+//
+////                    Column(modifier = Modifier.weight(1f)) {
+////                        Text(
+////                            text = "Power of the Word",
+////                            fontWeight = FontWeight.Bold,
+////                            fontSize = 15.sp
+////                        )
+////                        Text(
+////                            text = "Gospel Channel",
+////                            fontSize = 12.sp,
+////                            color = MaterialTheme.colorScheme.onSurfaceVariant
+////                        )
+////                    }
+////
+//                    Button(
+//                        onClick = { /* Subscribe */ },
+//                        colors = ButtonDefaults.buttonColors(
+//                            containerColor = MaterialTheme.colorScheme.primary,
+//                            contentColor = MaterialTheme.colorScheme.onPrimary
+//                        ),
+//                        shape = RoundedCornerShape(20.dp),
+//                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp),
+//                        modifier = Modifier.height(36.dp)
+//                    ) {
+//                        Text("Subscribe", fontSize = 13.sp, fontWeight = FontWeight.Bold)
+//                    }
+//                }
+//                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp)
+//            }
 
             // 4. Description Section
-            item {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    Text(
-                        text = "Description",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = currentVideo.description ?: "No description available.",
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
-                    )
-                }
-            }
+//            item {
+//                Column(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(16.dp)
+//                ) {
+//                    Text(
+//                        text = "Description",
+//                        fontWeight = FontWeight.Bold,
+//                        fontSize = 14.sp
+//                    )
+//                    Spacer(modifier = Modifier.height(4.dp))
+//                    Text(
+//                        text = currentVideo.description ?: "No description available.",
+//                        fontSize = 14.sp,
+//                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+//                    )
+//                }
+//            }
 
             // 5. Related Videos Header
             item {
