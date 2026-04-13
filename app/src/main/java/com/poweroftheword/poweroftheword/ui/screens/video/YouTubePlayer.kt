@@ -26,62 +26,63 @@ fun YoutubePlayerComposable(
 
     if (videoId == null) return
 
-    // Initialize the WebView with strict security settings
-    val webView = remember {
-        WebView(context).apply {
-            layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            )
-            
-            // Set background to transparent to avoid white flash
-            setBackgroundColor(Color.TRANSPARENT)
+    // Standard YouTube embed HTML to ensure reliable rendering
+    val html = """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body { margin: 0; padding: 0; background-color: black; }
+                .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; }
+                .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+            </style>
+        </head>
+        <body>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/$videoId?autoplay=1&modestbranding=1&rel=0&enablejsapi=1" 
+                        frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen></iframe>
+            </div>
+        </body>
+        </html>
+    """.trimIndent()
 
-            settings.apply {
-                javaScriptEnabled = true
-                domStorageEnabled = true
-                loadWithOverviewMode = true
-                useWideViewPort = true
-                mediaPlaybackRequiresUserGesture = false
-                allowFileAccess = false
-                allowContentAccess = false
-                mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
-            }
-
-            webViewClient = object : WebViewClient() {
-                override fun onPageFinished(view: WebView?, url: String?) {
-                    super.onPageFinished(view, url)
-                    // When the page is loaded, we count it as a view start
-                    if (!hasRecordedView) {
-                        onVideoStarted()
-                        hasRecordedView = true
-                    }
-                }
-            }
-            webChromeClient = WebChromeClient()
-        }
-    }
-
-    // Load the URL
-    DisposableEffect(videoId) {
-        val embedUrl = "https://www.youtube.com/embed/$videoId?rel=0&modestbranding=1&autoplay=1&enablejsapi=1"
-
-        val headers = mapOf(
-            "Referer" to "https://com.poweroftheword.poweroftheword",
-            "Origin" to "https://www.youtube.com"
-        )
-
-        webView.loadUrl(embedUrl, headers)
-
-        onDispose {
-            webView.stopLoading()
-            webView.loadUrl("about:blank")
-        }
-    }
-
-    // Display the view in Compose
     AndroidView(
         modifier = modifier,
-        factory = { webView }
+        factory = { ctx ->
+            WebView(ctx).apply {
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
+                
+                // Set background to black
+                setBackgroundColor(Color.BLACK)
+
+                settings.apply {
+                    javaScriptEnabled = true
+                    domStorageEnabled = true
+                    loadWithOverviewMode = true
+                    useWideViewPort = true
+                    mediaPlaybackRequiresUserGesture = false
+                    mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+                }
+
+                webViewClient = object : WebViewClient() {
+                    override fun onPageFinished(view: WebView?, url: String?) {
+                        super.onPageFinished(view, url)
+                        if (!hasRecordedView) {
+                            onVideoStarted()
+                            hasRecordedView = true
+                        }
+                    }
+                }
+                webChromeClient = WebChromeClient()
+            }
+        },
+        update = { webView ->
+            // Use loadDataWithBaseURL to allow the iframe to load correctly
+            webView.loadDataWithBaseURL("https://www.youtube.com", html, "text/html", "utf-8", null)
+        }
     )
 }
