@@ -1,18 +1,15 @@
 package com.poweroftheword.poweroftheword.ui.screens.video
 
 import android.annotation.SuppressLint
-import android.graphics.Color
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.compose.foundation.layout.fillMaxWidth
 import com.poweroftheword.poweroftheword.util.extractYoutubeId
 
 @SuppressLint("SetJavaScriptEnabled")
@@ -24,20 +21,18 @@ fun YoutubePlayerComposable(
 ) {
     val context = LocalContext.current
     val videoId = remember(videoUrl) { extractYoutubeId(videoUrl) }
-    var hasRecordedView by remember(videoUrl) { mutableStateOf(false) }
+    val currentOnVideoStarted by rememberUpdatedState(onVideoStarted)
 
     if (videoId == null) return
 
+    // 1. Initialize the WebView with strict security settings
     val webView = remember {
         WebView(context).apply {
-
             layoutParams = ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
             )
-
-            setBackgroundColor(Color.TRANSPARENT)
-            setLayerType(WebView.LAYER_TYPE_HARDWARE, null)
+            setBackgroundColor(android.graphics.Color.TRANSPARENT)
 
             settings.apply {
                 javaScriptEnabled = true
@@ -46,48 +41,40 @@ fun YoutubePlayerComposable(
                 useWideViewPort = true
                 mediaPlaybackRequiresUserGesture = false
 
-                // Important
-                javaScriptCanOpenWindowsAutomatically = true
-                setSupportMultipleWindows(true)
-                mixedContentMode = WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE
+                // Hardening: Prevent the WebView from accessing local system files
+                allowFileAccess = false
+                allowContentAccess = false
+                mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
             }
 
-            webViewClient = object : WebViewClient() {
-                override fun onPageFinished(view: WebView?, url: String?) {
-                    super.onPageFinished(view, url)
-                    if (!hasRecordedView) {
-                        onVideoStarted()
-                        hasRecordedView = true
-                    }
-                }
-            }
-
+            webViewClient = WebViewClient()
             webChromeClient = WebChromeClient()
         }
     }
 
+    // 2. Load the URL with Custom Headers for YouTube Validation
     DisposableEffect(videoId) {
+        val embedUrl = "https://www.youtube.com/embed/$videoId?rel=0&modestbranding=1&autoplay=1&enablejsapi=1"
 
-        val embedUrl =
-            "https://www.youtube.com/embed/$videoId?playsinline=1&autoplay=1"
-
-        // ✅ Your requested headers
+        // YouTube recommends identifying your app via the Referer header.
+        // Using your package name as the domain is the standard for Android apps.
         val headers = mapOf(
-            "Referer" to "https://www.youtube.com"
+            "Referer" to "https://com.poweroftheword.poweroftheword",
+            "Origin" to "https://www.youtube.com"
         )
 
         webView.loadUrl(embedUrl, headers)
-
+        currentOnVideoStarted()
+        webView.setLayerType(WebView.LAYER_TYPE_HARDWARE, null)
         onDispose {
             webView.stopLoading()
-            webView.loadUrl("about:blank")
+            webView.loadUrl("about:blank") // Stop audio immediately on exit
         }
     }
 
+    // 3. Display the view in Compose
     AndroidView(
-        modifier = modifier
-            .fillMaxWidth()
-            .aspectRatio(16f / 9f),
+        modifier = modifier,
         factory = { webView }
     )
 }
