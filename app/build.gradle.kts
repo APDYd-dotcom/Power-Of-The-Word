@@ -128,7 +128,7 @@ dependencies {
     // YouTube Player library
     implementation("com.pierfrancescosoffritti.androidyoutubeplayer:core:12.1.0")
     // Navigation
-    implementation("androidx.navigation:navigation-compose:2.6.0")
+    implementation("androidx.navigation:navigation-compose:2.8.4")
     //viewmodel
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
     //Hilt

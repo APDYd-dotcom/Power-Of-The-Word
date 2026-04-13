@@ -1,6 +1,7 @@
 package com.poweroftheword.poweroftheword.ui.screens.video
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import android.webkit.WebSettings
@@ -32,6 +33,9 @@ fun YoutubePlayerComposable(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
             )
+            
+            // Set background to transparent to avoid white flash
+            setBackgroundColor(Color.TRANSPARENT)
 
             settings.apply {
                 javaScriptEnabled = true

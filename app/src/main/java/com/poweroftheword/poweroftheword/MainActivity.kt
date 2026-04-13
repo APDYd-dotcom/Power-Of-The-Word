@@ -51,8 +51,9 @@ class MainActivity : ComponentActivity() {
             val settingsViewModel: SettingsViewModel = hiltViewModel()
             val currentLanguage by settingsViewModel.currentLanguage.collectAsState()
             
-            // Re-wrap the context whenever the language changes
             val context = LocalContext.current
+            
+            // Re-wrap the context whenever the language changes
             val localizedContext = remember(currentLanguage) {
                 updateResources(context, currentLanguage)
             }
@@ -86,20 +87,14 @@ class MainActivity : ComponentActivity() {
         configuration.setLocale(locale)
         configuration.setLayoutDirection(locale)
         
+        // Create a new context with the updated configuration
         val localizedContext = context.createConfigurationContext(configuration)
         
-        // Wrap the localized context but keep the original context as base
-        // This allows Hilt to find the Activity context by traversing ContextWrappers
+        // Wrap the original context (the Activity) instead of the localizedContext
+        // to ensure Hilt can still find the Activity context.
         return object : ContextWrapper(context) {
             override fun getResources() = localizedContext.resources
             override fun getAssets() = localizedContext.assets
-            override fun getSystemService(name: String): Any? {
-                return if (Context.LAYOUT_INFLATER_SERVICE == name) {
-                    localizedContext.getSystemService(name)
-                } else {
-                    super.getSystemService(name)
-                }
-            }
         }
     }
 

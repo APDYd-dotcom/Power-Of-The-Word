@@ -54,7 +54,8 @@ fun RelatedVideoCard(
                 text = video.title,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Spacer(Modifier.height(4.dp))
@@ -62,13 +63,13 @@ fun RelatedVideoCard(
             Text(
                 text = "Power of the Word",
                 style = MaterialTheme.typography.labelSmall,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Text(
-                text = "${video.view} views",
+                text = "${video.view ?: 0} views",
                 style = MaterialTheme.typography.labelSmall,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }

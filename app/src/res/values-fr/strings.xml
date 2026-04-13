@@ -93,6 +93,8 @@
     <string name="payment_method">Mode de paiement</string>
     <string name="credit_debit_card">Carte de crédit/débit</string>
     <string name="bank_transfer">Virement bancaire</string>
+    <string name="lumicash">Lumicash</string>
+    <string name="ecocash">Ecocash</string>
     <string name="bank_transfer_details">Détails du virement bancaire</string>
     <string name="bank_name">Nom de la banque :</string>
     <string name="account_name">Nom du compte :</string>

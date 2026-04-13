@@ -80,4 +80,38 @@
     <string name="schedule">Schedule</string>
     <string name="programs">Programs</string>
     <string name="donation">Donation</string>
+
+    <string name="donate">Donate</string>
+    <string name="support_ministry">Support the Ministry</string>
+    <string name="donation_impact">Your generous donation helps us spread the Gospel and support community outreach.</string>
+    <string name="lives_touched">Lives Touched</string>
+    <string name="countries">Countries</string>
+    <string name="broadcast">Broadcast</string>
+    <string name="select_amount">Select Amount</string>
+    <string name="enter_custom_amount">Enter custom amount</string>
+    <string name="make_monthly">Make this monthly</string>
+    <string name="recurring_donation">Recurring donation</string>
+    <string name="payment_method">Payment Method</string>
+    <string name="credit_debit_card">Credit/Debit Card</string>
+    <string name="bank_transfer">Bank Transfer</string>
+    <string name="lumicash" translatable="false">Lumicash</string>
+    <string name="ecocash" translatable="false">Ecocash</string>
+    <string name="bank_transfer_details">Bank Transfer Details</string>
+    <string name="bank_name">Bank Name:</string>
+    <string name="account_name">Account Name:</string>
+    <string name="account_number">Account Number:</string>
+    <string name="swift_code">SWIFT Code:</string>
+    <string name="lumicash_payment">Lumicash Payment</string>
+    <string name="lumicash_number">Lumicash Number</string>
+    <string name="ecocash_payment">Ecocash Payment</string>
+    <string name="ecocash_number">Ecocash Number</string>
+    <string name="bankobu_payment">Bankobu Payment</string>
+    <string name="bankobu_account">Bankobu Account</string>
+    <string name="ihela_payment">Ihela Payment</string>
+    <string name="ihela_number">Ihela Number</string>
+    <string name="instructions">Instructions:</string>
+    <string name="keep_sms_receipt">Keep SMS receipt</string>
+    <string name="save_confirmation_sms">Save confirmation SMS</string>
+    <string name="keep_reference">Keep reference</string>
+    <string name="donate_with_amount">Donate $%1$s</string>
 </resources>

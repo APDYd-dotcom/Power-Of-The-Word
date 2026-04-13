@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Radio
 import androidx.compose.material3.*
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,6 +23,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.poweroftheword.poweroftheword.domain.model.Radio
+import com.poweroftheword.poweroftheword.ui.components.RadioHeaderSkeleton
+import com.poweroftheword.poweroftheword.ui.components.RadioStationCardSkeleton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,18 +35,6 @@ fun RadioScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val currentlyPlayingId by viewModel.currentlyPlayingId.collectAsState()
     val isPlaying by viewModel.isPlaying.collectAsState()
-
-    // Filtered list to avoid duplicates if radioStatus is also in the list
-//    val radioList = remember(radioStatus) {
-//        val staticList = listOf(
-//            Radio("1", "RFI", "https://rfimonde64k.ice.infomaniak.ch/rfimonde-64.mp3", "00:00", "23:59", true),
-//            Radio("2", "Gospel FM", "", "00:00", "23:59", false),
-//            Radio("3", "Praise Radio", "", "00:00", "23:59", false),
-//            Radio("4", "Classic FM", "", "00:00", "23:59", true)
-//        )
-//        // If we have a real radioStatus from API, we could prepend or replace
-//        radioStatus?.let { listOf(it) + staticList.filter { s -> s.id != it.id } } ?: staticList
-//    }
 
     Box(
         modifier = Modifier
@@ -73,73 +64,87 @@ fun RadioScreen(
             }
         ) { padding ->
 
-            if (isLoading && radioStatus == null) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = Color.White)
-                }
-            } else {
-
+            PullToRefreshBox(
+                isRefreshing = isLoading && radioStatus.isNotEmpty(),
+                onRefresh = { viewModel.loadRadioData() },
+                modifier = Modifier.padding(padding).fillMaxSize()
+            ) {
                 LazyColumn(
                     modifier = Modifier
-                        .padding(padding)
                         .fillMaxSize(),
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
 
-                    // 🔷 HEADER
-                    item {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 24.dp, bottom = 16.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-
-                            Box(
-                                modifier = Modifier
-                                    .size(140.dp)
-                                    .clip(RoundedCornerShape(24.dp))
-                                    .background(Color(0xFF2A3442)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    Icons.Default.Radio,
-                                    contentDescription = null,
-                                    tint = Color(0xFF4DA3FF),
-                                    modifier = Modifier.size(64.dp)
-                                )
-                            }
-
-                            Spacer(Modifier.height(16.dp))
-
+                    if (isLoading && radioStatus.isEmpty()) {
+                        // 🔷 LOADING SKELETONS
+                        item { RadioHeaderSkeleton() }
+                        item {
                             Text(
-                                "Radio",
-                                color = Color.White,
-                                fontSize = 22.sp,
+                                "ALL STATIONS",
+                                color = Color.LightGray,
+                                fontSize = 13.sp,
                                 fontWeight = FontWeight.Bold
                             )
                         }
-                    }
+                        items(5) {
+                            RadioStationCardSkeleton()
+                        }
+                    } else {
+                        // 🔷 HEADER
+                        item {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 24.dp, bottom = 16.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
 
-                    // 🔷 TITLE
-                    item {
-                        Text(
-                            "ALL STATIONS",
-                            color = Color.LightGray,
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
+                                Box(
+                                    modifier = Modifier
+                                        .size(140.dp)
+                                        .clip(RoundedCornerShape(24.dp))
+                                        .background(Color(0xFF2A3442)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        Icons.Default.Radio,
+                                        contentDescription = null,
+                                        tint = Color(0xFF4DA3FF),
+                                        modifier = Modifier.size(64.dp)
+                                    )
+                                }
 
-                    // 🔷 LIST
-                    items(radioStatus) { radio ->
-                        RadioStationCard(
-                            radio = radio,
-                            isCurrentlyPlaying = radio.id == currentlyPlayingId,
-                            isPlaying = isPlaying,
-                            onPlayClick = { viewModel.togglePlay(radio) }
-                        )
+                                Spacer(Modifier.height(16.dp))
+
+                                Text(
+                                    "Radio",
+                                    color = Color.White,
+                                    fontSize = 22.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+
+                        // 🔷 TITLE
+                        item {
+                            Text(
+                                "ALL STATIONS",
+                                color = Color.LightGray,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+
+                        // 🔷 LIST
+                        items(radioStatus) { radio ->
+                            RadioStationCard(
+                                radio = radio,
+                                isCurrentlyPlaying = radio.id == currentlyPlayingId,
+                                isPlaying = isPlaying,
+                                onPlayClick = { viewModel.togglePlay(radio) }
+                            )
+                        }
                     }
                 }
             }

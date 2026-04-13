@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name" translatable="false">Power Of The Word</string>
     <string name="settings">Mipangilio</string>
     <string name="language">Lugha</string>
     <string name="church_ministry">Huduma ya Kanisa</string>
@@ -82,23 +81,25 @@
     <string name="donation">Mchango</string>
 
     <string name="donate">Changia</string>
-    <string name="support_ministry">Tegemeza Huduma</string>
+    <string name="support_ministry">Saidia Huduma</string>
     <string name="donation_impact">Mchango wako wa ukarimu unatusaidia kueneza Injili na kusaidia jamii.</string>
     <string name="lives_touched">Maisha Yaliyoguswa</string>
     <string name="countries">Nchi</string>
     <string name="broadcast">Matangazo</string>
     <string name="select_amount">Chagua Kiasi</string>
-    <string name="enter_custom_amount">Ingiza kiasi chako</string>
+    <string name="enter_custom_amount">Weka kiasi chako</string>
     <string name="make_monthly">Fanya hivi kila mwezi</string>
-    <string name="recurring_donation">Mchango wa kurudia</string>
+    <string name="recurring_donation">Mchango wa mara kwa mara</string>
     <string name="payment_method">Njia ya Malipo</string>
-    <string name="credit_debit_card">Kadi ya Benki</string>
-    <string name="bank_transfer">Hamisho la Benki</string>
-    <string name="bank_transfer_details">Maelezo ya Hamisho la Benki</string>
+    <string name="credit_debit_card">Kadi ya Mkopo/Akiba</string>
+    <string name="bank_transfer">Uhamisho wa Benki</string>
+    <string name="lumicash" translatable="false">Lumicash</string>
+    <string name="ecocash" translatable="false">Ecocash</string>
+    <string name="bank_transfer_details">Maelezo ya Uhamisho wa Benki</string>
     <string name="bank_name">Jina la Benki:</string>
     <string name="account_name">Jina la Akaunti:</string>
     <string name="account_number">Namba ya Akaunti:</string>
-    <string name="swift_code">Namba ya SWIFT:</string>
+    <string name="swift_code">Msimbo wa SWIFT:</string>
     <string name="lumicash_payment">Malipo ya Lumicash</string>
     <string name="lumicash_number">Namba ya Lumicash</string>
     <string name="ecocash_payment">Malipo ya Ecocash</string>
@@ -107,9 +108,9 @@
     <string name="bankobu_account">Akaunti ya Bankobu</string>
     <string name="ihela_payment">Malipo ya Ihela</string>
     <string name="ihela_number">Namba ya Ihela</string>
-    <string name="instructions">Jinsi ya kufanya:</string>
-    <string name="keep_sms_receipt">Weka risiti ya SMS</string>
+    <string name="instructions">Maelekezo:</string>
+    <string name="keep_sms_receipt">Tunza risiti ya SMS</string>
     <string name="save_confirmation_sms">Hifadhi SMS ya uthibitisho</string>
-    <string name="keep_reference">Weka namba ya kumbukumbu</string>
+    <string name="keep_reference">Tunza namba ya kumbukumbu</string>
     <string name="donate_with_amount">Changia $%1$s</string>
 </resources>

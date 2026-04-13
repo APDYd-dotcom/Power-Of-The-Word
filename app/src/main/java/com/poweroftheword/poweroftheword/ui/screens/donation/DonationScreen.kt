@@ -42,8 +42,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.poweroftheword.poweroftheword.R
+import com.poweroftheword.poweroftheword.util.localizedString
+import com.poweroftheword.poweroftheword.util.truncate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,10 +66,10 @@ fun DonationScreen(onBackClick: () -> Unit) {
         containerColor = Color(0xFF121826),
         topBar = {
             TopAppBar(
-                title = { Text("Donate", fontWeight = FontWeight.Bold) },
+                title = { Text(localizedString(R.string.donate), fontWeight = FontWeight.Bold, color = Color.White) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = Color.White)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -106,7 +110,7 @@ fun DonationScreen(onBackClick: () -> Unit) {
                             }
                             Spacer(Modifier.width(12.dp))
                             Text(
-                                "Support the Ministry",
+                                localizedString(R.string.support_ministry),
                                 color = Color.White,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 18.sp
@@ -116,7 +120,7 @@ fun DonationScreen(onBackClick: () -> Unit) {
                         Spacer(Modifier.height(12.dp))
 
                         Text(
-                            "Your generous donation helps us spread the Gospel and support community outreach.",
+                            localizedString(R.string.donation_impact),
                             color = Color.White.copy(0.9f)
                         )
                     }
@@ -131,9 +135,9 @@ fun DonationScreen(onBackClick: () -> Unit) {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    StatCard("5000+", "Lives Touched", Color(0xFF3D74F6), Modifier.weight(1f))
-                    StatCard("100+", "Countries", Color(0xFF9B59B6), Modifier.weight(1f))
-                    StatCard("24/7", "Broadcast", Color(0xFFE84393), Modifier.weight(1f))
+                    StatCard("5000+", localizedString(R.string.lives_touched).truncate(12), Color(0xFF3D74F6), Modifier.weight(1f))
+                    StatCard("100+", localizedString(R.string.countries).truncate(12), Color(0xFF9B59B6), Modifier.weight(1f))
+                    StatCard("24/7", localizedString(R.string.broadcast).truncate(12), Color(0xFFE84393), Modifier.weight(1f))
                 }
             }
 
@@ -144,7 +148,7 @@ fun DonationScreen(onBackClick: () -> Unit) {
                 CardShape {
                     Column {
 
-                        Text("Select Amount", fontWeight = FontWeight.Bold)
+                        Text(localizedString(R.string.select_amount), fontWeight = FontWeight.Bold, color = Color.White)
 
                         Spacer(Modifier.height(12.dp))
 
@@ -177,7 +181,7 @@ fun DonationScreen(onBackClick: () -> Unit) {
                                 customAmount = it
                                 selectedAmount = null
                             },
-                            placeholder = { Text("Enter custom amount") },
+                            placeholder = { Text(localizedString(R.string.enter_custom_amount)) },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(12.dp)
                         )
@@ -196,9 +200,9 @@ fun DonationScreen(onBackClick: () -> Unit) {
                             onCheckedChange = { isMonthly = it }
                         )
                         Column {
-                            Text("Make this monthly")
+                            Text(localizedString(R.string.make_monthly), color = Color.White)
                             Text(
-                                "Recurring donation",
+                                localizedString(R.string.recurring_donation),
                                 fontSize = 12.sp,
                                 color = Color.Gray
                             )
@@ -213,18 +217,20 @@ fun DonationScreen(onBackClick: () -> Unit) {
             item {
                 CardShape {
                     Column {
-                        Text("Payment Method", fontWeight = FontWeight.Bold)
+                        Text(localizedString(R.string.payment_method), fontWeight = FontWeight.Bold, color = Color.White)
 
                         Spacer(Modifier.height(12.dp))
 
                         listOf(
-                            "Credit/Debit Card",
-                            "Bank Transfer",
-                            "Lumicash",
-                            "Ecocash"
-                        ).forEach {
-                            PaymentOption(it, selectedPayment) {
-                                selectedPayment = it
+                            localizedString(R.string.credit_debit_card) to "Credit/Debit Card",
+                            localizedString(R.string.bank_transfer) to "Bank Transfer",
+                            localizedString(R.string.lumicash) to "Lumicash",
+                            localizedString(R.string.ecocash) to "Ecocash",
+                            localizedString(R.string.bankobu_payment) to "Bankobu",
+                            localizedString(R.string.ihela_payment) to "Ihela"
+                        ).forEach { (display, key) ->
+                            PaymentOption(display, selectedPayment == key) {
+                                selectedPayment = key
                             }
                         }
                     }
@@ -267,8 +273,8 @@ fun DonationScreen(onBackClick: () -> Unit) {
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        if (finalAmount == null) "Select Amount"
-                        else "Donate $$finalAmount",
+                        if (finalAmount == null) localizedString(R.string.select_amount)
+                        else localizedString(R.string.donate_with_amount, finalAmount.toString()),
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     )
@@ -321,11 +327,9 @@ fun AmountChip(
 @Composable
 fun PaymentOption(
     title: String,
-    selected: String,
-    onClick: (String) -> Unit
+    isSelected: Boolean,
+    onClick: () -> Unit
 ) {
-    val isSelected = title == selected
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -334,7 +338,7 @@ fun PaymentOption(
                 else Color(0xFF2A3142),
                 RoundedCornerShape(12.dp)
             )
-            .clickable { onClick(title) }
+            .clickable { onClick() }
             .padding(14.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -367,7 +371,13 @@ fun StatCard(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(value, color = color, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-            Text(label, fontSize = 12.sp, color = Color.Gray)
+            Text(
+                text = label,
+                fontSize = 12.sp,
+                color = Color.Gray,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 }
@@ -378,14 +388,14 @@ fun StatCard(
 fun BankDetailsCard() {
     GradientBorderCard(borderColor = Color(0xFF3D74F6)) {
         Column {
-            Text("Bank Transfer Details", color = Color.White, fontWeight = FontWeight.Bold)
+            Text(localizedString(R.string.bank_transfer_details), color = Color.White, fontWeight = FontWeight.Bold)
 
             Spacer(Modifier.height(12.dp))
 
-            InfoRow("Bank Name:", "First National Bank")
-            InfoRow("Account Name:", "Power of the Word Ministry")
-            InfoRow("Account Number:", "1234567890")
-            InfoRow("SWIFT Code:", "FNBXXX123")
+            InfoRow(localizedString(R.string.bank_name), "First National Bank")
+            InfoRow(localizedString(R.string.account_name), "Power of the Word Ministry")
+            InfoRow(localizedString(R.string.account_number), "1234567890")
+            InfoRow(localizedString(R.string.swift_code), "FNBXXX123")
         }
     }
 }
@@ -398,12 +408,12 @@ fun LumicashCard() {
     GradientBorderCard(borderColor = Color(0xFFFF6A00)) {
 
         Column {
-            PaymentHeader("Lumicash Payment", Color(0xFFFF6A00))
+            PaymentHeader(localizedString(R.string.lumicash_payment), Color(0xFFFF6A00))
 
             Spacer(Modifier.height(12.dp))
 
-            InfoBox("+257 79 XX XX XX", "Lumicash Number")
-            InfoBox("Power of the Word", "Account Name")
+            InfoBox("+257 79 XX XX XX", localizedString(R.string.lumicash_number))
+            InfoBox("Power of the Word", localizedString(R.string.account_name))
 
             InstructionBox(
                 steps = listOf(
@@ -411,7 +421,7 @@ fun LumicashCard() {
                     "Select Send Money",
                     "Enter number above",
                     "Enter amount and confirm",
-                    "Keep SMS receipt"
+                    localizedString(R.string.keep_sms_receipt)
                 ),
                 color = Color(0xFF5A2A1A)
             )
@@ -426,12 +436,12 @@ fun EcocashCard() {
     GradientBorderCard(borderColor = Color(0xFF00C853)) {
 
         Column {
-            PaymentHeader("Ecocash Payment", Color(0xFF00C853))
+            PaymentHeader(localizedString(R.string.ecocash_payment), Color(0xFF00C853))
 
             Spacer(Modifier.height(12.dp))
 
-            InfoBox("+257 71 XX XX XX", "Ecocash Number")
-            InfoBox("Power of the Word", "Account Name")
+            InfoBox("+257 71 XX XX XX", localizedString(R.string.ecocash_number))
+            InfoBox("Power of the Word", localizedString(R.string.account_name))
 
             InstructionBox(
                 listOf(
@@ -439,7 +449,7 @@ fun EcocashCard() {
                     "Select Send Money",
                     "Enter number",
                     "Enter PIN",
-                    "Save confirmation SMS"
+                    localizedString(R.string.save_confirmation_sms)
                 ),
                 color = Color(0xFF0F3D2E)
             )
@@ -453,12 +463,12 @@ fun BankobuCard() {
     GradientBorderCard(borderColor = Color(0xFF2962FF)) {
 
         Column {
-            PaymentHeader("Bankobu Payment", Color(0xFF2962FF))
+            PaymentHeader(localizedString(R.string.bankobu_payment), Color(0xFF2962FF))
 
             Spacer(Modifier.height(12.dp))
 
-            InfoBox("+257 76 XX XX XX", "Bankobu Account")
-            InfoBox("Power of the Word Ministry", "Account Name")
+            InfoBox("+257 76 XX XX XX", localizedString(R.string.bankobu_account))
+            InfoBox("Power of the Word Ministry", localizedString(R.string.account_name))
 
             InstructionBox(
                 listOf(
@@ -480,12 +490,12 @@ fun IhelaCard() {
     GradientBorderCard(borderColor = Color(0xFF8E44AD)) {
 
         Column {
-            PaymentHeader("Ihela Payment", Color(0xFF8E44AD))
+            PaymentHeader(localizedString(R.string.ihela_payment), Color(0xFF8E44AD))
 
             Spacer(Modifier.height(12.dp))
 
-            InfoBox("+257 22 XX XX XX", "Ihela Number")
-            InfoBox("Power of the Word", "Account Name")
+            InfoBox("+257 22 XX XX XX", localizedString(R.string.ihela_number))
+            InfoBox("Power of the Word", localizedString(R.string.account_name))
 
             InstructionBox(
                 listOf(
@@ -493,7 +503,7 @@ fun IhelaCard() {
                     "Select Send Money",
                     "Enter number",
                     "Enter amount",
-                    "Keep reference"
+                    localizedString(R.string.keep_reference)
                 ),
                 color = Color(0xFF3A1F4F)
             )
@@ -540,7 +550,7 @@ fun InstructionBox(steps: List<String>) {
             .padding(12.dp)
     ) {
         Column {
-            Text("Instructions:", fontWeight = FontWeight.Bold, color = Color.White)
+            Text(localizedString(R.string.instructions), fontWeight = FontWeight.Bold, color = Color.White)
 
             Spacer(Modifier.height(6.dp))
 
@@ -617,7 +627,7 @@ fun InstructionBox(
             .padding(12.dp)
     ) {
         Column {
-            Text("Instructions:", color = Color.White, fontWeight = FontWeight.Bold)
+            Text(localizedString(R.string.instructions), color = Color.White, fontWeight = FontWeight.Bold)
 
             Spacer(Modifier.height(6.dp))
 

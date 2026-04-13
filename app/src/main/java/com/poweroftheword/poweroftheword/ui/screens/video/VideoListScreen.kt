@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.poweroftheword.poweroftheword.R
 import com.poweroftheword.poweroftheword.domain.model.VideoItem
+import com.poweroftheword.poweroftheword.ui.components.VideoCardSkeleton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -112,7 +113,7 @@ fun VideoListScreen(
         }
     ) { paddingValues ->
         PullToRefreshBox(
-            isRefreshing = isLoading,
+            isRefreshing = isLoading && videos.isNotEmpty(),
             onRefresh = { viewModel.loadVideos() },
             modifier = Modifier.padding(paddingValues).fillMaxSize().background(MaterialTheme.colorScheme.background)
         ) {
@@ -123,6 +124,14 @@ fun VideoListScreen(
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
                     )
+                }
+            } else if (isLoading && videos.isEmpty()) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(5) {
+                        VideoCardSkeleton()
+                    }
                 }
             } else {
                 LazyColumn(

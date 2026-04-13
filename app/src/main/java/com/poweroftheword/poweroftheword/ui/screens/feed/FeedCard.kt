@@ -18,6 +18,8 @@ import coil.compose.AsyncImage
 import com.poweroftheword.poweroftheword.domain.model.FeedItem
 import com.poweroftheword.poweroftheword.ui.theme.*
 import com.poweroftheword.poweroftheword.util.truncate
+import com.poweroftheword.poweroftheword.BuildConfig
+import com.poweroftheword.poweroftheword.util.formatDate
 
 @Composable
 fun FeedItemCard(
@@ -37,6 +39,7 @@ fun FeedItemCard(
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
 
@@ -50,7 +53,7 @@ fun FeedItemCard(
             ) {
 
                 AsyncImage(
-                    model = "https://poweroftheword.bi${ feed.photo}",
+                    model = "${BuildConfig.BASE_URL}${feed.photo}",
                     contentDescription = null,
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
@@ -119,7 +122,7 @@ fun FeedItemCard(
                 ) {
 
                     Text(
-                        text = feed.date,
+                        text = formatDate(feed.date),
                         fontSize = 12.sp
                     )
 

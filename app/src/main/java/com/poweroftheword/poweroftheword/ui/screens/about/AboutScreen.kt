@@ -26,6 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.poweroftheword.poweroftheword.R
+import com.poweroftheword.poweroftheword.ui.components.AboutScreenSkeleton
 import com.poweroftheword.poweroftheword.util.localizedString
 
 
@@ -38,6 +39,10 @@ fun AboutScreen(
 ) {
 
     val scrollState = rememberScrollState()
+    // In a real app, you would get isLoading from a ViewModel. 
+    // Since AboutScreen currently doesn't have a ViewModel, we'll assume it's loaded for now.
+    // If you add an API call here later, you can toggle this.
+    val isLoading = false 
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -63,121 +68,127 @@ fun AboutScreen(
         }
     ) { padding ->
 
-        Column(
-            modifier = Modifier
-                .padding(padding)
-                .verticalScroll(scrollState)
-        ) {
-
-            // 👤 HEADER
-            Row(
+        if (isLoading) {
+            Box(modifier = Modifier.padding(padding)) {
+                AboutScreenSkeleton()
+            }
+        } else {
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(padding)
+                    .verticalScroll(scrollState)
             ) {
 
-                Image(
-                    painter = painterResource(id = R.drawable.dailword1),
-                    contentDescription = null,
+                // 👤 HEADER
+                Row(
                     modifier = Modifier
-                        .size(70.dp)
-                        .clip(CircleShape),
-                    contentScale = ContentScale.Crop
-                )
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
 
-                Spacer(modifier = Modifier.width(12.dp))
+                    Image(
+                        painter = painterResource(id = R.drawable.dailword1),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(70.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
 
-                Column {
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    Column {
+                        Text(
+                            localizedString(R.string.pastor_name),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        Text(
+                            localizedString(R.string.pastor_title),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+
+                // 📝 DESCRIPTION
+                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+
                     Text(
-                        localizedString(R.string.pastor_name),
+                        localizedString(R.string.about_motto),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
 
+                    Spacer(modifier = Modifier.height(8.dp))
+
                     Text(
-                        localizedString(R.string.pastor_title),
-                        style = MaterialTheme.typography.bodySmall,
+                        localizedString(R.string.about_description),
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-            }
 
-            // 📝 DESCRIPTION
-            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                Spacer(modifier = Modifier.height(20.dp))
 
-                Text(
-                    localizedString(R.string.about_motto),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
+                // 📅 WEEKLY PROGRAM
+                SectionTitle(localizedString(R.string.weekly_program))
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Card(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    )
+                ) {
 
-                Text(
-                    localizedString(R.string.about_description),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
+                    val programs = listOf(
+                        Triple(localizedString(R.string.monday), "06:00 AM - 07:00 AM", localizedString(R.string.morning_prayer)),
+                        Triple(localizedString(R.string.tuesday), "06:00 AM - 07:00 AM", localizedString(R.string.power_of_the_word)),
+                        Triple(localizedString(R.string.wednesday), "06:00 AM - 07:00 AM", localizedString(R.string.bible_study)),
+                        Triple(localizedString(R.string.thursday), "06:00 AM - 07:00 AM", localizedString(R.string.testimony_time)),
+                        Triple(localizedString(R.string.friday), "06:00 AM - 07:00 AM", localizedString(R.string.praise_worship)),
+                        Triple(localizedString(R.string.saturday), "08:00 AM - 10:00 AM", localizedString(R.string.weekend_special)),
+                        Triple(localizedString(R.string.sunday), "09:00 AM - 11:00 AM", localizedString(R.string.live_preaching))
+                    )
 
-            Spacer(modifier = Modifier.height(20.dp))
-
-            // 📅 WEEKLY PROGRAM
-            SectionTitle(localizedString(R.string.weekly_program))
-
-            Card(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
-                )
-            ) {
-
-                val programs = listOf(
-                    Triple(localizedString(R.string.monday), "06:00 AM - 07:00 AM", localizedString(R.string.morning_prayer)),
-                    Triple(localizedString(R.string.tuesday), "06:00 AM - 07:00 AM", localizedString(R.string.power_of_the_word)),
-                    Triple(localizedString(R.string.wednesday), "06:00 AM - 07:00 AM", localizedString(R.string.bible_study)),
-                    Triple(localizedString(R.string.thursday), "06:00 AM - 07:00 AM", localizedString(R.string.testimony_time)),
-                    Triple(localizedString(R.string.friday), "06:00 AM - 07:00 AM", localizedString(R.string.praise_worship)),
-                    Triple(localizedString(R.string.saturday), "08:00 AM - 10:00 AM", localizedString(R.string.weekend_special)),
-                    Triple(localizedString(R.string.sunday), "09:00 AM - 11:00 AM", localizedString(R.string.live_preaching))
-                )
-
-                Column {
-                    programs.forEachIndexed { index, item ->
-                        ProgramRow(item)
-                        if (index != programs.lastIndex) {
-                            HorizontalDivider(
-                                Modifier,
-                                DividerDefaults.Thickness,
-                                color = MaterialTheme.colorScheme.outline.copy(0.2f)
-                            )
+                    Column {
+                        programs.forEachIndexed { index, item ->
+                            ProgramRow(item)
+                            if (index != programs.lastIndex) {
+                                HorizontalDivider(
+                                    Modifier,
+                                    DividerDefaults.Thickness,
+                                    color = MaterialTheme.colorScheme.outline.copy(0.2f)
+                                )
+                            }
                         }
                     }
                 }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                // 📞 CONTACTS (🔥 CLONED STYLE)
+                SectionTitle(localizedString(R.string.contacts))
+
+    // 🌐 SOCIAL MEDIA (images)
+                ContactItem(icon = R.drawable.whatsapp,size = 35, text = localizedString(R.string.give_testimony))
+                ContactItem(icon = R.drawable.whatsapp,size = 35, text = localizedString(R.string.contact_us))
+                ContactItem(icon = R.drawable.facebook, size = 35, text = localizedString(R.string.facebook_page))
+                ContactItem(icon = R.drawable.tiktok,size = 35, text = localizedString(R.string.tiktok_page))
+                ContactItem(icon = R.drawable.instagram,size = 30, text = localizedString(R.string.instagram_page))
+                ContactItem(icon = R.drawable.youtube,size = 45, text = localizedString(R.string.youtube_page))
+
+    // ⚙️ SYSTEM ACTIONS (icons)
+                ContactItem(iconVector = Icons.Default.Email, onClik = { onSettingsClick() }, text = "info@poweroftheword.com")
+                ContactItem(iconVector = Icons.Default.Favorite, onClik = { onDonationClick() }, text = localizedString(R.string.donate_power_word))
+                ContactItem(iconVector = Icons.Default.MenuBook, text = localizedString(R.string.power_word_story))
+                Spacer(modifier = Modifier.height(40.dp))
             }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            // 📞 CONTACTS (🔥 CLONED STYLE)
-            SectionTitle(localizedString(R.string.contacts))
-
-// 🌐 SOCIAL MEDIA (images)
-            ContactItem(icon = R.drawable.whatsapp,size = 35, text = localizedString(R.string.give_testimony))
-            ContactItem(icon = R.drawable.whatsapp,size = 35, text = localizedString(R.string.contact_us))
-            ContactItem(icon = R.drawable.facebook, size = 35, text = localizedString(R.string.facebook_page))
-            ContactItem(icon = R.drawable.tiktok,size = 35, text = localizedString(R.string.tiktok_page))
-            ContactItem(icon = R.drawable.instagram,size = 30, text = localizedString(R.string.instagram_page))
-            ContactItem(icon = R.drawable.youtube,size = 45, text = localizedString(R.string.youtube_page))
-
-// ⚙️ SYSTEM ACTIONS (icons)
-            ContactItem(iconVector = Icons.Default.Email, onClik = { onSettingsClick() }, text = "info@poweroftheword.com")
-            ContactItem(iconVector = Icons.Default.Favorite, onClik = { onDonationClick() }, text = localizedString(R.string.donate_power_word))
-            ContactItem(iconVector = Icons.Default.MenuBook, text = localizedString(R.string.power_word_story))
-            Spacer(modifier = Modifier.height(40.dp))
         }
     }
 }

@@ -1,5 +1,9 @@
 package com.poweroftheword.poweroftheword.ui.screens
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -63,6 +67,21 @@ import com.poweroftheword.poweroftheword.util.truncate
 fun MainScreen() {
 
     val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+
+    val bottomNavItems = listOf(
+        Screen.Home,
+        Screen.Videos,
+        Screen.Audios,
+        Screen.Radio,
+        Screen.About,
+        Screen.Feed
+    )
+
+    val isBottomBarVisible = bottomNavItems.any { screen ->
+        currentDestination?.hierarchy?.any { it.route == screen.route } == true
+    } && currentDestination?.route != Screen.VideoDetail.route && currentDestination?.route != Screen.FeedDetail.route
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -72,7 +91,7 @@ fun MainScreen() {
         NavHost(
             navController = navController,
             startDestination = Screen.Home.route,
-            modifier = Modifier.padding(bottom = 70.dp) //  avoid overlap
+            modifier = Modifier.padding(bottom = if (isBottomBarVisible) 70.dp else 0.dp) //  avoid overlap only when visible
         ) {
 
             composable(Screen.Home.route) {
@@ -158,7 +177,28 @@ fun MainScreen() {
 
             composable(
                 route = Screen.VideoDetail.route,
-                arguments = listOf(navArgument("videoId") { type = NavType.StringType })
+                arguments = listOf(navArgument("videoId") { type = NavType.StringType }),
+                enterTransition = {
+                    slideIntoContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                        animationSpec = tween(500)
+                    ) + fadeIn(animationSpec = tween(500))
+                },
+                exitTransition = {
+                    slideOutOfContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                        animationSpec = tween(500)
+                    ) + fadeOut(animationSpec = tween(500))
+                },
+                popEnterTransition = {
+                    fadeIn(animationSpec = tween(500))
+                },
+                popExitTransition = {
+                    slideOutOfContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                        animationSpec = tween(500)
+                    ) + fadeOut(animationSpec = tween(500))
+                }
             ) { backStackEntry ->
                 val viewModel: VideoListViewModel = hiltViewModel()
                 val videoId = backStackEntry.arguments?.getString("videoId")
@@ -166,9 +206,17 @@ fun MainScreen() {
                 val video = videos.find { it.id.toString() == videoId }
                 VideoDetailScreen(
                     viewModel = viewModel,
-                    onBackClick = { navController.popBackStack() },
-                    onVideoClick = { video ->
-                        navController.navigate(Screen.VideoDetail.createRoute(video.id))
+                    onBackClick = { 
+                        if (!navController.popBackStack()) {
+                            navController.navigate(Screen.Home.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    inclusive = true
+                                }
+                            }
+                        }
+                    },
+                    onVideoClick = { v ->
+                        navController.navigate(Screen.VideoDetail.createRoute(v.id))
                     },
                     videoId = video?.id.toString()
                 )
@@ -239,13 +287,16 @@ fun MainScreen() {
 
 
         //  Bottom bar (FLOATING)
-        Box(
-            modifier = Modifier.align(Alignment.BottomCenter)
-        ) {
-            BottomAppBar(navController)
+        if (isBottomBarVisible) {
+            Box(
+                modifier = Modifier.align(Alignment.BottomCenter)
+            ) {
+                BottomAppBar(navController)
+            }
         }
     }
 }
+
 @Composable
 fun BottomAppBar(navController: NavController) {
 
@@ -260,12 +311,6 @@ fun BottomAppBar(navController: NavController) {
         Screen.About,
         Screen.Feed
     )
-
-    val isBottomBarVisible = bottomNavItems.any {
-        currentDestination?.hierarchy?.any { it.route == it.route } == true
-    }
-
-    if (!isBottomBarVisible) return
 
     NavigationBar(
         modifier = Modifier

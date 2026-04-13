@@ -3,6 +3,7 @@ package com.poweroftheword.poweroftheword.ui.screens.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,8 +36,12 @@ import androidx.compose.ui.unit.dp
 import com.poweroftheword.poweroftheword.R
 import com.poweroftheword.poweroftheword.domain.model.FeedItem
 import com.poweroftheword.poweroftheword.domain.model.VideoItem
+import com.poweroftheword.poweroftheword.ui.components.DynamicHeroSkeleton
+import com.poweroftheword.poweroftheword.ui.components.FeedItemCardSkeleton
+import com.poweroftheword.poweroftheword.ui.components.VideoCardSkeleton
 import com.poweroftheword.poweroftheword.ui.screens.feed.FeedItemCard
 import com.poweroftheword.poweroftheword.ui.screens.video.VideoCard
+import com.poweroftheword.poweroftheword.util.shimmerEffect
 import com.poweroftheword.poweroftheword.util.truncate
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,7 +59,7 @@ fun HomeScreen(
 
     Surface {
         PullToRefreshBox(
-            isRefreshing = state.isLoading,
+            isRefreshing = state.isLoading && state.latestVideos.isNotEmpty(),
             onRefresh = { viewModel.loadHomeData() },
             modifier = Modifier
                 .fillMaxSize()
@@ -63,42 +69,50 @@ fun HomeScreen(
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                item { 
-                    DynamicHero(
-                        dailyWord = state.dailyWord,
-                        currentLanguage = state.currentLanguage,
-                        onLanguageChange = { viewModel.changeLanguage(it) }
-                    )
-                }
+                if (state.isLoading && state.latestVideos.isEmpty()) {
+                    item { DynamicHeroSkeleton() }
+                    item { SectionHeaderSkeleton() }
+                    item { VideoCardSkeleton() }
+                    item { SectionHeaderSkeleton() }
+                    items(3) { FeedItemCardSkeleton() }
+                } else {
+                    item { 
+                        DynamicHero(
+                            dailyWord = state.dailyWord,
+                            currentLanguage = state.currentLanguage,
+                            onLanguageChange = { viewModel.changeLanguage(it) }
+                        )
+                    }
 
-                if (state.latestVideos.isNotEmpty()) {
+                    if (state.latestVideos.isNotEmpty()) {
+                        item {
+                            SectionHeader(
+                                title = stringResource(R.string.popular_video),
+                                onSeeAllClick = onSeeAllVideos
+                            )
+                        }
+                        item {
+                            VideoCard(
+                                video = state.latestVideos[0],
+                                onClick = { onVideoClick(state.latestVideos[0]) },
+                                onLikeClick = { viewModel.likeVideo(state.latestVideos[0].id.toString()) }
+                            )
+                        }
+                    }
+
                     item {
                         SectionHeader(
-                            title = stringResource(R.string.popular_video),
-                            onSeeAllClick = onSeeAllVideos
+                            title = stringResource(R.string.latest_post),
+                            onSeeAllClick = onSeeAllFeeds
                         )
                     }
-                    item {
-                        VideoCard(
-                            video = state.latestVideos[0],
-                            onClick = { onVideoClick(state.latestVideos[0]) },
-                            onLikeClick = { viewModel.likeVideo(state.latestVideos[0].id.toString()) }
+
+                    items(state.latestFeeds.take(3)) { feed ->
+                        FeedItemCard(
+                            feed = feed,
+                            onClick = { onFeedClick(feed) }
                         )
                     }
-                }
-
-                item {
-                    SectionHeader(
-                        title = stringResource(R.string.latest_post),
-                        onSeeAllClick = onSeeAllFeeds
-                    )
-                }
-
-                items(state.latestFeeds.take(3)) { feed ->
-                    FeedItemCard(
-                        feed = feed,
-                        onClick = { onFeedClick(feed) }
-                    )
                 }
 
                 item {
@@ -154,5 +168,31 @@ fun SectionHeader(
                 tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
             )
         }
+    }
+}
+
+@Composable
+fun SectionHeaderSkeleton() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .width(150.dp)
+                .height(24.dp)
+                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f), RoundedCornerShape(4.dp))
+                .shimmerEffect()
+        )
+        Box(
+            modifier = Modifier
+                .width(60.dp)
+                .height(18.dp)
+                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f), RoundedCornerShape(4.dp))
+                .shimmerEffect()
+        )
     }
 }
