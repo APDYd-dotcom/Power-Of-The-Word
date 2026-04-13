@@ -7,10 +7,12 @@ import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.foundation.layout.fillMaxWidth
 import com.poweroftheword.poweroftheword.util.extractYoutubeId
 
 @SuppressLint("SetJavaScriptEnabled")
@@ -26,16 +28,16 @@ fun YoutubePlayerComposable(
 
     if (videoId == null) return
 
-    // Initialize the WebView with strict security settings
     val webView = remember {
         WebView(context).apply {
+
             layoutParams = ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
             )
 
-            // Set background to transparent to avoid white flash
             setBackgroundColor(Color.TRANSPARENT)
+            setLayerType(WebView.LAYER_TYPE_HARDWARE, null)
 
             settings.apply {
                 javaScriptEnabled = true
@@ -43,32 +45,35 @@ fun YoutubePlayerComposable(
                 loadWithOverviewMode = true
                 useWideViewPort = true
                 mediaPlaybackRequiresUserGesture = false
-                allowFileAccess = false
-                allowContentAccess = false
-                mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
+
+                // Important
+                javaScriptCanOpenWindowsAutomatically = true
+                setSupportMultipleWindows(true)
+                mixedContentMode = WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE
             }
 
             webViewClient = object : WebViewClient() {
                 override fun onPageFinished(view: WebView?, url: String?) {
                     super.onPageFinished(view, url)
-                    // When the page is loaded, we count it as a view start
                     if (!hasRecordedView) {
                         onVideoStarted()
                         hasRecordedView = true
                     }
                 }
             }
+
             webChromeClient = WebChromeClient()
         }
     }
 
-    // Load the URL
     DisposableEffect(videoId) {
-        val embedUrl = "https://www.youtube.com/embed/$videoId?rel=0&modestbranding=1&autoplay=1&enablejsapi=1"
 
+        val embedUrl =
+            "https://www.youtube.com/embed/$videoId?playsinline=1&autoplay=1"
+
+        // ✅ Your requested headers
         val headers = mapOf(
-            "Referer" to "https://com.poweroftheword.poweroftheword",
-            "Origin" to "https://www.youtube.com"
+            "Referer" to "https://www.youtube.com"
         )
 
         webView.loadUrl(embedUrl, headers)
@@ -79,9 +84,10 @@ fun YoutubePlayerComposable(
         }
     }
 
-    // Display the view in Compose
     AndroidView(
-        modifier = modifier,
+        modifier = modifier
+            .fillMaxWidth()
+            .aspectRatio(16f / 9f),
         factory = { webView }
     )
 }
