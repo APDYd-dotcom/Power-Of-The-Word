@@ -1,5 +1,6 @@
 package com.poweroftheword.poweroftheword.ui.screens.audio
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.media.MediaPlayer
@@ -256,7 +257,11 @@ fun AudioPlayerComponent(
                         type = "text/plain"
                         putExtra(Intent.EXTRA_TEXT, "$title\n$audioUrl")
                     }
-                    context.startActivity(Intent.createChooser(intent, "Share Audio"))
+                    val chooser = Intent.createChooser(intent, "Share Audio")
+                    if (context !is Activity) {
+                        chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
+                    context.startActivity(chooser)
                 }) {
                     Icon(Icons.Default.Share, contentDescription = null)
                 }

@@ -1,0 +1,48 @@
+<resources>
+    <string name="settings">Ibisigashane</string>
+    <string name="language">Ururimi</string>
+    <string name="church_ministry">Ubusuku bw\'Ishengero</string>
+    <string name="church_feed">Amakuru y\'Ishengero</string>
+    <string name="daily_word">Ijambo rya Minsi Yose</string>
+    <string name="pastor_schedule">Urutonde rwa Pasitori</string>
+    <string name="church_programs">Imigambi y\'Ishengero</string>
+    <string name="donations_giving">Intererano n\'Amashikanwa</string>
+    <string name="information">Amakuru</string>
+    <string name="about_us">Ibitwerekeye</string>
+    <string name="contact_us">Tuvugishe</string>
+    <string name="about">Ibitwerekeye</string>
+    <string name="weekly_program">Urutonde rw\'Indwi</string>
+    <string name="contacts">Aho mwatubariza</string>
+    <string name="share_via">Sangiza biciye kuri</string>
+    <string name="send_email">Rungika Imeeli</string>
+    <string name="share_audio">Sangiza Amajwi</string>
+
+    <string name="pastor_name">Pasitori Justin Nitezuwera</string>
+    <string name="pastor_title">Umwigisha w\'Ubutumwa Bwiza bwa Yesu Kristo</string>
+    <string name="about_motto">Vyukana ugusenga n\'ugushimagiza Umwami iminsi yose!</string>
+    <string name="about_description">Power of the Word ni ikiganiro kigamije kuvyura abakristo mu buryo bw\'impwemu kugira ngo bubahe Impwemu Yera gushitsa ivyo Imana igomba.</string>
+
+    <string name="monday">Ku wa Mbere</string>
+    <string name="tuesday">Ku wa Kabiri</string>
+    <string name="wednesday">Ku wa Gatatu</string>
+    <string name="thursday">Ku wa Kane</string>
+    <string name="friday">Ku wa Gatanu</string>
+    <string name="saturday">Ku wa Gatandatu</string>
+    <string name="sunday">Ku wa Mungu</string>
+
+    <string name="morning_prayer">Ibisabisho vya mu Gatondo</string>
+    <string name="power_of_the_word">Ububasha bw\'Ijambo</string>
+    <string name="bible_study">Inyigisho za Bibiliya</string>
+    <string name="testimony_time">Umwanya w\'Ibingira</string>
+    <string name="praise_worship">Guhimbaza n\'Ugusenga</string>
+    <string name="weekend_special">Akaruhuko k\'Indwi</string>
+    <string name="live_preaching">Inyigisho imbona nkubone</string>
+
+    <string name="give_testimony">Tanga Intahe yawe</string>
+    <string name="facebook_page">Facebook Power of the word</string>
+    <string name="tiktok_page">TikTok Power of the word</string>
+    <string name="instagram_page">Instagram Power of the word</string>
+    <string name="youtube_page">YouTube Power of the word</string>
+    <string name="donate_power_word">Shigikira Power of the Word</string>
+    <string name="power_word_story">Amakuru ya Power of the Word</string>
+</resources>

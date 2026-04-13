@@ -15,7 +15,6 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material3.*
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,9 +24,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.poweroftheword.poweroftheword.R
+import com.poweroftheword.poweroftheword.util.localizedString
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,7 +46,7 @@ fun AboutScreen(
             TopAppBar(
                 title = {
                     Text(
-                        "About",
+                        localizedString(R.string.about),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
@@ -91,13 +90,13 @@ fun AboutScreen(
 
                 Column {
                     Text(
-                        "Pastor Justin Nitezuwera",
+                        localizedString(R.string.pastor_name),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
 
                     Text(
-                        "Evangelist of the Good News of Jesus Christ",
+                        localizedString(R.string.pastor_title),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -108,7 +107,7 @@ fun AboutScreen(
             Column(modifier = Modifier.padding(horizontal = 16.dp)) {
 
                 Text(
-                    "Wake up praying and praising the Lord every day!",
+                    localizedString(R.string.about_motto),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -116,7 +115,7 @@ fun AboutScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    "Power of the Word is a broadcast to spiritually awaken Christians in order to allow the Holy Spirit to accomplish the will of God.",
+                    localizedString(R.string.about_description),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -125,7 +124,7 @@ fun AboutScreen(
             Spacer(modifier = Modifier.height(20.dp))
 
             // 📅 WEEKLY PROGRAM
-            SectionTitle("Weekly Program")
+            SectionTitle(localizedString(R.string.weekly_program))
 
             Card(
                 modifier = Modifier
@@ -138,13 +137,13 @@ fun AboutScreen(
             ) {
 
                 val programs = listOf(
-                    Triple("Monday", "06:00 AM - 07:00 AM", "Morning Prayer"),
-                    Triple("Tuesday", "06:00 AM - 07:00 AM", "Power of the Word"),
-                    Triple("Wednesday", "06:00 AM - 07:00 AM", "Bible Study"),
-                    Triple("Thursday", "06:00 AM - 07:00 AM", "Testimony Time"),
-                    Triple("Friday", "06:00 AM - 07:00 AM", "Praise & Worship"),
-                    Triple("Saturday", "08:00 AM - 10:00 AM", "Weekend Special"),
-                    Triple("Sunday", "09:00 AM - 11:00 AM", "Live Preaching")
+                    Triple(localizedString(R.string.monday), "06:00 AM - 07:00 AM", localizedString(R.string.morning_prayer)),
+                    Triple(localizedString(R.string.tuesday), "06:00 AM - 07:00 AM", localizedString(R.string.power_of_the_word)),
+                    Triple(localizedString(R.string.wednesday), "06:00 AM - 07:00 AM", localizedString(R.string.bible_study)),
+                    Triple(localizedString(R.string.thursday), "06:00 AM - 07:00 AM", localizedString(R.string.testimony_time)),
+                    Triple(localizedString(R.string.friday), "06:00 AM - 07:00 AM", localizedString(R.string.praise_worship)),
+                    Triple(localizedString(R.string.saturday), "08:00 AM - 10:00 AM", localizedString(R.string.weekend_special)),
+                    Triple(localizedString(R.string.sunday), "09:00 AM - 11:00 AM", localizedString(R.string.live_preaching))
                 )
 
                 Column {
@@ -164,20 +163,20 @@ fun AboutScreen(
             Spacer(modifier = Modifier.height(20.dp))
 
             // 📞 CONTACTS (🔥 CLONED STYLE)
-            SectionTitle("Contacts")
+            SectionTitle(localizedString(R.string.contacts))
 
 // 🌐 SOCIAL MEDIA (images)
-            ContactItem(icon = R.drawable.whatsapp,size = 35, text = "Give your Testimony")
-            ContactItem(icon = R.drawable.whatsapp,size = 35, text = "Contact us")
-            ContactItem(icon = R.drawable.facebook, size = 35, text = "Facebook Power of the word")
-            ContactItem(icon = R.drawable.tiktok,size = 35, text = "TikTok Power of the word")
-            ContactItem(icon = R.drawable.instagram,size = 30, text = "Instagram Power of the word")
-            ContactItem(icon = R.drawable.youtube,size = 45, text = "YouTube Power of the word")
+            ContactItem(icon = R.drawable.whatsapp,size = 35, text = localizedString(R.string.give_testimony))
+            ContactItem(icon = R.drawable.whatsapp,size = 35, text = localizedString(R.string.contact_us))
+            ContactItem(icon = R.drawable.facebook, size = 35, text = localizedString(R.string.facebook_page))
+            ContactItem(icon = R.drawable.tiktok,size = 35, text = localizedString(R.string.tiktok_page))
+            ContactItem(icon = R.drawable.instagram,size = 30, text = localizedString(R.string.instagram_page))
+            ContactItem(icon = R.drawable.youtube,size = 45, text = localizedString(R.string.youtube_page))
 
 // ⚙️ SYSTEM ACTIONS (icons)
             ContactItem(iconVector = Icons.Default.Email, onClik = { onSettingsClick() }, text = "info@poweroftheword.com")
-            ContactItem(iconVector = Icons.Default.Favorite, onClik = { onDonationClick() }, text = "Donate to Power of the Word")
-            ContactItem(iconVector = Icons.Default.MenuBook, text = "The Power of the Word Story")
+            ContactItem(iconVector = Icons.Default.Favorite, onClik = { onDonationClick() }, text = localizedString(R.string.donate_power_word))
+            ContactItem(iconVector = Icons.Default.MenuBook, text = localizedString(R.string.power_word_story))
             Spacer(modifier = Modifier.height(40.dp))
         }
     }
@@ -238,10 +237,10 @@ fun ContactItem(
                 .clip(CircleShape)
                 .clickable { onClik }
                 .background(
-                    when (text) {
-                        "info@poweroftheword.com" -> Color(0xFFFF6B6B) // 🔴 Email
-                        "Donate to Power of the Word" -> Color(0xFFB36BFF) // 🟣 Donate
-                        "The Power of the Word Story" -> Color(0xFF4A90E2) // 🔵 Story
+                    when {
+                        text.contains("info@") -> Color(0xFFFF6B6B) // 🔴 Email
+                        text.contains("Donate") || text.contains("Dons") || text.contains("Changia") || text.contains("Shigikira") -> Color(0xFFB36BFF) // 🟣 Donate
+                        text.contains("Story") || text.contains("histoire") || text.contains("Hadithi") || text.contains("Amakuru") -> Color(0xFF4A90E2) // 🔵 Story
                         else -> MaterialTheme.colorScheme.surface
                     }
                 ),
@@ -284,13 +283,3 @@ fun ContactItem(
         )
     }
 }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun ShowPreview(){
-//    AboutScreen(
-//        onBackClick = {},
-//        onDonationClick = {},
-//        onSettingsClick = {}
-//    )
-//}

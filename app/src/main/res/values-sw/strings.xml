@@ -1,0 +1,48 @@
+<resources>
+    <string name="settings">Mipangilio</string>
+    <string name="language">Lugha</string>
+    <string name="church_ministry">Huduma ya Kanisa</string>
+    <string name="church_feed">Habari za Kanisa</string>
+    <string name="daily_word">Neno la Siku</string>
+    <string name="pastor_schedule">Ratiba ya Mchungaji</string>
+    <string name="church_programs">Mipango ya Kanisa</string>
+    <string name="donations_giving">Michango na Sadaka</string>
+    <string name="information">Habari</string>
+    <string name="about_us">Kuhusu sisi</string>
+    <string name="contact_us">Wasiliana nasi</string>
+    <string name="about">Kuhusu</string>
+    <string name="weekly_program">Ratiba ya Wiki</string>
+    <string name="contacts">Mawasiliano</string>
+    <string name="share_via">Shiriki kupitia</string>
+    <string name="send_email">Tuma Barua Pepe</string>
+    <string name="share_audio">Shiriki Sauti</string>
+
+    <string name="pastor_name">Mchungaji Justin Nitezuwera</string>
+    <string name="pastor_title">Mwinjilisti wa Habari Njema ya Yesu Kristo</string>
+    <string name="about_motto">Amka ukisali na kumsifu Bwana kila siku!</string>
+    <string name="about_description">Power of the Word ni matangazo ya kuwaamsha Wakristo kiroho ili kuruhusu Roho Mtakatifu kutimiza mapenzi ya Mungu.</string>
+
+    <string name="monday">Jumatatu</string>
+    <string name="tuesday">Jumanne</string>
+    <string name="wednesday">Jumatano</string>
+    <string name="thursday">Alhamisi</string>
+    <string name="friday">Ijumaa</string>
+    <string name="saturday">Jumamosi</string>
+    <string name="sunday">Jumapili</string>
+
+    <string name="morning_prayer">Maombi ya Asubuhi</string>
+    <string name="power_of_the_word">Nguvu ya Neno</string>
+    <string name="bible_study">Mafunzo ya Biblia</string>
+    <string name="testimony_time">Wakati wa Ushuhuda</string>
+    <string name="praise_worship">Sifa na Ibada</string>
+    <string name="weekend_special">Maalum ya Wikiendi</string>
+    <string name="live_preaching">Mahubiri ya Moja kwa Moja</string>
+
+    <string name="give_testimony">Toa Ushuhuda wako</string>
+    <string name="facebook_page">Facebook Power of the word</string>
+    <string name="tiktok_page">TikTok Power of the word</string>
+    <string name="instagram_page">Instagram Power of the word</string>
+    <string name="youtube_page">YouTube Power of the word</string>
+    <string name="donate_power_word">Changia Power of the Word</string>
+    <string name="power_word_story">Hadithi ya Power of the Word</string>
+</resources>

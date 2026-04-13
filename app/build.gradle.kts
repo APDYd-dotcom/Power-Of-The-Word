@@ -1,3 +1,5 @@
+import io.netty.util.ReferenceCountUtil.release
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -10,6 +12,9 @@ plugins {
 
 android {
     namespace = "com.poweroftheword.poweroftheword"
+//    compileSdk {
+//        version = release(35)
+//    }
     compileSdk = 35
 
     defaultConfig {
@@ -31,7 +36,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -48,6 +54,14 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+    }
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("arm64-v8a")
+            isUniversalApk = false
+        }
     }
 }
 

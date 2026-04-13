@@ -1,0 +1,48 @@
+<resources>
+    <string name="settings">Paramètres</string>
+    <string name="language">Langue</string>
+    <string name="church_ministry">Ministère de l\'Église</string>
+    <string name="church_feed">Fil de l\'Église</string>
+    <string name="daily_word">Parole Quotidienne</string>
+    <string name="pastor_schedule">Emploi du temps du Pasteur</string>
+    <string name="church_programs">Programmes de l\'Église</string>
+    <string name="donations_giving">Dons et Offrandes</string>
+    <string name="information">Information</string>
+    <string name="about_us">À propos de nous</string>
+    <string name="contact_us">Contactez-nous</string>
+    <string name="about">À propos</string>
+    <string name="weekly_program">Programme Hebdomadaire</string>
+    <string name="contacts">Contacts</string>
+    <string name="share_via">Partager via</string>
+    <string name="send_email">Envoyer un Email</string>
+    <string name="share_audio">Partager l\'Audio</string>
+
+    <string name="pastor_name">Pasteur Justin Nitezuwera</string>
+    <string name="pastor_title">Évangéliste de la Bonne Nouvelle de Jésus-Christ</string>
+    <string name="about_motto">Réveillez-vous en priant et en louant le Seigneur chaque jour !</string>
+    <string name="about_description">Power of the Word est une émission destinée à éveiller spirituellement les chrétiens afin de permettre au Saint-Esprit d\'accomplir la volonté de Dieu.</string>
+
+    <string name="monday">Lundi</string>
+    <string name="tuesday">Mardi</string>
+    <string name="wednesday">Mercredi</string>
+    <string name="thursday">Jeudi</string>
+    <string name="friday">Vendredi</string>
+    <string name="saturday">Samedi</string>
+    <string name="sunday">Dimanche</string>
+
+    <string name="morning_prayer">Prière du Matin</string>
+    <string name="power_of_the_word">Puissance de la Parole</string>
+    <string name="bible_study">Étude Biblique</string>
+    <string name="testimony_time">Temps de Témoignage</string>
+    <string name="praise_worship">Louange et Adoration</string>
+    <string name="weekend_special">Spécial Week-end</string>
+    <string name="live_preaching">Prédication en Direct</string>
+
+    <string name="give_testimony">Donnez votre Témoignage</string>
+    <string name="facebook_page">Facebook Power of the word</string>
+    <string name="tiktok_page">TikTok Power of the word</string>
+    <string name="instagram_page">Instagram Power of the word</string>
+    <string name="youtube_page">YouTube Power of the word</string>
+    <string name="donate_power_word">Faire un don à Power of the Word</string>
+    <string name="power_word_story">L\'histoire de Power of the Word</string>
+</resources>

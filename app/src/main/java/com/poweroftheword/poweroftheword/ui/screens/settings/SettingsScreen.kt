@@ -16,7 +16,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.poweroftheword.poweroftheword.R
 import com.poweroftheword.poweroftheword.ui.screens.about.SectionTitle
+import com.poweroftheword.poweroftheword.util.localizedString
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,7 +41,7 @@ fun SettingsScreen(
     )
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Settings") }) }
+        topBar = { TopAppBar(title = { Text(localizedString(R.string.settings)) }) }
     ) { padding ->
         Column(
             modifier = Modifier
@@ -47,7 +49,7 @@ fun SettingsScreen(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
-            SectionTitle("Language")
+            SectionTitle(localizedString(R.string.language))
             languages.forEach { (code, name) ->
                 LanguageItem(
                     name = name,
@@ -57,60 +59,50 @@ fun SettingsScreen(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-            SectionTitle("Church Ministry")
+            SectionTitle(localizedString(R.string.church_ministry))
             
             SettingsMenuItem(
-                title = "Church Feed",
+                title = localizedString(R.string.church_feed),
                 icon = Icons.AutoMirrored.Filled.List,
                 onClick = onNavigateToFeed
             )
             SettingsMenuItem(
-                title = "Daily Word",
+                title = localizedString(R.string.daily_word),
                 icon = Icons.Default.Favorite,
                 onClick = onNavigateToDailyWord
             )
             SettingsMenuItem(
-                title = "Pastor Schedule",
+                title = localizedString(R.string.pastor_schedule),
                 icon = Icons.Default.DateRange,
                 onClick = onNavigateToHoraire
             )
             SettingsMenuItem(
-                title = "Church Programs",
+                title = localizedString(R.string.church_programs),
                 icon = Icons.Default.DateRange,
                 onClick = onNavigateToPrograms
             )
             SettingsMenuItem(
-                title = "Donations & Giving",
+                title = localizedString(R.string.donations_giving),
                 icon = Icons.Default.Add,
                 onClick = onNavigateToDonation
             )
             
             Spacer(modifier = Modifier.height(16.dp))
-            SectionTitle("Information")
+            SectionTitle(localizedString(R.string.information))
             
             SettingsMenuItem(
-                title = "About Us",
+                title = localizedString(R.string.about_us),
                 icon = Icons.Default.Info,
                 onClick = onNavigateToAbout
             )
             SettingsMenuItem(
-                title = "Contact Us",
+                title = localizedString(R.string.contact_us),
                 icon = Icons.Default.Call,
                 onClick = onNavigateToContact
             )
         }
     }
 }
-
-//@Composable
-//fun SectionTitle(title: String) {
-//    Text(
-//        text = title,
-//        style = MaterialTheme.typography.titleMedium,
-//        color = MaterialTheme.colorScheme.primary,
-//        modifier = Modifier.padding(16.dp)
-//    )
-//}
 
 @Composable
 fun LanguageItem(name: String, selected: Boolean, onClick: () -> Unit) {
@@ -145,8 +137,6 @@ fun SettingsMenuItem(title: String, icon: ImageVector, onClick: () -> Unit) {
     ) {
         Icon(imageVector = icon, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
         
-
-
         Spacer(modifier = Modifier.width(16.dp))
         Text(text = title, style = MaterialTheme.typography.bodyLarge)
         Spacer(modifier = Modifier.weight(1f))
