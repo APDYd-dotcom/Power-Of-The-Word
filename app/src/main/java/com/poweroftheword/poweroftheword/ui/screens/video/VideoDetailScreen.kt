@@ -103,7 +103,7 @@ fun VideoDetailScreen(
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(230.dp)
+                                .aspectRatio(16f / 9f)
                                 .background(Color.Black)
                         ) {
                             YoutubePlayerComposable(
@@ -203,7 +203,7 @@ fun VideoDetailSkeleton() {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(230.dp)
+                .aspectRatio(16f / 9f)
                 .placeholder(
                     visible = true,
                     highlight = PlaceholderHighlight.shimmer(),
@@ -216,6 +216,7 @@ fun VideoDetailSkeleton() {
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
+            // Title Placeholder
             Box(
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
@@ -230,6 +231,7 @@ fun VideoDetailSkeleton() {
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            // Metadata Placeholder
             Box(
                 modifier = Modifier
                     .fillMaxWidth(0.4f)
@@ -244,20 +246,94 @@ fun VideoDetailSkeleton() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Action Chips Placeholder
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                repeat(2) {
+                Box(
+                    modifier = Modifier
+                        .width(80.dp)
+                        .height(36.dp)
+                        .placeholder(
+                            visible = true,
+                            highlight = PlaceholderHighlight.shimmer(),
+                            color = MaterialTheme.colorScheme.surfaceVariant,
+                            shape = RoundedCornerShape(20.dp)
+                        )
+                )
+                Box(
+                    modifier = Modifier
+                        .width(120.dp)
+                        .height(36.dp)
+                        .placeholder(
+                            visible = true,
+                            highlight = PlaceholderHighlight.shimmer(),
+                            color = MaterialTheme.colorScheme.surfaceVariant,
+                            shape = RoundedCornerShape(20.dp)
+                        )
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Related Videos Section Placeholder
+        Box(
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .width(100.dp)
+                .height(20.dp)
+                .placeholder(
+                    visible = true,
+                    highlight = PlaceholderHighlight.shimmer(),
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    shape = RoundedCornerShape(4.dp)
+                )
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        repeat(3) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.Top
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(width = 120.dp, height = 70.dp)
+                        .placeholder(
+                            visible = true,
+                            highlight = PlaceholderHighlight.shimmer(),
+                            color = MaterialTheme.colorScheme.surfaceVariant,
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Column(modifier = Modifier.weight(1f)) {
                     Box(
                         modifier = Modifier
-                            .width(90.dp)
-                            .height(36.dp)
+                            .fillMaxWidth()
+                            .height(16.dp)
                             .placeholder(
                                 visible = true,
                                 highlight = PlaceholderHighlight.shimmer(),
                                 color = MaterialTheme.colorScheme.surfaceVariant,
-                                shape = RoundedCornerShape(20.dp)
+                                shape = RoundedCornerShape(4.dp)
+                            )
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(0.5f)
+                            .height(12.dp)
+                            .placeholder(
+                                visible = true,
+                                highlight = PlaceholderHighlight.shimmer(),
+                                color = MaterialTheme.colorScheme.surfaceVariant,
+                                shape = RoundedCornerShape(4.dp)
                             )
                     )
                 }
