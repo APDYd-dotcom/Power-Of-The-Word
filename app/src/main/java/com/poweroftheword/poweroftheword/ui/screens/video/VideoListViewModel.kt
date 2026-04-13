@@ -79,7 +79,7 @@ class VideoListViewModel @Inject constructor(
                 val likedIds = result.map { video ->
                     async {
                         try {
-                            if (repository.chackLike(deviceId,video.id.toString()).success.fanta) {
+                            if (repository.chackLike(deviceId, videoId = video.id.toString()).success.fanta) {
                                 video.id.toString()
                             } else null
                         } catch (e: Exception) {
@@ -112,29 +112,47 @@ class VideoListViewModel @Inject constructor(
     }
 
     fun likeVideo(videoId: String) {
-        if (_likedVideoIds.value.contains(videoId)) return
-
+        val isCurrentlyLiked = _likedVideoIds.value.contains(videoId)
         val currentVideos = _videos.value
         val videoIndex = currentVideos.indexOfFirst { it.id.toString() == videoId }
         
         if (videoIndex != -1) {
-            _likedVideoIds.value = _likedVideoIds.value + videoId
             val video = currentVideos[videoIndex]
-            val updatedVideo = video.copy(like = (video.like ?: 0) + 1, isLiked = true)
-            val updatedList = currentVideos.toMutableList()
-            updatedList[videoIndex] = updatedVideo
-            _videos.value = updatedList
+            
+            // Optimistic UI Update
+            if (isCurrentlyLiked) {
+                _likedVideoIds.value = _likedVideoIds.value - videoId
+                val updatedVideo = video.copy(
+                    like = maxOf(0, (video.like ?: 0) - 1), 
+                    isLiked = false
+                )
+                val updatedList = currentVideos.toMutableList()
+                updatedList[videoIndex] = updatedVideo
+                _videos.value = updatedList
+            } else {
+                _likedVideoIds.value = _likedVideoIds.value + videoId
+                val updatedVideo = video.copy(
+                    like = (video.like ?: 0) + 1, 
+                    isLiked = true
+                )
+                val updatedList = currentVideos.toMutableList()
+                updatedList[videoIndex] = updatedVideo
+                _videos.value = updatedList
+            }
         }
 
         viewModelScope.launch {
             val deviceId = DeviceUtils.getDeviceId(context)
             try {
-                repository.interactions(videoId, deviceId, action ="like")
+                // Use "like" action for both liking and unliking if the API toggles, 
+                // or you might need a specific action if the API requires it.
+                repository.interactions(deviceId, videoId = videoId, action = "like")
             } catch (e: Exception) {
-                _likedVideoIds.value = _likedVideoIds.value - videoId
+                // Rollback on failure
+                _likedVideoIds.value = if (isCurrentlyLiked) _likedVideoIds.value + videoId else _likedVideoIds.value - videoId
                 _videos.value = currentVideos
-                _error.value = "Failed to like video."
-                Log.e("VideoListViewModel", "Failed to like video", e)
+                _error.value = "Failed to update like status."
+                Log.e("VideoListViewModel", "Failed to toggle like", e)
             }
         }
     }

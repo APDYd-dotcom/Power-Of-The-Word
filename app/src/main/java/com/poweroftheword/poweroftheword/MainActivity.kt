@@ -41,7 +41,11 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
+        installSplashScreen().apply {
+            setKeepOnScreenCondition {
+                false
+            }
+        }
         super.onCreate(savedInstanceState)
         
         askNotificationPermission()

@@ -141,4 +141,6 @@ dependencies {
 
     implementation("androidx.palette:palette-ktx:1.0.0")
     implementation("io.coil-kt:coil-compose:2.4.0")
+
+    implementation("com.google.android.material:material:1.11.0")
 }

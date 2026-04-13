@@ -1,10 +1,29 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.PowerOfTheWord" parent="android:Theme.Material.Light.NoActionBar" />
 
-    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">#FFFFFF</item>
-        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
-        <item name="postSplashScreenTheme">@style/Theme.PowerOfTheWord</item>
+    <!-- Main Theme -->
+    <style name="Theme.PowerOfTheWord" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:statusBarColor">#000000</item>
+        <item name="android:navigationBarColor">#000000</item>
     </style>
+
+    <!-- YouTube-like Splash Theme -->
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+
+        <!-- Clean background (YouTube style: dark or white) -->
+        <item name="windowSplashScreenBackground">@color/black</item>
+
+        <!-- Center logo ONLY (no background circle) -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_logo</item>
+
+        <!-- Remove icon background (important for YouTube look) -->
+        <item name="windowSplashScreenIconBackgroundColor">@android:color/transparent</item>
+
+        <!-- Faster animation (YouTube is very quick) -->
+        <item name="windowSplashScreenAnimationDuration">500</item>
+
+        <!-- Fade into main theme -->
+        <item name="postSplashScreenTheme">@style/Theme.PowerOfTheWord</item>
+
+    </style>
+
 </resources>

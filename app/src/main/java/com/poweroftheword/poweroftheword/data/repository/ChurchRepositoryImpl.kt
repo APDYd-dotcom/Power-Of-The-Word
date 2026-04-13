@@ -48,6 +48,10 @@ class ChurchRepositoryImpl @Inject constructor(
     private val BASE_URL = BuildConfig.BASE_URLAPI
     private val LANGUAGE_KEY = stringPreferencesKey("language_preference")
 
+    private val json = Json {
+        ignoreUnknownKeys = true
+        coerceInputValues = true
+    }
 
     override suspend fun getVideos(language: String): List<VideoItem> {
         return try {
@@ -61,9 +65,7 @@ class ChurchRepositoryImpl @Inject constructor(
                 )
             }.bodyAsText()
 
-            val res = Json {
-                ignoreUnknownKeys = true
-            }.decodeFromString<Video>(response)
+            val res = json.decodeFromString<Video>(response)
             Log.d("ChurchRepo", "getVideos | Found ${res.videos.size} videos")
             res.videos
 
@@ -97,9 +99,7 @@ class ChurchRepositoryImpl @Inject constructor(
                 )
             }.bodyAsText()
 
-            val res = Json {
-                ignoreUnknownKeys = true
-            }.decodeFromString<Audio>(response)
+            val res = json.decodeFromString<Audio>(response)
             Log.d("ChurchRepo", "getAudio | Found ${res.audios.size} audios")
             res.audios
 
@@ -121,9 +121,7 @@ class ChurchRepositoryImpl @Inject constructor(
                 )
             }.bodyAsText()
 
-            val response = Json {
-                ignoreUnknownKeys = true
-            }.decodeFromString<Feed>(rawResponse)
+            val response = json.decodeFromString<Feed>(rawResponse)
             Log.d("ChurchRepo", "getFeeds | Found ${response.feeds.size} items")
             response.feeds
 
@@ -145,9 +143,7 @@ class ChurchRepositoryImpl @Inject constructor(
                 )
             }.bodyAsText()
 
-            val res = Json {
-                ignoreUnknownKeys = true
-            }.decodeFromString<DailyWord>(response)
+            val res = json.decodeFromString<DailyWord>(response)
             Log.d("ChurchRepo", "getDailyWord | Found ${res.dailywords.size} items")
             res.dailywords
 
@@ -161,9 +157,7 @@ class ChurchRepositoryImpl @Inject constructor(
         return try {
             Log.d("ChurchRepo", "getRadioStatus | Fetching...")
             val response: String = client.get("$BASE_URL/radio/").bodyAsText()
-            val res = Json {
-                ignoreUnknownKeys = true
-            }.decodeFromString<RadioResponse>(response)
+            val res = json.decodeFromString<RadioResponse>(response)
             Log.d("ChurchRepo", "getRadioStatus | Status: ${res.results.size}")
             res.results
         } catch (e: Exception) {
@@ -184,9 +178,7 @@ class ChurchRepositoryImpl @Inject constructor(
                 )
             }.bodyAsText()
 
-            val res = Json {
-                ignoreUnknownKeys = true
-            }.decodeFromString<ProgramResponse>(response)
+            val res = json.decodeFromString<ProgramResponse>(response)
             Log.d("ChurchRepo", "getPrograms | Found ${res.programs.size} programs")
             res.programs
 
@@ -245,7 +237,7 @@ class ChurchRepositoryImpl @Inject constructor(
         feedId: String?,
         action: String
     ): InteractionResponse {
-       try {
+        return try {
             val response = client.post("$BASE_URL/interact/") {
                 contentType(ContentType.Application.Json)
                 setBody(
@@ -260,17 +252,13 @@ class ChurchRepositoryImpl @Inject constructor(
             }.bodyAsText()
 
             Log.d("ChurchRepo", "Interactions | Success: $response")
-
+            json.decodeFromString<InteractionResponse>(response)
         } catch (e: Exception) {
-            Log.d(
-                "ChurchRepo",
-                "Interactions | VideoId: $videoId, deviceId: $deviceId, audioId: $audioId, feedId: $feedId"
-            )
             Log.e("ChurchRepo", "Interactions | Error: ${e.message}", e)
+            InteractionResponse(Fanta(fanta = false), "Error", "")
         }
-
-        return InteractionResponse(Fanta(fanta = false), "", "")
     }
+
     override suspend fun getlikeVideo(videoId: String, deviceId: String): Fanta {
         return try {
             Log.d("ChurchRepo", "getlikeVideo | videoId: $videoId, deviceId: $deviceId")
@@ -294,8 +282,7 @@ class ChurchRepositoryImpl @Inject constructor(
         audioId: String?,
         feedId: String?
     ): InteractionResponse {
-        try {
-
+        return try {
             val response = client.post( "$BASE_URL/checklike/"){
                 contentType(ContentType.Application.Json)
                 setBody(
@@ -309,14 +296,12 @@ class ChurchRepositoryImpl @Inject constructor(
                         null
                 )
             }.bodyAsText()
-            Log.d("ChurchRepo", "Interactions | VideoId: $videoId, deviceId: $deviceId, audioId: $audioId, feedId: $feedId")
             Log.d("ChurchRepo", "chackLike | Success: $response")
-
+            json.decodeFromString<InteractionResponse>(response)
         } catch (e: Exception){
-            Log.d("ChurchRepo", "CheckLit | VideoId: $videoId,")
-            Log.e("ChurchRepo", "CheckLIke | Error: ${e.message}")
+            Log.e("ChurchRepo", "chackLike | Error: ${e.message}", e)
+            InteractionResponse(Fanta(fanta = false), "Error", "")
         }
-        return InteractionResponse(Fanta(fanta = false), "", "")
     }
 
     override suspend fun shareVideo(videoId: String, deviceId: String) {
