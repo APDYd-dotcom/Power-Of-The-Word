@@ -42,50 +42,32 @@ fun VideoDetailScreen(
         videos.find { it.id.toString() == videoId }
     }
 
-    val backgroundColor = MaterialTheme.colorScheme.background
-
     Scaffold(
-        containerColor = backgroundColor,
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
-                            tint = MaterialTheme.colorScheme.onSurface
-                        )
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
                     }
                 },
                 title = {
-                    Text(
-                        text = "Sermon",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    titleContentColor = MaterialTheme.colorScheme.onSurface,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onSurface
-                )
+                    Text("Sermon", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                }
             )
         }
     ) { padding ->
+        // Root container with theme background
         Surface(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding),
-            color = backgroundColor
+            color = MaterialTheme.colorScheme.background
         ) {
             if (isLoading) {
                 VideoDetailSkeleton()
             } else if (currentVideo == null) {
-                Box(
-                    modifier = Modifier.fillMaxSize().background(backgroundColor),
-                    contentAlignment = Alignment.Center
-                ) {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(
                         text = "Video not found", 
                         color = MaterialTheme.colorScheme.onSurface,
@@ -93,10 +75,9 @@ fun VideoDetailScreen(
                     )
                 }
             } else {
+                val video = currentVideo
                 LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(backgroundColor)
+                    modifier = Modifier.fillMaxSize()
                 ) {
                     // 1. Video Player Section
                     item {
@@ -104,13 +85,13 @@ fun VideoDetailScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(230.dp)
-                                .background(Color.Black)
+                                .background(Color.Black) // Dark base for video
                         ) {
                             YoutubePlayerComposable(
-                                videoUrl = currentVideo.url,
+                                videoUrl = video.url,
                                 modifier = Modifier.fillMaxSize(),
                                 onVideoStarted = {
-                                    viewModel.onVideoViewed(currentVideo.id.toString())
+                                    viewModel.onVideoViewed(video.id.toString())
                                 }
                             )
                         }
@@ -121,11 +102,10 @@ fun VideoDetailScreen(
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .background(backgroundColor)
                                 .padding(16.dp)
                         ) {
                             Text(
-                                text = currentVideo.title,
+                                text = video.title,
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurface
@@ -134,27 +114,28 @@ fun VideoDetailScreen(
                             Spacer(modifier = Modifier.height(8.dp))
                             
                             Text(
-                                text = "${currentVideo.view ?: 0} views • ${formatDate(currentVideo.date)}",
+                                text = "${video.view ?: 0} views • ${formatDate(video.date)}",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             
                             Spacer(modifier = Modifier.height(16.dp))
                             
+                            // Action Buttons
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 ActionChip(
-                                    icon = if (currentVideo.isLiked) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp,
-                                    label = "${currentVideo.like ?: 0}",
-                                    tint = if (currentVideo.isLiked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-                                    onClick = { viewModel.likeVideo(currentVideo.id.toString()) }
+                                    icon = if (video.isLiked) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp,
+                                    label = "${video.like ?: 0}",
+                                    tint = if (video.isLiked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                    onClick = { viewModel.likeVideo(video.id.toString()) }
                                 )
                                 ActionChip(
                                     icon = Icons.Outlined.Share,
-                                    label = "Share ${currentVideo.share ?: 0}",
-                                    onClick = { viewModel.shareVideo(currentVideo) }
+                                    label = "Share ${video.share ?: 0}",
+                                    onClick = { viewModel.shareVideo(video) }
                                 )
                             }
                         }
@@ -176,7 +157,7 @@ fun VideoDetailScreen(
                     }
 
                     // 6. Related Videos List
-                    val relatedVideos = videos.filter { it.id != currentVideo.id }
+                    val relatedVideos = videos.filter { it.id != video.id }
                     items(relatedVideos) { related ->
                         RelatedVideoCard(
                             video = related,
@@ -203,7 +184,7 @@ fun VideoDetailSkeleton() {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(230.dp)
+                .height(220.dp)
                 .placeholder(
                     visible = true,
                     highlight = PlaceholderHighlight.shimmer(),
@@ -216,6 +197,7 @@ fun VideoDetailSkeleton() {
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
+            // Title Placeholder
             Box(
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
@@ -230,6 +212,7 @@ fun VideoDetailSkeleton() {
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            // Metadata Placeholder
             Box(
                 modifier = Modifier
                     .fillMaxWidth(0.4f)
@@ -244,20 +227,94 @@ fun VideoDetailSkeleton() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Action Chips Placeholder
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                repeat(2) {
+                Box(
+                    modifier = Modifier
+                        .width(80.dp)
+                        .height(36.dp)
+                        .placeholder(
+                            visible = true,
+                            highlight = PlaceholderHighlight.shimmer(),
+                            color = MaterialTheme.colorScheme.surfaceVariant,
+                            shape = RoundedCornerShape(20.dp)
+                        )
+                )
+                Box(
+                    modifier = Modifier
+                        .width(120.dp)
+                        .height(36.dp)
+                        .placeholder(
+                            visible = true,
+                            highlight = PlaceholderHighlight.shimmer(),
+                            color = MaterialTheme.colorScheme.surfaceVariant,
+                            shape = RoundedCornerShape(20.dp)
+                        )
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Related Videos Section Placeholder
+        Box(
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .width(100.dp)
+                .height(20.dp)
+                .placeholder(
+                    visible = true,
+                    highlight = PlaceholderHighlight.shimmer(),
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    shape = RoundedCornerShape(4.dp)
+                )
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        repeat(3) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.Top
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(width = 120.dp, height = 70.dp)
+                        .placeholder(
+                            visible = true,
+                            highlight = PlaceholderHighlight.shimmer(),
+                            color = MaterialTheme.colorScheme.surfaceVariant,
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Column(modifier = Modifier.weight(1f)) {
                     Box(
                         modifier = Modifier
-                            .width(90.dp)
-                            .height(36.dp)
+                            .fillMaxWidth()
+                            .height(16.dp)
                             .placeholder(
                                 visible = true,
                                 highlight = PlaceholderHighlight.shimmer(),
                                 color = MaterialTheme.colorScheme.surfaceVariant,
-                                shape = RoundedCornerShape(20.dp)
+                                shape = RoundedCornerShape(4.dp)
+                            )
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(0.5f)
+                            .height(12.dp)
+                            .placeholder(
+                                visible = true,
+                                highlight = PlaceholderHighlight.shimmer(),
+                                color = MaterialTheme.colorScheme.surfaceVariant,
+                                shape = RoundedCornerShape(4.dp)
                             )
                     )
                 }
