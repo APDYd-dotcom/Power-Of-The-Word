@@ -18,6 +18,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -55,6 +57,8 @@ import com.poweroftheword.poweroftheword.ui.screens.settings.SettingsViewModel
 import com.poweroftheword.poweroftheword.ui.screens.video.VideoDetailScreen
 import com.poweroftheword.poweroftheword.ui.screens.video.VideoListScreen
 import com.poweroftheword.poweroftheword.ui.screens.video.VideoListViewModel
+import com.poweroftheword.poweroftheword.util.truncate
+
 @Composable
 fun MainScreen() {
 
@@ -286,7 +290,7 @@ fun BottomAppBar(navController: NavController) {
                     screen.icon?.let {
                         Icon(
                             imageVector = it,
-                            contentDescription = screen.title,
+                            contentDescription = stringResource(screen.titleResId),
                             modifier = Modifier.size(22.dp)
                         )
                     }
@@ -294,8 +298,10 @@ fun BottomAppBar(navController: NavController) {
 
                 label = {
                     Text(
-                        text = screen.title,
-                        style = MaterialTheme.typography.labelSmall
+                        text = stringResource(screen.titleResId).truncate(10),
+                        style = MaterialTheme.typography.labelSmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 },
 

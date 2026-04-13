@@ -23,9 +23,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.poweroftheword.poweroftheword.R
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,8 +46,18 @@ fun AudioListScreen(
     var showYearMenu by remember { mutableStateOf(false) }
 
     val months = listOf(
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
+        stringResource(R.string.january),
+        stringResource(R.string.february),
+        stringResource(R.string.march),
+        stringResource(R.string.april),
+        stringResource(R.string.may),
+        stringResource(R.string.june),
+        stringResource(R.string.july),
+        stringResource(R.string.august),
+        stringResource(R.string.september),
+        stringResource(R.string.october),
+        stringResource(R.string.november),
+        stringResource(R.string.december)
     )
     val currentYear = Calendar.getInstance().get(Calendar.YEAR)
     val years = (2025..currentYear).toList()
@@ -56,7 +68,7 @@ fun AudioListScreen(
                 TopAppBar(
                     title = {
                         Text(
-                            "Archives",
+                            stringResource(R.string.archives),
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp,
                             color = MaterialTheme.colorScheme.onBackground
@@ -218,7 +230,7 @@ fun AudioListScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "No audio sermons found.",
+                            text = stringResource(R.string.no_audio_sermons_found),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
                         )

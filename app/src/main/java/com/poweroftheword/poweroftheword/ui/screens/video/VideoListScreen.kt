@@ -15,9 +15,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.poweroftheword.poweroftheword.R
 import com.poweroftheword.poweroftheword.domain.model.VideoItem
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,7 +41,7 @@ fun VideoListScreen(
                 TopAppBar(
                     title = {
                         Text(
-                            "Videos",
+                            stringResource(R.string.videos),
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp,
                             color = MaterialTheme.colorScheme.onSurface
@@ -76,7 +78,7 @@ fun VideoListScreen(
                         FilterChip(
                             selected = selectedType == null,
                             onClick = { viewModel.onTypeSelect(null) },
-                            label = { Text("All", fontSize = 14.sp) },
+                            label = { Text(stringResource(R.string.all), fontSize = 14.sp) },
                             shape = RoundedCornerShape(20.dp),
                             border = null,
                             colors = FilterChipDefaults.filterChipColors(
@@ -86,10 +88,16 @@ fun VideoListScreen(
                         )
                     }
                     items(videoTypes) { type ->
+                        val label = when(type) {
+                            "preach" -> stringResource(R.string.preach)
+                            "testimony" -> stringResource(R.string.testimony)
+                            "live" -> stringResource(R.string.live)
+                            else -> type.replaceFirstChar { it.uppercase() }
+                        }
                         FilterChip(
                             selected = selectedType == type,
                             onClick = { viewModel.onTypeSelect(type) },
-                            label = { Text(type.replaceFirstChar { it.uppercase() }, fontSize = 14.sp) },
+                            label = { Text(label, fontSize = 14.sp) },
                             shape = RoundedCornerShape(20.dp),
                             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)),
                             colors = FilterChipDefaults.filterChipColors(
@@ -111,7 +119,7 @@ fun VideoListScreen(
             if (videos.isEmpty() && !isLoading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(
-                        text = error ?: "No videos found.",
+                        text = error ?: stringResource(R.string.no_videos_found),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
                     )

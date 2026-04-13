@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.*
 import coil.compose.AsyncImage
 import com.poweroftheword.poweroftheword.domain.model.FeedItem
 import com.poweroftheword.poweroftheword.ui.theme.*
+import com.poweroftheword.poweroftheword.util.truncate
 
 @Composable
 fun FeedItemCard(
@@ -89,7 +90,7 @@ fun FeedItemCard(
 
                 // 🔥 TITLE
                 Text(
-                    text = feed.title,
+                    text = feed.title.truncate(50),
                     color = Color.White,
                     modifier = Modifier
                         .align(Alignment.BottomStart)
@@ -104,7 +105,7 @@ fun FeedItemCard(
             Column(modifier = Modifier.padding(16.dp)) {
 
                 Text(
-                    text = feed.desc,
+                    text = feed.desc.truncate(120),
                     style = MaterialTheme.typography.bodyMedium,
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis

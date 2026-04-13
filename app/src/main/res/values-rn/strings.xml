@@ -45,4 +45,38 @@
     <string name="youtube_page">YouTube Power of the word</string>
     <string name="donate_power_word">Shigikira Power of the Word</string>
     <string name="power_word_story">Amakuru ya Power of the Word</string>
+
+    <string name="popular_video">Isanamu rimenyerewe</string>
+    <string name="latest_post">Amakuru mashasha</string>
+    <string name="view_all">Vyose hamwe</string>
+    <string name="videos">Amasanamu</string>
+    <string name="all">Vyose</string>
+    <string name="preach">Inyigisho</string>
+    <string name="testimony">Intahe</string>
+    <string name="live">Imbona nkubone</string>
+    <string name="no_videos_found">Nta masanamu aboneka.</string>
+    <string name="feed">Amakuru</string>
+    <string name="no_feeds_available">Nta makuru aboneka</string>
+    <string name="archives">Ububiko</string>
+    <string name="no_audio_sermons_found">Nta nyigisho z\'amajwi aboneka.</string>
+
+    <string name="january">Nzero</string>
+    <string name="february">Ruhuhuma</string>
+    <string name="march">Ntwarante</string>
+    <string name="april">Ndamukiza</string>
+    <string name="may">Rusama</string>
+    <string name="june">Ruheshi</string>
+    <string name="july">Mukakaro</string>
+    <string name="august">Myandagaro</string>
+    <string name="september">Nyakanga</string>
+    <string name="october">Gitugutu</string>
+    <string name="november">Munyonyo</string>
+    <string name="december">Kigarama</string>
+
+    <string name="home">Urugo</string>
+    <string name="audio">Amajwi</string>
+    <string name="radio">Radiyo</string>
+    <string name="schedule">Indatabahe</string>
+    <string name="programs">Ibiganiro</string>
+    <string name="donation">Intererano</string>
 </resources>

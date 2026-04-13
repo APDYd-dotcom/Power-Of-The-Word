@@ -45,4 +45,38 @@
     <string name="youtube_page">YouTube Power of the word</string>
     <string name="donate_power_word">Faire un don à Power of the Word</string>
     <string name="power_word_story">L\'histoire de Power of the Word</string>
+
+    <string name="popular_video">Vidéo populaire</string>
+    <string name="latest_post">Dernier message</string>
+    <string name="view_all">Voir tout</string>
+    <string name="videos">Vidéos</string>
+    <string name="all">Tout</string>
+    <string name="preach">Prêcher</string>
+    <string name="testimony">Témoignage</string>
+    <string name="live">En direct</string>
+    <string name="no_videos_found">Aucune vidéo trouvée.</string>
+    <string name="feed">Fil d\'actualité</string>
+    <string name="no_feeds_available">Aucun flux disponible</string>
+    <string name="archives">Archives</string>
+    <string name="no_audio_sermons_found">Aucun sermon audio trouvé.</string>
+
+    <string name="january">Janvier</string>
+    <string name="february">Février</string>
+    <string name="march">Mars</string>
+    <string name="april">Avril</string>
+    <string name="may">Mai</string>
+    <string name="june">Juin</string>
+    <string name="july">Juillet</string>
+    <string name="august">Août</string>
+    <string name="september">Septembre</string>
+    <string name="october">Octobre</string>
+    <string name="november">Novembre</string>
+    <string name="december">Décembre</string>
+
+    <string name="home">Accueil</string>
+    <string name="audio">Audio</string>
+    <string name="radio">Radio</string>
+    <string name="schedule">Horaire</string>
+    <string name="programs">Programmes</string>
+    <string name="donation">Donation</string>
 </resources>

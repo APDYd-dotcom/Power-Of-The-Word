@@ -27,12 +27,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.poweroftheword.poweroftheword.R
 import com.poweroftheword.poweroftheword.domain.model.FeedItem
 import com.poweroftheword.poweroftheword.domain.model.VideoItem
 import com.poweroftheword.poweroftheword.ui.screens.feed.FeedItemCard
 import com.poweroftheword.poweroftheword.ui.screens.video.VideoCard
+import com.poweroftheword.poweroftheword.util.truncate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,7 +74,7 @@ fun HomeScreen(
                 if (state.latestVideos.isNotEmpty()) {
                     item {
                         SectionHeader(
-                            title = "Popular Video",
+                            title = stringResource(R.string.popular_video),
                             onSeeAllClick = onSeeAllVideos
                         )
                     }
@@ -85,7 +89,7 @@ fun HomeScreen(
 
                 item {
                     SectionHeader(
-                        title = "Latest Post",
+                        title = stringResource(R.string.latest_post),
                         onSeeAllClick = onSeeAllFeeds
                     )
                 }
@@ -123,18 +127,24 @@ fun SectionHeader(
             style = MaterialTheme.typography.titleLarge.copy(
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground
-            )
+            ),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f)
         )
+        Spacer(modifier = Modifier.width(8.dp))
         Row(
             modifier = Modifier.clickable { onSeeAllClick() },
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "View All",
+                text = stringResource(R.string.view_all).truncate(12),
                 style = MaterialTheme.typography.bodyMedium.copy(
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
                     fontWeight = FontWeight.Medium
-                )
+                ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
             Spacer(modifier = Modifier.width(4.dp))
             Icon(

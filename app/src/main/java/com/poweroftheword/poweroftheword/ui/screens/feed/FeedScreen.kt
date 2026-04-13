@@ -23,8 +23,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.poweroftheword.poweroftheword.R
 import com.poweroftheword.poweroftheword.domain.model.FeedItem
 
 
@@ -49,7 +51,7 @@ fun FeedScreen(
 
             feeds.isEmpty() -> {
                 Text(
-                    text = "No feeds available",
+                    text = stringResource(R.string.no_feeds_available),
                     modifier = Modifier.align(androidx.compose.ui.Alignment.Center)
                 )
             }
@@ -58,7 +60,7 @@ fun FeedScreen(
                 Scaffold(
                     topBar = {
                         TopAppBar(
-                            title = { Text("Feed", fontWeight = FontWeight.Bold) }
+                            title = { Text(stringResource(R.string.feed), fontWeight = FontWeight.Bold) }
                         )
                     }
                 ) { padding ->

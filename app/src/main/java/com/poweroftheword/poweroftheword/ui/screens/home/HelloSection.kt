@@ -22,12 +22,14 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.palette.graphics.Palette
 import coil.compose.AsyncImage
 import com.poweroftheword.poweroftheword.domain.model.DailyWord
 import com.poweroftheword.poweroftheword.BuildConfig
+import com.poweroftheword.poweroftheword.util.truncate
 
 @Composable
 fun DynamicHero(
@@ -103,10 +105,12 @@ fun DynamicHero(
                 ) {
 
                     Text(
-                        text = "Power of the Word",
+                        text = "Power of the Word".truncate(20),
                         color = Color.White,
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
 
                     Row(

@@ -269,7 +269,7 @@ class ChurchRepositoryImpl @Inject constructor(
             Log.e("ChurchRepo", "Interactions | Error: ${e.message}", e)
         }
 
-        return TODO("Provide the return value")
+        return InteractionResponse(Fanta(fanta = false), "", "")
     }
     override suspend fun getlikeVideo(videoId: String, deviceId: String): Fanta {
         return try {
@@ -285,6 +285,8 @@ class ChurchRepositoryImpl @Inject constructor(
             Fanta(fanta = false)
         }
     }
+
+    //ChackLike Api Service
 
     override suspend fun chackLike(
         deviceId: String,
@@ -314,7 +316,7 @@ class ChurchRepositoryImpl @Inject constructor(
             Log.d("ChurchRepo", "CheckLit | VideoId: $videoId,")
             Log.e("ChurchRepo", "CheckLIke | Error: ${e.message}")
         }
-        return TODO()
+        return InteractionResponse(Fanta(fanta = false), "", "")
     }
 
     override suspend fun shareVideo(videoId: String, deviceId: String) {
