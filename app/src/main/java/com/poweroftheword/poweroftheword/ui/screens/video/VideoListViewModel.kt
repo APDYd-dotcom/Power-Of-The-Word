@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.poweroftheword.poweroftheword.data.local.VideoLikeDao
 import com.poweroftheword.poweroftheword.domain.model.VideoItem
 import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
 import com.poweroftheword.poweroftheword.util.DeviceUtils
@@ -17,6 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class VideoListViewModel @Inject constructor(
     private val repository: ChurchRepository,
+    private val dao: VideoLikeDao,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -26,15 +28,19 @@ class VideoListViewModel @Inject constructor(
     private val _selectedType = MutableStateFlow<String?>(null)
     val selectedType: StateFlow<String?> = _selectedType.asStateFlow()
 
-    private val _videos = MutableStateFlow<List<VideoItem>>(emptyList())
+    private val _rawVideos = MutableStateFlow<List<VideoItem>>(emptyList())
     
-    // Track liked IDs locally to simulate YouTube behavior
-    private val _likedVideoIds = MutableStateFlow<Set<String>>(emptySet())
-
     val filteredVideos: StateFlow<List<VideoItem>> =
-        combine(_videos, _searchQuery, _selectedType, _likedVideoIds) { videos, query, type, likedIds ->
+        combine(_rawVideos, _searchQuery, _selectedType, dao.getAllLikesFlow()) { videos, query, type, localLikes ->
+            val likeMap = localLikes.associateBy { it.videoId }
             videos.map { video ->
-                video.copy(isLiked = likedIds.contains(video.id.toString()))
+                val localState = likeMap[video.id.toString()]
+                video.copy(
+                    isLiked = localState?.isLiked ?: false,
+                    like = if (localState?.isPending == true) {
+                        if (localState.isLiked) (video.like ?: 0) + 1 else maxOf(0, (video.like ?: 0) - 1)
+                    } else video.like
+                )
             }.filter { video ->
                 val matchesQuery = query.isBlank() || 
                                   video.title.contains(query, true) || 
@@ -72,25 +78,11 @@ class VideoListViewModel @Inject constructor(
             try {
                 val language = repository.getSavedLanguage().first()
                 val result = repository.getVideos(language)
+                _rawVideos.value = result
                 
                 val deviceId = DeviceUtils.getDeviceId(context)
+                repository.syncMissingLikes(result, deviceId)
                 
-                // Fetch liked status for each video in parallel
-                val likedIds = result.map { video ->
-                    async {
-                        try {
-                            if (repository.chackLike(deviceId, videoId = video.id.toString()).success.fanta) {
-                                video.id.toString()
-                            } else null
-                        } catch (e: Exception) {
-                            Log.e("VideoListViewModel", "Failed to check like status for ${video.id}", e)
-                            null
-                        }
-                    }
-                }.awaitAll().filterNotNull().toSet()
-                
-                _likedVideoIds.value = likedIds
-                _videos.value = result
             } catch (e: Exception) {
                 _error.value = e.message ?: "Failed to load videos"
             } finally {
@@ -112,48 +104,9 @@ class VideoListViewModel @Inject constructor(
     }
 
     fun likeVideo(videoId: String) {
-        val isCurrentlyLiked = _likedVideoIds.value.contains(videoId)
-        val currentVideos = _videos.value
-        val videoIndex = currentVideos.indexOfFirst { it.id.toString() == videoId }
-        
-        if (videoIndex != -1) {
-            val video = currentVideos[videoIndex]
-            
-            // Optimistic UI Update
-            if (isCurrentlyLiked) {
-                _likedVideoIds.value = _likedVideoIds.value - videoId
-                val updatedVideo = video.copy(
-                    like = maxOf(0, (video.like ?: 0) - 1), 
-                    isLiked = false
-                )
-                val updatedList = currentVideos.toMutableList()
-                updatedList[videoIndex] = updatedVideo
-                _videos.value = updatedList
-            } else {
-                _likedVideoIds.value = _likedVideoIds.value + videoId
-                val updatedVideo = video.copy(
-                    like = (video.like ?: 0) + 1, 
-                    isLiked = true
-                )
-                val updatedList = currentVideos.toMutableList()
-                updatedList[videoIndex] = updatedVideo
-                _videos.value = updatedList
-            }
-        }
-
         viewModelScope.launch {
             val deviceId = DeviceUtils.getDeviceId(context)
-            try {
-                // Use "like" action for both liking and unliking if the API toggles, 
-                // or you might need a specific action if the API requires it.
-                repository.interactions(deviceId, videoId = videoId, action = "like")
-            } catch (e: Exception) {
-                // Rollback on failure
-                _likedVideoIds.value = if (isCurrentlyLiked) _likedVideoIds.value + videoId else _likedVideoIds.value - videoId
-                _videos.value = currentVideos
-                _error.value = "Failed to update like status."
-                Log.e("VideoListViewModel", "Failed to toggle like", e)
-            }
+            repository.toggleVideoLikeLocal(videoId, deviceId)
         }
     }
 

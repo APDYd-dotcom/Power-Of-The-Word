@@ -5,23 +5,14 @@ import android.util.Log
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.media3.common.C
+import androidx.work.*
+import androidx.work.WorkManager
 import com.poweroftheword.poweroftheword.BuildConfig
-import com.poweroftheword.poweroftheword.domain.model.Audio
-import com.poweroftheword.poweroftheword.domain.model.AudioItem
-import com.poweroftheword.poweroftheword.domain.model.DailyWord
-import com.poweroftheword.poweroftheword.domain.model.DailyWordItem
-import com.poweroftheword.poweroftheword.domain.model.Fanta
-import com.poweroftheword.poweroftheword.domain.model.Feed
-import com.poweroftheword.poweroftheword.domain.model.FeedItem
-import com.poweroftheword.poweroftheword.domain.model.Horaire
-import com.poweroftheword.poweroftheword.domain.model.InteractionResponse
-import com.poweroftheword.poweroftheword.domain.model.Live
-import com.poweroftheword.poweroftheword.domain.model.Program
-import com.poweroftheword.poweroftheword.domain.model.ProgramResponse
-import com.poweroftheword.poweroftheword.domain.model.Radio
-import com.poweroftheword.poweroftheword.domain.model.RadioResponse
-import com.poweroftheword.poweroftheword.domain.model.Video
-import com.poweroftheword.poweroftheword.domain.model.VideoItem
+import com.poweroftheword.poweroftheword.data.local.VideoLikeDao
+import com.poweroftheword.poweroftheword.data.local.VideoLikeEntity
+import com.poweroftheword.poweroftheword.data.worker.LikeSyncWorker
+import com.poweroftheword.poweroftheword.domain.model.*
 import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -34,6 +25,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.content.TextContent
 import io.ktor.http.contentType
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
@@ -42,7 +34,8 @@ private val Context.dataStore by preferencesDataStore(name = "settings")
 
 class ChurchRepositoryImpl @Inject constructor(
     private val client: HttpClient,
-    private val context: Context
+    private val context: Context,
+    private val videoLikeDao: VideoLikeDao
 ) : ChurchRepository {
 
     private val BASE_URL = BuildConfig.BASE_URLAPI
@@ -374,6 +367,55 @@ class ChurchRepositoryImpl @Inject constructor(
     override suspend fun saveLanguage(language: String) {
         context.dataStore.edit { preferences ->
             preferences[LANGUAGE_KEY] = language
+        }
+    }
+
+    override suspend fun toggleVideoLikeLocal(videoId: String, deviceId: String) {
+        val current = videoLikeDao.getLikeSync(videoId)
+        val newLikedState = !(current?.isLiked ?: false)
+
+        // 1. Instant Local Update
+        videoLikeDao.insertOrUpdate(
+            VideoLikeEntity(
+                videoId = videoId,
+                isLiked = newLikedState,
+                isPending = true
+            )
+        )
+
+        // 2. Schedule Sync
+        val constraints = androidx.work.Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val syncRequest = OneTimeWorkRequestBuilder<LikeSyncWorker>()
+            .setConstraints(constraints)
+            .build()
+
+        WorkManager.getInstance(context).enqueueUniqueWork(
+            "sync_likes",
+            ExistingWorkPolicy.APPEND_OR_REPLACE,
+            syncRequest
+        )
+    }
+
+    override suspend fun syncMissingLikes(videos: List<VideoItem>, deviceId: String) {
+        videos.forEach { video ->
+            val local = videoLikeDao.getLikeSync(video.id.toString())
+            if (local == null) {
+                try {
+                    val response = chackLike(deviceId, videoId = video.id.toString())
+                    videoLikeDao.insertOrUpdate(
+                        VideoLikeEntity(
+                            videoId = video.id.toString(),
+                            isLiked = response.success.fanta,
+                            isPending = false
+                        )
+                    )
+                } catch (e: Exception) {
+                    Log.e("ChurchRepo", "Failed to init like for ${video.id}")
+                }
+            }
         }
     }
 }

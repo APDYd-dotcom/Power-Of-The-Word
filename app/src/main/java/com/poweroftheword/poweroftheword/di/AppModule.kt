@@ -1,6 +1,9 @@
 package com.poweroftheword.poweroftheword.di
 
 import android.content.Context
+import androidx.room.Room
+import com.poweroftheword.poweroftheword.data.local.AppDatabase
+import com.poweroftheword.poweroftheword.data.local.VideoLikeDao
 import com.poweroftheword.poweroftheword.data.repository.ChurchRepositoryImpl
 import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
 import dagger.Module
@@ -40,10 +43,27 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
+        return Room.databaseBuilder(
+            context,
+            AppDatabase::class.java,
+            "power_of_the_word_db"
+        ).build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideVideoLikeDao(database: AppDatabase): VideoLikeDao {
+        return database.videoLikeDao()
+    }
+
+    @Provides
+    @Singleton
     fun provideChurchRepository(
         client: HttpClient,
-        @ApplicationContext context: Context
+        @ApplicationContext context: Context,
+        videoLikeDao: VideoLikeDao
     ): ChurchRepository {
-        return ChurchRepositoryImpl(client, context)
+        return ChurchRepositoryImpl(client, context, videoLikeDao)
     }
 }
