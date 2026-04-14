@@ -1,8 +1,6 @@
 package com.poweroftheword.poweroftheword.ui.screens.audio
 
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.media.MediaPlayer
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -15,6 +13,7 @@ import androidx.compose.material.icons.filled.GraphicEq
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -28,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.poweroftheword.poweroftheword.domain.model.AudioItem
 import com.poweroftheword.poweroftheword.util.formatTime
 import com.poweroftheword.poweroftheword.util.formatDate
 import kotlinx.coroutines.delay
@@ -37,13 +37,9 @@ import kotlinx.coroutines.delay
 @Composable
 fun AudioPlayerComponent(
     context: Context,
-    audioUrl: String,
+    audio: AudioItem,
     viewModel : AudioListViewModel,
-    audioId: Int,
     isLiked: Boolean,
-    date: String,
-    time: String,
-    title: String
 ) {
     val mediaPlayer = remember { MediaPlayer() }
 
@@ -54,10 +50,10 @@ fun AudioPlayerComponent(
     var position by remember { mutableFloatStateOf(0f) }
 
     //  LOAD AUDIO FROM URL
-    LaunchedEffect(audioUrl) {
+    LaunchedEffect(audio.file) {
         try {
             mediaPlayer.reset()
-            mediaPlayer.setDataSource( "https://poweroftheword.bi${audioUrl}")
+            mediaPlayer.setDataSource( "https://poweroftheword.bi${audio.file}")
 
             mediaPlayer.setOnPreparedListener {
                 isPrepared = true
@@ -104,7 +100,7 @@ fun AudioPlayerComponent(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
 
-                // ICON BOX (UNCHANGED)
+                // ICON BOX
                 Box(
                     modifier = Modifier
                         .size(60.dp)
@@ -121,13 +117,13 @@ fun AudioPlayerComponent(
                 }
             Column {
                 Text(
-                    text = formatDate(date),
+                    text = formatDate(audio.date),
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
                     color = Color.White
                 )
                 Text(
-                    text = formatTime(time),
+                    text = formatTime(audio.visibleTime ?: "04:00h"),
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(top = 2.dp),
                     fontSize = 12.sp,
@@ -136,7 +132,7 @@ fun AudioPlayerComponent(
             }
 
 
-                // PLAY BUTTON (UNCHANGED)
+                // PLAY BUTTON
                 Button(
                     onClick = {
                         if (!isPrepared) return@Button
@@ -147,6 +143,7 @@ fun AudioPlayerComponent(
                         } else {
                             mediaPlayer.start()
                             setIsPlaying(true)
+                            viewModel.onAudioListened(audio.id)
                         }
                     },
                     shape = CircleShape,
@@ -167,7 +164,7 @@ fun AudioPlayerComponent(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            //  CUSTOM SLIDER (UNCHANGED DESIGN)
+            //  CUSTOM SLIDER
             Slider(
                 value = position,
                 onValueChange = {
@@ -234,7 +231,7 @@ fun AudioPlayerComponent(
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        title,
+                        audio.title,
                         fontWeight = FontWeight.Bold,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -243,25 +240,17 @@ fun AudioPlayerComponent(
 
                 // LIKE BUTTON
                 IconButton(onClick = {
-                    viewModel.likeAudio(audioId)
+                    viewModel.toggleLike(audio.id.toString())
                 }) {
                     Icon(
-                        Icons.Outlined.ThumbUp,
+                        imageVector = if (isLiked) Icons.Default.ThumbUp else Icons.Outlined.ThumbUp,
                         tint = if (isLiked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                         contentDescription = null)
                 }
 
-                // SHARE BUTTON (FIXED FOR URL)
+                // SHARE BUTTON
                 IconButton(onClick = {
-                    val intent = Intent(Intent.ACTION_SEND).apply {
-                        type = "text/plain"
-                        putExtra(Intent.EXTRA_TEXT, "$title\n$audioUrl")
-                    }
-                    val chooser = Intent.createChooser(intent, "Share Audio")
-                    if (context !is Activity) {
-                        chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    }
-                    context.startActivity(chooser)
+                    viewModel.shareAudio(audio)
                 }) {
                     Icon(Icons.Default.Share, contentDescription = null)
                 }

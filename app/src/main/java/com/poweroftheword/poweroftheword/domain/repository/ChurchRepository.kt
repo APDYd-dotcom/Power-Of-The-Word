@@ -48,4 +48,7 @@ interface ChurchRepository {
     // Offline-first Likes
     suspend fun toggleVideoLikeLocal(videoId: String, deviceId: String)
     suspend fun syncMissingLikes(videos: List<VideoItem>, deviceId: String)
+    
+    suspend fun toggleAudioLikeLocal(audioId: String, deviceId: String)
+    suspend fun syncMissingAudioLikes(audios: List<AudioItem>, deviceId: String)
 }

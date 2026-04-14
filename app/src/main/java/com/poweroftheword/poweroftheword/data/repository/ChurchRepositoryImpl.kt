@@ -5,12 +5,13 @@ import android.util.Log
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import androidx.media3.common.C
 import androidx.work.*
-import androidx.work.WorkManager
 import com.poweroftheword.poweroftheword.BuildConfig
+import com.poweroftheword.poweroftheword.data.local.AudioLikeDao
+import com.poweroftheword.poweroftheword.data.local.AudioLikeEntity
 import com.poweroftheword.poweroftheword.data.local.VideoLikeDao
 import com.poweroftheword.poweroftheword.data.local.VideoLikeEntity
+import com.poweroftheword.poweroftheword.data.worker.AudioLikeSyncWorker
 import com.poweroftheword.poweroftheword.data.worker.LikeSyncWorker
 import com.poweroftheword.poweroftheword.domain.model.*
 import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
@@ -25,7 +26,6 @@ import io.ktor.http.ContentType
 import io.ktor.http.content.TextContent
 import io.ktor.http.contentType
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
@@ -35,7 +35,8 @@ private val Context.dataStore by preferencesDataStore(name = "settings")
 class ChurchRepositoryImpl @Inject constructor(
     private val client: HttpClient,
     private val context: Context,
-    private val videoLikeDao: VideoLikeDao
+    private val videoLikeDao: VideoLikeDao,
+    private val audioLikeDao: AudioLikeDao
 ) : ChurchRepository {
 
     private val BASE_URL = BuildConfig.BASE_URLAPI
@@ -393,7 +394,7 @@ class ChurchRepositoryImpl @Inject constructor(
             .build()
 
         WorkManager.getInstance(context).enqueueUniqueWork(
-            "sync_likes",
+            "sync_video_likes",
             ExistingWorkPolicy.APPEND_OR_REPLACE,
             syncRequest
         )
@@ -414,6 +415,55 @@ class ChurchRepositoryImpl @Inject constructor(
                     )
                 } catch (e: Exception) {
                     Log.e("ChurchRepo", "Failed to init like for ${video.id}")
+                }
+            }
+        }
+    }
+
+    override suspend fun toggleAudioLikeLocal(audioId: String, deviceId: String) {
+        val current = audioLikeDao.getLikeSync(audioId)
+        val newLikedState = !(current?.isLiked ?: false)
+
+        // 1. Instant Local Update
+        audioLikeDao.insertOrUpdate(
+            AudioLikeEntity(
+                audioId = audioId,
+                isLiked = newLikedState,
+                isPending = true
+            )
+        )
+
+        // 2. Schedule Sync
+        val constraints = androidx.work.Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val syncRequest = OneTimeWorkRequestBuilder<AudioLikeSyncWorker>()
+            .setConstraints(constraints)
+            .build()
+
+        WorkManager.getInstance(context).enqueueUniqueWork(
+            "sync_audio_likes",
+            ExistingWorkPolicy.APPEND_OR_REPLACE,
+            syncRequest
+        )
+    }
+
+    override suspend fun syncMissingAudioLikes(audios: List<AudioItem>, deviceId: String) {
+        audios.forEach { audio ->
+            val local = audioLikeDao.getLikeSync(audio.id.toString())
+            if (local == null) {
+                try {
+                    val response = chackLike(deviceId, audioId = audio.id.toString())
+                    audioLikeDao.insertOrUpdate(
+                        AudioLikeEntity(
+                            audioId = audio.id.toString(),
+                            isLiked = response.success.fanta,
+                            isPending = false
+                        )
+                    )
+                } catch (e: Exception) {
+                    Log.e("ChurchRepo", "Failed to init audio like for ${audio.id}")
                 }
             }
         }

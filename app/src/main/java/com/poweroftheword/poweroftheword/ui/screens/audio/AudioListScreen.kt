@@ -37,6 +37,7 @@ fun AudioListScreen(
     viewModel: AudioListViewModel,
 ) {
     val audios by viewModel.filteredAudios.collectAsState()
+    val likedAudioIds by viewModel.likedAudioIds.collectAsState()
 
     val isLoading by viewModel.isLoading.collectAsState()
     val selectedMonth by viewModel.selectedMonth.collectAsState()
@@ -245,12 +246,8 @@ fun AudioListScreen(
                         AudioPlayerComponent(
                             viewModel = viewModel,
                             context = context,
-                            audioId = audio.id,
-                            audioUrl = audio.file,
-                            isLiked = audio.isLiked == true,
-                            date =  audio.date,
-                            time = audio.visibleTime ?: "04:00h",
-                            title = audio.title
+                            audio = audio,
+                            isLiked = likedAudioIds.contains(audio.id.toString())
                         )
                     }
                 }
