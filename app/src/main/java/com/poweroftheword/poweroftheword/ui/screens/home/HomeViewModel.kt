@@ -4,6 +4,8 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.poweroftheword.poweroftheword.data.local.FeedLikeDao
+import com.poweroftheword.poweroftheword.data.local.VideoLikeDao
 import com.poweroftheword.poweroftheword.domain.model.*
 import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
 import com.poweroftheword.poweroftheword.util.DeviceUtils
@@ -28,11 +30,21 @@ data class HomeState(
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val repository: ChurchRepository,
+    private val videoLikeDao: VideoLikeDao,
+    private val feedLikeDao: FeedLikeDao,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HomeState())
     val state: StateFlow<HomeState> = _state.asStateFlow()
+
+    val likedVideoIds: StateFlow<Set<String>> = videoLikeDao.getAllLikesFlow()
+        .map { likes -> likes.filter { it.isLiked }.map { it.videoId }.toSet() }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptySet())
+
+    val likedFeedIds: StateFlow<Set<String>> = feedLikeDao.getAllLikesFlow()
+        .map { likes -> likes.filter { it.isLiked }.map { it.feedId }.toSet() }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptySet())
 
     init {
         repository.getSavedLanguage()
@@ -68,6 +80,11 @@ class HomeViewModel @Inject constructor(
                         isLoading = false
                     )
                 }
+                
+                val deviceId = DeviceUtils.getDeviceId(context)
+                repository.syncMissingLikes(latestVideos, deviceId)
+                repository.syncMissingFeedLikes(latestFeeds, deviceId)
+                
             } catch (e: Exception) {
                 _state.update { it.copy(isLoading = false, error = "Failed to load updates") }
             }
@@ -78,11 +95,20 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             val deviceId = DeviceUtils.getDeviceId(context)
             try {
-                Log.d("HomeViewModel", "Liking video: $videoId")
-                repository.likeVideo(videoId, deviceId)
-                loadHomeData()
+                repository.toggleVideoLikeLocal(videoId, deviceId)
             } catch (e: Exception) {
                 _state.update { it.copy(error = "Failed to like video.") }
+            }
+        }
+    }
+
+    fun toggleFeedLike(feedId: String) {
+        viewModelScope.launch {
+            val deviceId = DeviceUtils.getDeviceId(context)
+            try {
+                repository.toggleFeedLikeLocal(feedId, deviceId)
+            } catch (e: Exception) {
+                _state.update { it.copy(error = "Failed to like feed.") }
             }
         }
     }

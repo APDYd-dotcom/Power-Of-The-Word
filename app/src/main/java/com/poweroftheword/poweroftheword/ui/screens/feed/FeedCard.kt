@@ -5,6 +5,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -24,6 +26,8 @@ import com.poweroftheword.poweroftheword.util.formatDate
 @Composable
 fun FeedItemCard(
     feed: FeedItem,
+    isLiked: Boolean,
+    onLikeClick: () -> Unit,
     onClick: () -> Unit
 ) {
 
@@ -118,6 +122,7 @@ fun FeedItemCard(
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
 
@@ -127,6 +132,17 @@ fun FeedItemCard(
                     )
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
+
+                        IconButton(onClick = onLikeClick) {
+                            Icon(
+                                imageVector = if (isLiked) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp,
+                                contentDescription = null,
+                                tint = if (isLiked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.width(8.dp))
 
                         Icon(
                             imageVector = Icons.Outlined.Visibility,

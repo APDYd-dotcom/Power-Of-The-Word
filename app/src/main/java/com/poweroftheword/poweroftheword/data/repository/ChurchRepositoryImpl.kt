@@ -9,9 +9,12 @@ import androidx.work.*
 import com.poweroftheword.poweroftheword.BuildConfig
 import com.poweroftheword.poweroftheword.data.local.AudioLikeDao
 import com.poweroftheword.poweroftheword.data.local.AudioLikeEntity
+import com.poweroftheword.poweroftheword.data.local.FeedLikeDao
+import com.poweroftheword.poweroftheword.data.local.FeedLikeEntity
 import com.poweroftheword.poweroftheword.data.local.VideoLikeDao
 import com.poweroftheword.poweroftheword.data.local.VideoLikeEntity
 import com.poweroftheword.poweroftheword.data.worker.AudioLikeSyncWorker
+import com.poweroftheword.poweroftheword.data.worker.FeedLikeSyncWorker
 import com.poweroftheword.poweroftheword.data.worker.LikeSyncWorker
 import com.poweroftheword.poweroftheword.domain.model.*
 import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
@@ -36,7 +39,8 @@ class ChurchRepositoryImpl @Inject constructor(
     private val client: HttpClient,
     private val context: Context,
     private val videoLikeDao: VideoLikeDao,
-    private val audioLikeDao: AudioLikeDao
+    private val audioLikeDao: AudioLikeDao,
+    private val feedLikeDao: FeedLikeDao
 ) : ChurchRepository {
 
     private val BASE_URL = BuildConfig.BASE_URLAPI
@@ -375,7 +379,6 @@ class ChurchRepositoryImpl @Inject constructor(
         val current = videoLikeDao.getLikeSync(videoId)
         val newLikedState = !(current?.isLiked ?: false)
 
-        // 1. Instant Local Update
         videoLikeDao.insertOrUpdate(
             VideoLikeEntity(
                 videoId = videoId,
@@ -384,7 +387,6 @@ class ChurchRepositoryImpl @Inject constructor(
             )
         )
 
-        // 2. Schedule Sync
         val constraints = androidx.work.Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
@@ -424,7 +426,6 @@ class ChurchRepositoryImpl @Inject constructor(
         val current = audioLikeDao.getLikeSync(audioId)
         val newLikedState = !(current?.isLiked ?: false)
 
-        // 1. Instant Local Update
         audioLikeDao.insertOrUpdate(
             AudioLikeEntity(
                 audioId = audioId,
@@ -433,7 +434,6 @@ class ChurchRepositoryImpl @Inject constructor(
             )
         )
 
-        // 2. Schedule Sync
         val constraints = androidx.work.Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
@@ -464,6 +464,53 @@ class ChurchRepositoryImpl @Inject constructor(
                     )
                 } catch (e: Exception) {
                     Log.e("ChurchRepo", "Failed to init audio like for ${audio.id}")
+                }
+            }
+        }
+    }
+
+    override suspend fun toggleFeedLikeLocal(feedId: String, deviceId: String) {
+        val current = feedLikeDao.getLikeSync(feedId)
+        val newLikedState = !(current?.isLiked ?: false)
+
+        feedLikeDao.insertOrUpdate(
+            FeedLikeEntity(
+                feedId = feedId,
+                isLiked = newLikedState,
+                isPending = true
+            )
+        )
+
+        val constraints = androidx.work.Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val syncRequest = OneTimeWorkRequestBuilder<FeedLikeSyncWorker>()
+            .setConstraints(constraints)
+            .build()
+
+        WorkManager.getInstance(context).enqueueUniqueWork(
+            "sync_feed_likes",
+            ExistingWorkPolicy.APPEND_OR_REPLACE,
+            syncRequest
+        )
+    }
+
+    override suspend fun syncMissingFeedLikes(feeds: List<FeedItem>, deviceId: String) {
+        feeds.forEach { feed ->
+            val local = feedLikeDao.getLikeSync(feed.id.toString())
+            if (local == null) {
+                try {
+                    val response = chackLike(deviceId, feedId = feed.id.toString())
+                    feedLikeDao.insertOrUpdate(
+                        FeedLikeEntity(
+                            feedId = feed.id.toString(),
+                            isLiked = response.success.fanta,
+                            isPending = false
+                        )
+                    )
+                } catch (e: Exception) {
+                    Log.e("ChurchRepo", "Failed to init feed like for ${feed.id}")
                 }
             }
         }

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.poweroftheword.poweroftheword.data.local.AppDatabase
 import com.poweroftheword.poweroftheword.data.local.AudioLikeDao
+import com.poweroftheword.poweroftheword.data.local.FeedLikeDao
 import com.poweroftheword.poweroftheword.data.local.VideoLikeDao
 import com.poweroftheword.poweroftheword.data.repository.ChurchRepositoryImpl
 import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
@@ -50,7 +51,7 @@ object AppModule {
             AppDatabase::class.java,
             "power_of_the_word_db"
         )
-            .fallbackToDestructiveMigration() // Added to handle version change easily for now
+            .fallbackToDestructiveMigration()
             .build()
     }
 
@@ -68,12 +69,19 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideFeedLikeDao(database: AppDatabase): FeedLikeDao {
+        return database.feedLikeDao()
+    }
+
+    @Provides
+    @Singleton
     fun provideChurchRepository(
         client: HttpClient,
         @ApplicationContext context: Context,
         videoLikeDao: VideoLikeDao,
-        audioLikeDao: AudioLikeDao
+        audioLikeDao: AudioLikeDao,
+        feedLikeDao: FeedLikeDao
     ): ChurchRepository {
-        return ChurchRepositoryImpl(client, context, videoLikeDao, audioLikeDao)
+        return ChurchRepositoryImpl(client, context, videoLikeDao, audioLikeDao, feedLikeDao)
     }
 }

@@ -1,33 +1,38 @@
 package com.poweroftheword.poweroftheword.ui.screens.feed
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.poweroftheword.poweroftheword.data.local.FeedLikeDao
 import com.poweroftheword.poweroftheword.domain.model.FeedItem
 import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
+import com.poweroftheword.poweroftheword.util.DeviceUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.update
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class FeedViewModel @Inject constructor(
-    private val repository: ChurchRepository
+    private val repository: ChurchRepository,
+    private val feedLikeDao: FeedLikeDao,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(FeedState())
     val state: StateFlow<FeedState> = _state.asStateFlow()
 
-    // Compatibility properties for other observers
     private val _feeds = MutableStateFlow<List<FeedItem>>(emptyList())
     val feeds: StateFlow<List<FeedItem>> = _feeds.asStateFlow()
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+    val likedFeedIds: StateFlow<Set<String>> = feedLikeDao.getAllLikesFlow()
+        .map { likes -> likes.filter { it.isLiked }.map { it.feedId }.toSet() }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptySet())
 
     init {
         loadFeeds()
@@ -41,7 +46,6 @@ class FeedViewModel @Inject constructor(
             try {
                 val language = repository.getSavedLanguage().first()
 
-                // ✅ Use runCatching to enable the use of .fold() on the repository call result
                 runCatching {
                     repository.getFeeds(language)
                 }.fold(
@@ -55,7 +59,11 @@ class FeedViewModel @Inject constructor(
                         }
                         _feeds.value = feedsList
                         _isLoading.value = false
-                        Log.d("FeedVM", "Loaded ${feedsList} feeds")
+                        
+                        val deviceId = DeviceUtils.getDeviceId(context)
+                        repository.syncMissingFeedLikes(feedsList, deviceId)
+                        
+                        Log.d("FeedVM", "Loaded ${feedsList.size} feeds")
                     },
                     onFailure = { error ->
                         _state.update {
@@ -78,6 +86,13 @@ class FeedViewModel @Inject constructor(
                 Log.e("FeedVM", "Error: ${e.message}")
                 _isLoading.value = false
             }
+        }
+    }
+
+    fun toggleLike(feedId: String) {
+        viewModelScope.launch {
+            val deviceId = DeviceUtils.getDeviceId(context)
+            repository.toggleFeedLikeLocal(feedId, deviceId)
         }
     }
 }

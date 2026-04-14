@@ -1,4 +1,5 @@
 package com.poweroftheword.poweroftheword.domain.model
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -17,5 +18,17 @@ data class FeedItem(
     val language: String,
     val type: String,
     val desc: String,
+    val views: Int,
+    val like: Int,
+    val share: Int,
+    @SerialName("start_hour")
+    val startHour: String,
+    @SerialName("end_hour")
+    val endHour: String,
+    val location: String,
+    val host: String,
+    val expectation: String,
+    @SerialName("created_at")
+    val createdAt: String,
     val date: String
 )

@@ -56,6 +56,8 @@ fun HomeScreen(
     onSeeAllFeeds: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
+    val likedVideoIds by viewModel.likedVideoIds.collectAsState()
+    val likedFeedIds by viewModel.likedFeedIds.collectAsState()
 
     Surface {
         PullToRefreshBox(
@@ -92,10 +94,11 @@ fun HomeScreen(
                             )
                         }
                         item {
+                            val video = state.latestVideos[0]
                             VideoCard(
-                                video = state.latestVideos[0],
-                                onClick = { onVideoClick(state.latestVideos[0]) },
-                                onLikeClick = { viewModel.likeVideo(state.latestVideos[0].id.toString()) }
+                                video = video.copy(isLiked = likedVideoIds.contains(video.id.toString())),
+                                onClick = { onVideoClick(video) },
+                                onLikeClick = { viewModel.likeVideo(video.id.toString()) }
                             )
                         }
                     }
@@ -110,6 +113,8 @@ fun HomeScreen(
                     items(state.latestFeeds.take(3)) { feed ->
                         FeedItemCard(
                             feed = feed,
+                            isLiked = likedFeedIds.contains(feed.id.toString()),
+                            onLikeClick = { viewModel.toggleFeedLike(feed.id.toString()) },
                             onClick = { onFeedClick(feed) }
                         )
                     }

@@ -51,4 +51,7 @@ interface ChurchRepository {
     
     suspend fun toggleAudioLikeLocal(audioId: String, deviceId: String)
     suspend fun syncMissingAudioLikes(audios: List<AudioItem>, deviceId: String)
+
+    suspend fun toggleFeedLikeLocal(feedId: String, deviceId: String)
+    suspend fun syncMissingFeedLikes(feeds: List<FeedItem>, deviceId: String)
 }

@@ -33,6 +33,7 @@ fun FeedScreen(
     onFeedClick: (FeedItem) -> Unit
 ) {
     val feeds by viewModel.feeds.collectAsState()
+    val likedFeedIds by viewModel.likedFeedIds.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
 
     Scaffold(
@@ -78,6 +79,8 @@ fun FeedScreen(
                         items(feeds) { feed ->
                             FeedItemCard(
                                 feed = feed,
+                                isLiked = likedFeedIds.contains(feed.id.toString()),
+                                onLikeClick = { viewModel.toggleLike(feed.id.toString()) },
                                 onClick = { onFeedClick(feed) }
                             )
                         }
