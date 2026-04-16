@@ -36,7 +36,7 @@ class LikeSyncWorker @AssistedInject constructor(
                     action = action
                 )
 
-                if (response.success.fanta) {
+                if (response.success) {
                     // Mark as synced
                     dao.insertOrUpdate(entity.copy(isPending = false))
                     Log.d("LikeSyncWorker", "Synced ${entity.videoId} as $action")

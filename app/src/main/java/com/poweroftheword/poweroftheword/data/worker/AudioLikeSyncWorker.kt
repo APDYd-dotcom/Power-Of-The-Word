@@ -36,7 +36,7 @@ class AudioLikeSyncWorker @AssistedInject constructor(
                     action = action
                 )
 
-                if (response.success.fanta) {
+                if (response.success) {
                     // Mark as synced
                     dao.insertOrUpdate(entity.copy(isPending = false))
                     Log.d("AudioLikeSyncWorker", "Synced ${entity.audioId} as $action")

@@ -5,7 +5,11 @@ import android.util.Log
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import androidx.work.*
+import androidx.work.Constraints
+import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.poweroftheword.poweroftheword.BuildConfig
 import com.poweroftheword.poweroftheword.data.local.AudioLikeDao
 import com.poweroftheword.poweroftheword.data.local.AudioLikeEntity
@@ -13,10 +17,28 @@ import com.poweroftheword.poweroftheword.data.local.FeedLikeDao
 import com.poweroftheword.poweroftheword.data.local.FeedLikeEntity
 import com.poweroftheword.poweroftheword.data.local.VideoLikeDao
 import com.poweroftheword.poweroftheword.data.local.VideoLikeEntity
+import com.poweroftheword.poweroftheword.data.local.VideoViewDao
+import com.poweroftheword.poweroftheword.data.local.VideoViewEntity
 import com.poweroftheword.poweroftheword.data.worker.AudioLikeSyncWorker
 import com.poweroftheword.poweroftheword.data.worker.FeedLikeSyncWorker
 import com.poweroftheword.poweroftheword.data.worker.LikeSyncWorker
-import com.poweroftheword.poweroftheword.domain.model.*
+import com.poweroftheword.poweroftheword.data.worker.VideoViewSyncWorker
+import com.poweroftheword.poweroftheword.domain.model.Audio
+import com.poweroftheword.poweroftheword.domain.model.AudioItem
+import com.poweroftheword.poweroftheword.domain.model.DailyWord
+import com.poweroftheword.poweroftheword.domain.model.DailyWordItem
+import com.poweroftheword.poweroftheword.domain.model.Fanta
+import com.poweroftheword.poweroftheword.domain.model.Feed
+import com.poweroftheword.poweroftheword.domain.model.FeedItem
+import com.poweroftheword.poweroftheword.domain.model.Horaire
+import com.poweroftheword.poweroftheword.domain.model.InteractionResponse
+import com.poweroftheword.poweroftheword.domain.model.Live
+import com.poweroftheword.poweroftheword.domain.model.Program
+import com.poweroftheword.poweroftheword.domain.model.ProgramResponse
+import com.poweroftheword.poweroftheword.domain.model.Radio
+import com.poweroftheword.poweroftheword.domain.model.RadioResponse
+import com.poweroftheword.poweroftheword.domain.model.Video
+import com.poweroftheword.poweroftheword.domain.model.VideoItem
 import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -40,7 +62,8 @@ class ChurchRepositoryImpl @Inject constructor(
     private val context: Context,
     private val videoLikeDao: VideoLikeDao,
     private val audioLikeDao: AudioLikeDao,
-    private val feedLikeDao: FeedLikeDao
+    private val feedLikeDao: FeedLikeDao,
+    private val videoViewDao: VideoViewDao
 ) : ChurchRepository {
 
     private val BASE_URL = BuildConfig.BASE_URLAPI
@@ -253,7 +276,7 @@ class ChurchRepositoryImpl @Inject constructor(
             json.decodeFromString<InteractionResponse>(response)
         } catch (e: Exception) {
             Log.e("ChurchRepo", "Interactions | Error: ${e.message}", e)
-            InteractionResponse(Fanta(fanta = false), "Error", "")
+            InteractionResponse( false, "Error", "")
         }
     }
 
@@ -298,7 +321,7 @@ class ChurchRepositoryImpl @Inject constructor(
             json.decodeFromString<InteractionResponse>(response)
         } catch (e: Exception){
             Log.e("ChurchRepo", "chackLike | Error: ${e.message}", e)
-            InteractionResponse(Fanta(fanta = false), "Error", "")
+            InteractionResponse(false, "Error", "")
         }
     }
 
@@ -423,7 +446,7 @@ class ChurchRepositoryImpl @Inject constructor(
                     videoLikeDao.insertOrUpdate(
                         VideoLikeEntity(
                             videoId = video.id.toString(),
-                            isLiked = response.success.fanta,
+                            isLiked = response.success,
                             isPending = false
                         )
                     )
@@ -470,7 +493,7 @@ class ChurchRepositoryImpl @Inject constructor(
                     audioLikeDao.insertOrUpdate(
                         AudioLikeEntity(
                             audioId = audio.id.toString(),
-                            isLiked = response.success.fanta,
+                            isLiked = response.success,
                             isPending = false
                         )
                     )
@@ -517,7 +540,7 @@ class ChurchRepositoryImpl @Inject constructor(
                     feedLikeDao.insertOrUpdate(
                         FeedLikeEntity(
                             feedId = feed.id.toString(),
-                            isLiked = response.success.fanta,
+                            isLiked = response.success,
                             isPending = false
                         )
                     )
@@ -525,6 +548,39 @@ class ChurchRepositoryImpl @Inject constructor(
                     Log.e("ChurchRepo", "Failed to init feed like for ${feed.id}")
                 }
             }
+        }
+    }
+
+    override suspend fun recordVideoViewLocal(videoId: String) {
+        val existing = videoViewDao.getVideoView(videoId)
+        if (existing == null || !existing.viewed) {
+            videoViewDao.insertOrUpdate(
+                VideoViewEntity(
+                    videoId = videoId,
+                    viewed = true,
+                    isPending = true
+                )
+            )
+
+            val constraints = Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build()
+
+            val syncRequest = OneTimeWorkRequestBuilder<VideoViewSyncWorker>()
+                .setConstraints(constraints)
+                .build()
+
+            WorkManager.getInstance(context).enqueueUniqueWork(
+                "sync_video_views",
+                ExistingWorkPolicy.APPEND_OR_REPLACE,
+                syncRequest
+            )
+        }
+    }
+
+    override fun getVideoViewedFlow(): Flow<Set<String>> {
+        return videoViewDao.getAllViewsFlow().map { views ->
+            views.filter { it.viewed }.map { it.videoId }.toSet()
         }
     }
 }

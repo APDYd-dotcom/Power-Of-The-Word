@@ -157,7 +157,7 @@ fun FeedItemCard(
                         Spacer(modifier = Modifier.width(4.dp))
 
                         Text(
-                            text = "1.2K views",
+                            text = "${feed.views} views",
                             fontSize = 12.sp
                         )
                     }

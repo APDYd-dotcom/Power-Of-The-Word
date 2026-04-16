@@ -7,7 +7,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -30,9 +29,8 @@ fun RelatedVideoCard(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() }
-            .padding(16.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
-
         AsyncImage(
             model = ImageRequest.Builder(context)
                 .data("https://img.youtube.com/vi/$videoId/maxresdefault.jpg")
@@ -49,11 +47,11 @@ fun RelatedVideoCard(
         Spacer(Modifier.width(12.dp))
 
         Column(Modifier.weight(1f)) {
-
             Text(
                 text = video.title,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
             )
@@ -67,7 +65,7 @@ fun RelatedVideoCard(
             )
 
             Text(
-                text = "${video.view ?: 0} views",
+                text = "${video.views ?: 0} views",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

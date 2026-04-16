@@ -136,7 +136,7 @@ fun VideoDetailScreen(
                             Spacer(modifier = Modifier.height(8.dp))
 
                             Text(
-                                text = "${currentVideo.view ?: 0} views • ${formatDate(currentVideo.date)}",
+                                text = "${currentVideo.views ?: 0} views • ${formatDate(currentVideo.date)}",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )

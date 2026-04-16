@@ -57,4 +57,8 @@ interface ChurchRepository {
 
     suspend fun toggleFeedLikeLocal(feedId: String, deviceId: String)
     suspend fun syncMissingFeedLikes(feeds: List<FeedItem>, deviceId: String)
+
+    // Video View Tracking (TikTok-style)
+    suspend fun recordVideoViewLocal(videoId: String)
+    fun getVideoViewedFlow(): Flow<Set<String>>
 }

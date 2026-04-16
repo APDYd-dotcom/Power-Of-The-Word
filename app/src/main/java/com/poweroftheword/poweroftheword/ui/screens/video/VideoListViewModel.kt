@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.poweroftheword.poweroftheword.data.local.VideoLikeDao
+import com.poweroftheword.poweroftheword.data.local.VideoViewDao
 import com.poweroftheword.poweroftheword.domain.model.VideoItem
 import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
 import com.poweroftheword.poweroftheword.util.DeviceUtils
@@ -19,6 +20,7 @@ import javax.inject.Inject
 class VideoListViewModel @Inject constructor(
     private val repository: ChurchRepository,
     private val dao: VideoLikeDao,
+    private val videoViewDao: VideoViewDao,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -31,15 +33,29 @@ class VideoListViewModel @Inject constructor(
     private val _rawVideos = MutableStateFlow<List<VideoItem>>(emptyList())
     
     val filteredVideos: StateFlow<List<VideoItem>> =
-        combine(_rawVideos, _searchQuery, _selectedType, dao.getAllLikesFlow()) { videos, query, type, localLikes ->
+        combine(
+            _rawVideos, 
+            _searchQuery, 
+            _selectedType, 
+            dao.getAllLikesFlow(),
+            videoViewDao.getAllViewsFlow()
+        ) { videos, query, type, localLikes, localViews ->
             val likeMap = localLikes.associateBy { it.videoId }
+            val viewMap = localViews.associateBy { it.videoId }
+            
             videos.map { video ->
                 val localState = likeMap[video.id.toString()]
+                val localView = viewMap[video.id.toString()]
+                
                 video.copy(
                     isLiked = localState?.isLiked ?: false,
+                    isViewed = localView != null,
                     like = if (localState?.isPending == true) {
                         if (localState.isLiked) (video.like ?: 0) + 1 else maxOf(0, (video.like ?: 0) - 1)
-                    } else video.like
+                    } else video.like,
+                    views = if (localView?.isPending == true) {
+                        (video.views ?: 0) + 1
+                    } else video.views
                 )
             }.filter { video ->
                 val matchesQuery = query.isBlank() || 
@@ -56,6 +72,9 @@ class VideoListViewModel @Inject constructor(
 
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
+
+    val viewedVideoIds: StateFlow<Set<String>> = repository.getVideoViewedFlow()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptySet())
 
     init {
         repository.getSavedLanguage()
@@ -93,12 +112,19 @@ class VideoListViewModel @Inject constructor(
 
     fun onVideoViewed(videoId: String) {
         viewModelScope.launch {
-            val deviceId = DeviceUtils.getDeviceId(context)
+            // 1. Record locally first - this triggers the Flow in filteredVideos immediately
+            repository.recordVideoViewLocal(videoId)
+            
+            // 2. Then call the interactions API in the background
             try {
-                repository.recordVideoView(videoId, deviceId)
-                Log.d("VideoListViewModel", "View recorded for video $videoId")
+                val deviceId = DeviceUtils.getDeviceId(context)
+                repository.interactions(
+                    deviceId = deviceId,
+                    videoId = videoId,
+                    action = "view"
+                )
             } catch (e: Exception) {
-                Log.e("VideoListViewModel", "Failed to record view", e)
+                Log.e("VideoListVM", "Failed to sync view to server: ${e.message}")
             }
         }
     }

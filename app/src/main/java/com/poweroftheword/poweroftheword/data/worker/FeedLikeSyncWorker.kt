@@ -35,7 +35,7 @@ class FeedLikeSyncWorker @AssistedInject constructor(
                     action = action
                 )
 
-                if (response.success.fanta) {
+                if (response.success) {
                     dao.insertOrUpdate(entity.copy(isPending = false))
                     Log.d("FeedLikeSyncWorker", "Synced ${entity.feedId} as $action")
                 }

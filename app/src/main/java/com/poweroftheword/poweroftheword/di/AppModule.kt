@@ -6,6 +6,7 @@ import com.poweroftheword.poweroftheword.data.local.AppDatabase
 import com.poweroftheword.poweroftheword.data.local.AudioLikeDao
 import com.poweroftheword.poweroftheword.data.local.FeedLikeDao
 import com.poweroftheword.poweroftheword.data.local.VideoLikeDao
+import com.poweroftheword.poweroftheword.data.local.VideoViewDao
 import com.poweroftheword.poweroftheword.data.repository.ChurchRepositoryImpl
 import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
 import dagger.Module
@@ -75,13 +76,27 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideVideoViewDao(database: AppDatabase): VideoViewDao {
+        return database.videoViewDao()
+    }
+
+    @Provides
+    @Singleton
     fun provideChurchRepository(
         client: HttpClient,
         @ApplicationContext context: Context,
         videoLikeDao: VideoLikeDao,
         audioLikeDao: AudioLikeDao,
-        feedLikeDao: FeedLikeDao
+        feedLikeDao: FeedLikeDao,
+        videoViewDao: VideoViewDao
     ): ChurchRepository {
-        return ChurchRepositoryImpl(client, context, videoLikeDao, audioLikeDao, feedLikeDao)
+        return ChurchRepositoryImpl(
+            client,
+            context,
+            videoLikeDao,
+            audioLikeDao,
+            feedLikeDao,
+            videoViewDao
+        )
     }
 }
