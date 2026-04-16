@@ -98,8 +98,19 @@ class AudioListViewModel @Inject constructor(
 
     fun onAudioListened(audioId: Int) {
         viewModelScope.launch {
-            val deviceId = DeviceUtils.getDeviceId(context)
-            repository.recordAudioListen(audioId, deviceId)
+            try {
+                val deviceId = DeviceUtils.getDeviceId(context)
+                // Register view via interaction API
+                repository.interactions(
+                    deviceId = deviceId,
+                    audioId = audioId.toString(),
+                    action = "view"
+                )
+                // Also call the legacy recordAudioListen
+                repository.recordAudioListen(audioId, deviceId)
+            } catch (e: Exception) {
+                Log.e("AudioVM", "Failed to register audio view: ${e.message}")
+            }
         }
     }
 
@@ -113,7 +124,11 @@ class AudioListViewModel @Inject constructor(
     fun shareAudio(audio: AudioItem) {
         viewModelScope.launch {
             val deviceId = DeviceUtils.getDeviceId(context)
-            repository.interactions(deviceId, audioId = audio.id.toString(), action = "share")
+            try {
+                repository.interactions(deviceId, audioId = audio.id.toString(), action = "share")
+            } catch (e: Exception) {
+                Log.e("AudioVM", "Failed to register share: ${e.message}")
+            }
             ShareUtils.shareText(
                 context,
                 "Listen to this sermon: ${audio.title}\n${audio.file}"

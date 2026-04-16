@@ -139,7 +139,16 @@ class VideoListViewModel @Inject constructor(
     fun shareVideo(video: VideoItem) {
         viewModelScope.launch {
             val deviceId = DeviceUtils.getDeviceId(context)
-            try { repository.shareVideo(video.id.toString(), deviceId) } catch (_: Exception) {}
+            try {
+                repository.interactions(
+                    deviceId = deviceId,
+                    videoId = video.id.toString(),
+                    action = "share"
+                )
+                repository.shareVideo(video.id.toString(), deviceId)
+            } catch (e: Exception) {
+                Log.e("VideoListVM", "Failed to record share on server", e)
+            }
             ShareUtils.shareText(context, "Check out this sermon:\n${video.title}\n${video.url}")
         }
     }

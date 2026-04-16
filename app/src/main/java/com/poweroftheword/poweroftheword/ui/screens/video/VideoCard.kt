@@ -13,7 +13,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -48,7 +47,6 @@ fun VideoCard(
             .clickable { onClick() }
             .background(MaterialTheme.colorScheme.background)
             .padding(bottom = 16.dp)
-            .alpha(if (video.isViewed) 0.7f else 1f) // Visual indication for viewed videos
     ) {
         // Thumbnail Section
         Box(
@@ -66,22 +64,6 @@ fun VideoCard(
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
             )
-
-            if (video.isViewed) {
-                Surface(
-                    color = Color.Black.copy(alpha = 0.6f),
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                         Text(
-                            text = "WATCHED",
-                            color = Color.White,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-            }
 
             Surface(
                 color = Color.Black.copy(alpha = 0.8f),
@@ -128,7 +110,7 @@ fun VideoCard(
                     fontWeight = FontWeight.Bold,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
-                    color = if (video.isViewed) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface,
+                    color = MaterialTheme.colorScheme.onSurface,
                     lineHeight = 20.sp
                 )
 
