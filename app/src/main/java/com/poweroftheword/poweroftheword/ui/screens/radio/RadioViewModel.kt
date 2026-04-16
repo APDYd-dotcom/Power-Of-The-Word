@@ -16,6 +16,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.collections.emptyList
 
@@ -56,7 +59,10 @@ class RadioViewModel @Inject constructor(
             _isLoading.value = true
             try {
                 val language = repository.getSavedLanguage().first()
-                _radioStatus.value = repository.getRadioStatus()
+                val rawRadios = repository.getRadioStatus()
+                _radioStatus.value = rawRadios.map { radio ->
+                    radio.copy(isActive = isRadioCurrentlyActive(radio.startHour, radio.endHour))
+                }
                 Log.e("RadioViewModel", "Radio Status: ${_radioStatus.value}")
                 _programs.value = repository.getPrograms(language)
             } catch (e: Exception) {
@@ -64,6 +70,33 @@ class RadioViewModel @Inject constructor(
             } finally {
                 _isLoading.value = false
             }
+        }
+    }
+
+    private fun isRadioCurrentlyActive(startHour: String, endHour: String): Boolean {
+        return try {
+            val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
+            val currentTime = Calendar.getInstance()
+            val nowStr = sdf.format(currentTime.time)
+            val now = sdf.parse(nowStr)
+            
+            val start = sdf.parse(startHour)
+            val end = sdf.parse(endHour)
+
+            if (start != null && end != null && now != null) {
+                if (start.before(end)) {
+                    // Normal range (e.g., 08:00 - 20:00)
+                    now in start..end
+                } else {
+                    // Overnight range (e.g., 22:00 - 04:00)
+                    now.after(start) || now.before(end)
+                }
+            } else {
+                false
+            }
+        } catch (e: Exception) {
+            Log.e("RadioViewModel", "Error parsing time", e)
+            false
         }
     }
 
