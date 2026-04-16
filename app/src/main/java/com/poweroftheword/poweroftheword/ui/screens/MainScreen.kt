@@ -172,7 +172,11 @@ fun MainScreen() {
                 val viewModel: FeedViewModel = hiltViewModel()
                 val feeds by viewModel.feeds.collectAsState()
                 val feed = feeds.find { it.id == feedId?.toInt() }
-                FeedDetailScreen(feed = feed, onBackClick = { navController.popBackStack() })
+                FeedDetailScreen(
+                    feed = feed,
+                    viewModel = viewModel,
+                    onBackClick = { navController.popBackStack() }
+                )
             }
 
             composable(

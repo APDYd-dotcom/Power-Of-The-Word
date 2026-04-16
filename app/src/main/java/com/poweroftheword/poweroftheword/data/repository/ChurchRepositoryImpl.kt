@@ -363,6 +363,18 @@ class ChurchRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun shareFeed(feedId: Int, deviceId: String) {
+        try {
+            Log.d("ChurchRepo", "shareFeed | feedId: $feedId")
+            client.post("$BASE_URL/sharefeed/") {
+                contentType(ContentType.Application.Json)
+                setBody(mapOf("feed" to feedId, "device_id" to deviceId))
+            }
+        } catch (e: Exception) {
+            Log.e("ChurchRepo", "shareFeed | Error: ${e.message}")
+        }
+    }
+
     override fun getSavedLanguage(): Flow<String> {
         return context.dataStore.data.map { preferences ->
             preferences[LANGUAGE_KEY] ?: "EN"

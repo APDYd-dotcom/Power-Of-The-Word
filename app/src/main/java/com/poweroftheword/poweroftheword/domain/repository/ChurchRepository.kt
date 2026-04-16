@@ -41,6 +41,9 @@ interface ChurchRepository {
     suspend fun shareAudio(audioId: Int, deviceId: String)
 
     suspend fun registerLiveViewer(liveId: String, deviceId: String)
+
+    suspend fun shareFeed(feedId: Int, deviceId: String)
+
     // Settings
     fun getSavedLanguage(): Flow<String>
     suspend fun saveLanguage(language: String)

@@ -1,14 +1,11 @@
 package com.poweroftheword.poweroftheword.ui.screens.feed
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -16,16 +13,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material.icons.outlined.Visibility
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -36,30 +29,30 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.Bullet
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.poweroftheword.poweroftheword.domain.model.FeedItem
-import com.poweroftheword.poweroftheword.ui.theme.FigmaBrightBlue
-import com.poweroftheword.poweroftheword.ui.theme.FigmaGreen
-import com.poweroftheword.poweroftheword.ui.theme.FigmaLightBg
-import com.poweroftheword.poweroftheword.ui.theme.FigmaPurple
+import com.poweroftheword.poweroftheword.BuildConfig
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FeedDetailScreen(
     feed: FeedItem?,
+    viewModel: FeedViewModel,
     onBackClick: () -> Unit
 ) {
     if (feed == null) return
+    
+    val likedFeedIds by viewModel.likedFeedIds.collectAsState()
+    val isLiked = likedFeedIds.contains(feed.id.toString())
 
     Scaffold(
         topBar = {
@@ -71,7 +64,7 @@ fun FeedDetailScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /* Share */ }) {
+                    IconButton(onClick = { viewModel.shareFeed(feed) }) {
                         Icon(Icons.Default.Share, contentDescription = null)
                     }
                 }
@@ -87,7 +80,7 @@ fun FeedDetailScreen(
 
             // 🔥 IMAGE HEADER
             AsyncImage(
-                model = "https://poweroftheword.bi${ feed.photo}",
+                model = "${BuildConfig.BASE_URL}${feed.photo}",
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -141,7 +134,7 @@ fun FeedDetailScreen(
                     Spacer(modifier = Modifier.width(4.dp))
 
                     Text(
-                        text = "5 hours ago",
+                        text = feed.date ?: "Recently",
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
@@ -159,7 +152,7 @@ fun FeedDetailScreen(
                     Spacer(modifier = Modifier.width(4.dp))
 
                     Text(
-                        text = "1,876 views",
+                        text = "${feed.views} views",
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
@@ -190,24 +183,22 @@ fun FeedDetailScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                DetailRow("📅 Date", "Wednesday, March 19, 2026")
-                DetailRow("⏰ Time", "7:00 PM - 9:00 PM")
-                DetailRow("📍 Location", "Main Sanctuary")
-                DetailRow("🎤 Leader", "Pastor & Team")
+                DetailRow("📅 Date", feed.date ?: "N/A")
+                DetailRow("⏰ Time", "${feed.startHour ?: ""} - ${feed.endHour ?: ""}")
+                DetailRow("📍 Location", feed.location ?: "Main Sanctuary")
+                DetailRow("🎤 Leader", feed.host ?: "Pastor & Team")
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text(
-                    text = "WHAT TO EXPECT:",
-                    fontWeight = FontWeight.Bold
-                )
+                if (!feed.expectation.isNullOrBlank()) {
+                    Text(
+                        text = "WHAT TO EXPECT:",
+                        fontWeight = FontWeight.Bold
+                    )
 
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Bullet("Powerful worship and praise")
-                Bullet("Corporate prayer time")
-                Bullet("Personal prayer ministry")
-                Bullet("Fellowship and refreshments")
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(feed.expectation)
+                }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -223,16 +214,20 @@ fun FeedDetailScreen(
 
                     OutlinedButton(
                         modifier = Modifier.weight(1f),
-                        onClick = { /* Like */ }
+                        onClick = { viewModel.toggleLike(feed.id.toString()) }
                     ) {
-                        Icon(Icons.Default.FavoriteBorder, contentDescription = null)
+                        Icon(
+                            imageVector = if (isLiked) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp,
+                            contentDescription = null,
+                            tint = if (isLiked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Like")
+                        Text(if (isLiked) "Liked" else "Like")
                     }
 
                     OutlinedButton(
                         modifier = Modifier.weight(1f),
-                        onClick = { /* Share */ }
+                        onClick = { viewModel.shareFeed(feed) }
                     ) {
                         Icon(Icons.Default.Share, contentDescription = null)
                         Spacer(modifier = Modifier.width(6.dp))

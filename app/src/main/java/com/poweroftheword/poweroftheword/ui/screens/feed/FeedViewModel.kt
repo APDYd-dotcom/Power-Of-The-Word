@@ -8,6 +8,7 @@ import com.poweroftheword.poweroftheword.data.local.FeedLikeDao
 import com.poweroftheword.poweroftheword.domain.model.FeedItem
 import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
 import com.poweroftheword.poweroftheword.util.DeviceUtils
+import com.poweroftheword.poweroftheword.util.ShareUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.*
@@ -93,6 +94,17 @@ class FeedViewModel @Inject constructor(
         viewModelScope.launch {
             val deviceId = DeviceUtils.getDeviceId(context)
             repository.toggleFeedLikeLocal(feedId, deviceId)
+        }
+    }
+
+    fun shareFeed(feed: FeedItem) {
+        viewModelScope.launch {
+            val deviceId = DeviceUtils.getDeviceId(context)
+            repository.shareFeed(feed.id, deviceId)
+            ShareUtils.shareText(
+                context,
+                "Check out this event: ${feed.title}\n${feed.desc ?: ""}"
+            )
         }
     }
 }
