@@ -90,6 +90,21 @@ class FeedViewModel @Inject constructor(
         }
     }
 
+    fun onFeedViewed(feedId: String) {
+        viewModelScope.launch {
+            try {
+                val deviceId = DeviceUtils.getDeviceId(context)
+                repository.interactions(
+                    deviceId = deviceId,
+                    feedId = feedId,
+                    action = "view"
+                )
+            } catch (e: Exception) {
+                Log.e("FeedVM", "Failed to register feed view: ${e.message}")
+            }
+        }
+    }
+
     fun toggleLike(feedId: String) {
         viewModelScope.launch {
             val deviceId = DeviceUtils.getDeviceId(context)
@@ -100,7 +115,15 @@ class FeedViewModel @Inject constructor(
     fun shareFeed(feed: FeedItem) {
         viewModelScope.launch {
             val deviceId = DeviceUtils.getDeviceId(context)
-            repository.shareFeed(feed.id, deviceId)
+            try {
+                repository.interactions(
+                    deviceId = deviceId,
+                    feedId = feed.id.toString(),
+                    action = "share"
+                )
+            } catch (e: Exception) {
+                Log.e("FeedVM", "Failed to register feed share: ${e.message}")
+            }
             ShareUtils.shareText(
                 context,
                 "Check out this event: ${feed.title}\n${feed.desc ?: ""}"

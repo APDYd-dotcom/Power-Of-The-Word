@@ -30,6 +30,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -53,6 +54,11 @@ fun FeedDetailScreen(
     
     val likedFeedIds by viewModel.likedFeedIds.collectAsState()
     val isLiked = likedFeedIds.contains(feed.id.toString())
+
+    // Register view when screen is opened
+    LaunchedEffect(feed.id) {
+        viewModel.onFeedViewed(feed.id.toString())
+    }
 
     Scaffold(
         topBar = {
