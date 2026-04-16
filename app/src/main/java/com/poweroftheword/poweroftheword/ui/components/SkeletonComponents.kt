@@ -120,6 +120,115 @@ fun FeedItemCardSkeleton() {
 }
 
 @Composable
+fun FeedDetailSkeleton() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        // Image Header
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(240.dp)
+                .shimmerEffect()
+        )
+
+        Column(modifier = Modifier.padding(16.dp)) {
+            // Category Tag
+            Box(
+                modifier = Modifier
+                    .width(80.dp)
+                    .height(24.dp)
+                    .clip(RoundedCornerShape(50))
+                    .shimmerEffect()
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Title
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .height(28.dp)
+                    .shimmerEffect()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Meta row
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .width(100.dp)
+                        .height(14.dp)
+                        .shimmerEffect()
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Box(
+                    modifier = Modifier
+                        .width(60.dp)
+                        .height(14.dp)
+                        .shimmerEffect()
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Divider
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(1.dp)
+                    .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Description
+            repeat(4) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(16.dp)
+                        .shimmerEffect()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.6f)
+                    .height(16.dp)
+                    .shimmerEffect()
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Event Details header
+            Box(
+                modifier = Modifier
+                    .width(120.dp)
+                    .height(18.dp)
+                    .shimmerEffect()
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Detail rows
+            repeat(4) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
+                        .height(14.dp)
+                        .shimmerEffect()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+        }
+    }
+}
+
+@Composable
 fun DynamicHeroSkeleton() {
     Box(
         modifier = Modifier

@@ -166,7 +166,28 @@ fun MainScreen() {
 
             composable(
                 route = Screen.FeedDetail.route,
-                arguments = listOf(navArgument("feedId") { type = NavType.StringType })
+                arguments = listOf(navArgument("feedId") { type = NavType.StringType }),
+                enterTransition = {
+                    slideIntoContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                        animationSpec = tween(500)
+                    ) + fadeIn(animationSpec = tween(500))
+                },
+                exitTransition = {
+                    slideOutOfContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                        animationSpec = tween(500)
+                    ) + fadeOut(animationSpec = tween(500))
+                },
+                popEnterTransition = {
+                    fadeIn(animationSpec = tween(500))
+                },
+                popExitTransition = {
+                    slideOutOfContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                        animationSpec = tween(500)
+                    ) + fadeOut(animationSpec = tween(500))
+                }
             ) { backStackEntry ->
                 val feedId = backStackEntry.arguments?.getString("feedId")
                 val viewModel: FeedViewModel = hiltViewModel()
@@ -175,7 +196,15 @@ fun MainScreen() {
                 FeedDetailScreen(
                     feed = feed,
                     viewModel = viewModel,
-                    onBackClick = { navController.popBackStack() }
+                    onBackClick = { 
+                        if (!navController.popBackStack()) {
+                            navController.navigate(Screen.Home.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    inclusive = true
+                                }
+                            }
+                        }
+                    }
                 )
             }
 

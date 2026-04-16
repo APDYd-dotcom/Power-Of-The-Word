@@ -18,6 +18,7 @@ data class Radio(
     val url: String,
     @SerialName("start_hour")
     val startHour: String,
+    val photo: String,
     @SerialName("end_hour")
     val endHour: String,
     @SerialName("is_active")

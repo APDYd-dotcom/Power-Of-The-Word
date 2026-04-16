@@ -18,10 +18,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import com.poweroftheword.poweroftheword.BuildConfig
 import com.poweroftheword.poweroftheword.domain.model.Radio
 import com.poweroftheword.poweroftheword.ui.components.RadioHeaderSkeleton
 import com.poweroftheword.poweroftheword.ui.components.RadioStationCardSkeleton
@@ -93,6 +96,7 @@ fun RadioScreen(
                     } else {
                         // 🔷 HEADER
                         item {
+                            val playingRadio = radioStatus.find { it.id == currentlyPlayingId }
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -107,18 +111,27 @@ fun RadioScreen(
                                         .background(Color(0xFF2A3442)),
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    Icon(
-                                        Icons.Default.Radio,
-                                        contentDescription = null,
-                                        tint = Color(0xFF4DA3FF),
-                                        modifier = Modifier.size(64.dp)
-                                    )
+                                    if (playingRadio != null) {
+                                        AsyncImage(
+                                            model = playingRadio.photo,
+                                            contentDescription = null,
+                                            modifier = Modifier.fillMaxSize(),
+                                            contentScale = ContentScale.Crop
+                                        )
+                                    } else {
+                                        Icon(
+                                            Icons.Default.Radio,
+                                            contentDescription = null,
+                                            tint = Color(0xFF4DA3FF),
+                                            modifier = Modifier.size(64.dp)
+                                        )
+                                    }
                                 }
 
                                 Spacer(Modifier.height(16.dp))
 
                                 Text(
-                                    "Radio",
+                                    if (isPlaying && playingRadio != null) playingRadio.name else "Radio",
                                     color = Color.White,
                                     fontSize = 22.sp,
                                     fontWeight = FontWeight.Bold
@@ -185,11 +198,11 @@ fun RadioStationCard(
                         .background(Color.DarkGray),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        Icons.Default.Radio,
+                    AsyncImage(
+                        model = radio.photo,
                         contentDescription = null,
-                        tint = Color.White.copy(alpha = 0.2f),
-                        modifier = Modifier.size(32.dp)
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
                     )
                 }
 
