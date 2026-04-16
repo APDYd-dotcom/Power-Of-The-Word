@@ -103,7 +103,7 @@ fun FeedDetailScreen(
                     color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
                 ) {
                     Text(
-                        text = feed.type.uppercase(),
+                        text = feed.type?.uppercase() ?: "",
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.labelSmall,
@@ -171,11 +171,13 @@ fun FeedDetailScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // 🔥 DESCRIPTION
-                Text(
-                    text = feed.desc,
-                    style = MaterialTheme.typography.bodyMedium,
-                    lineHeight = 22.sp
-                )
+                feed.desc?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.bodyMedium,
+                        lineHeight = 22.sp
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(16.dp))
 

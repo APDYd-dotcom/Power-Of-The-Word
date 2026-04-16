@@ -31,7 +31,7 @@ fun FeedItemCard(
     onClick: () -> Unit
 ) {
 
-    val categoryColor = when (feed.type.lowercase()) {
+    val categoryColor = when (feed.type?.lowercase()) {
         "igikorane" -> FigmaBrightBlue
         "itaganzo" -> FigmaGreen
         else -> FigmaPurple
@@ -86,13 +86,15 @@ fun FeedItemCard(
                         .padding(12.dp)
                         .align(Alignment.TopStart)
                 ) {
-                    Text(
-                        text = feed.type.uppercase(),
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.labelSmall
-                    )
+                    feed.type?.uppercase()?.let {
+                        Text(
+                            text = it,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                    }
                 }
 
                 // 🔥 TITLE
@@ -111,12 +113,14 @@ fun FeedItemCard(
             // 🔥 CONTENT
             Column(modifier = Modifier.padding(16.dp)) {
 
-                Text(
-                    text = feed.desc.truncate(120),
-                    style = MaterialTheme.typography.bodyMedium,
-                    maxLines = 3,
-                    overflow = TextOverflow.Ellipsis
-                )
+                feed.desc?.truncate(120)?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.bodyMedium,
+                        maxLines = 3,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(12.dp))
 
