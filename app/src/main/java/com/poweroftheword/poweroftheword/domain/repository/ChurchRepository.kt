@@ -35,6 +35,9 @@ interface ChurchRepository {
         feedId: String? = null
     ) : InteractionResponse
     suspend fun shareVideo(videoId: String, deviceId: String)
+
+    suspend fun getPastor(): List<PastorItem>
+
     
     suspend fun recordAudioListen(audioId: Int, deviceId: String)
     suspend fun likeAudio(audioId: Int, deviceId: String)

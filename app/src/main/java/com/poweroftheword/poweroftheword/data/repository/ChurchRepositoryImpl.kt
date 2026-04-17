@@ -23,22 +23,7 @@ import com.poweroftheword.poweroftheword.data.worker.AudioLikeSyncWorker
 import com.poweroftheword.poweroftheword.data.worker.FeedLikeSyncWorker
 import com.poweroftheword.poweroftheword.data.worker.LikeSyncWorker
 import com.poweroftheword.poweroftheword.data.worker.VideoViewSyncWorker
-import com.poweroftheword.poweroftheword.domain.model.Audio
-import com.poweroftheword.poweroftheword.domain.model.AudioItem
-import com.poweroftheword.poweroftheword.domain.model.DailyWord
-import com.poweroftheword.poweroftheword.domain.model.DailyWordItem
-import com.poweroftheword.poweroftheword.domain.model.Fanta
-import com.poweroftheword.poweroftheword.domain.model.Feed
-import com.poweroftheword.poweroftheword.domain.model.FeedItem
-import com.poweroftheword.poweroftheword.domain.model.Horaire
-import com.poweroftheword.poweroftheword.domain.model.InteractionResponse
-import com.poweroftheword.poweroftheword.domain.model.Live
-import com.poweroftheword.poweroftheword.domain.model.Program
-import com.poweroftheword.poweroftheword.domain.model.ProgramResponse
-import com.poweroftheword.poweroftheword.domain.model.Radio
-import com.poweroftheword.poweroftheword.domain.model.RadioResponse
-import com.poweroftheword.poweroftheword.domain.model.Video
-import com.poweroftheword.poweroftheword.domain.model.VideoItem
+import com.poweroftheword.poweroftheword.domain.model.*
 import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -276,7 +261,7 @@ class ChurchRepositoryImpl @Inject constructor(
             json.decodeFromString<InteractionResponse>(response)
         } catch (e: Exception) {
             Log.e("ChurchRepo", "Interactions | Error: ${e.message}", e)
-            InteractionResponse( false, "Error", "")
+            InteractionResponse(false, "Error", "")
         }
     }
 
@@ -304,7 +289,7 @@ class ChurchRepositoryImpl @Inject constructor(
         feedId: String?
     ): InteractionResponse {
         return try {
-            val response = client.post( "$BASE_URL/checklike/"){
+            val response = client.post("$BASE_URL/checklike/") {
                 contentType(ContentType.Application.Json)
                 setBody(
                     if (videoId != null)
@@ -319,7 +304,7 @@ class ChurchRepositoryImpl @Inject constructor(
             }.bodyAsText()
             Log.d("ChurchRepo", "chackLike | Success: $response")
             json.decodeFromString<InteractionResponse>(response)
-        } catch (e: Exception){
+        } catch (e: Exception) {
             Log.e("ChurchRepo", "chackLike | Error: ${e.message}", e)
             InteractionResponse(false, "Error", "")
         }
@@ -581,6 +566,20 @@ class ChurchRepositoryImpl @Inject constructor(
     override fun getVideoViewedFlow(): Flow<Set<String>> {
         return videoViewDao.getAllViewsFlow().map { views ->
             views.filter { it.viewed }.map { it.videoId }.toSet()
+        }
+    }
+
+
+    override suspend fun getPastor(): List<PastorItem> {
+        return try {
+            Log.d("ChurchRepo", "getPastor | Fetching...")
+            val response: String = client.get("${BASE_URL}/pastor/").bodyAsText()
+            val res = json.decodeFromString<Pastor>(response)
+            Log.d("ChurchRepo", "getPastor | Found ${res.results.size} pastors")
+            res.results
+        } catch (e: Exception) {
+            Log.e("ChurchRepo", "getPastor | Error: ${e.message}")
+            emptyList()
         }
     }
 }

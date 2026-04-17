@@ -11,18 +11,29 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.poweroftheword.poweroftheword.ui.screens.about.PastorViewModel
 import com.poweroftheword.poweroftheword.util.IntentUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ContactScreen(onBackClick: () -> Unit) {
+fun ContactScreen(
+    onBackClick: () -> Unit,
+    viewModel: PastorViewModel = hiltViewModel()
+) {
     val context = LocalContext.current
+    val pastors by viewModel.pastor.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    
+    val pastor = pastors.firstOrNull()
     
     Scaffold(
         topBar = {
@@ -36,62 +47,88 @@ fun ContactScreen(onBackClick: () -> Unit) {
             )
         }
     ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .padding(paddingValues)
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp)
-        ) {
-            Text(
-                text = "Get in Touch",
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "Have questions or need prayer? Reach out to us through any of the following channels.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            
-            Spacer(modifier = Modifier.height(24.dp))
-            
-            ContactMethodItem(
-                title = "Phone",
-                value = "+257 12 34 56 78",
-                icon = Icons.Default.Phone,
-                onClick = { IntentUtils.dialNumber(context, "+25712345678") }
-            )
-            
-            ContactMethodItem(
-                title = "Email",
-                value = "contact@poweroftheword.org",
-                icon = Icons.Default.Email,
-                onClick = { IntentUtils.sendEmail(context, "contact@poweroftheword.org", "Ministry Inquiry") }
-            )
-            
-            ContactMethodItem(
-                title = "Location",
-                value = "Bujumbura, Burundi",
-                icon = Icons.Default.LocationOn,
-                onClick = { /* Could add map intent if needed */ }
-            )
-            
-            Spacer(modifier = Modifier.height(32.dp))
-            
-            Text(
-                text = "Social Media",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            Text(
-                text = "Follow us on Facebook, YouTube and Instagram for daily spiritual messages and live services.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+        if (isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = "Get in Touch",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Have questions or need prayer? Reach out to us through any of the following channels.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                
+                Spacer(modifier = Modifier.height(24.dp))
+                
+                ContactMethodItem(
+                    title = "Phone",
+                    value = pastor?.phone ?: "+257 12 34 56 78",
+                    icon = Icons.Default.Phone,
+                    onClick = { 
+                        pastor?.phone?.let { IntentUtils.dialNumber(context, it) } 
+                            ?: IntentUtils.dialNumber(context, "+25712345678")
+                    }
+                )
+                
+                ContactMethodItem(
+                    title = "Email",
+                    value = pastor?.email ?: "contact@poweroftheword.org",
+                    icon = Icons.Default.Email,
+                    onClick = { 
+                        pastor?.email?.let { IntentUtils.sendEmail(context, it, "Ministry Inquiry") }
+                            ?: IntentUtils.sendEmail(context, "contact@poweroftheword.org", "Ministry Inquiry")
+                    }
+                )
+
+                if (pastor?.whatsapp != null && pastor.whatsapp.isNotEmpty()) {
+                    ContactMethodItem(
+                        title = "WhatsApp",
+                        value = pastor.whatsapp,
+                        icon = Icons.Default.Phone, // You might want to use a WhatsApp icon if available
+                        onClick = { IntentUtils.dialNumber(context, pastor.whatsapp) }
+                    )
+                }
+                
+                ContactMethodItem(
+                    title = "Location",
+                    value = "Bujumbura, Burundi",
+                    icon = Icons.Default.LocationOn,
+                    onClick = { /* Could add map intent if needed */ }
+                )
+                
+                Spacer(modifier = Modifier.height(32.dp))
+                
+                Text(
+                    text = "Social Media",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                Text(
+                    text = "Follow us on Facebook, YouTube and Instagram for daily spiritual messages and live services.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
     }
 }

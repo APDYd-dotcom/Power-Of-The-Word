@@ -16,6 +16,8 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,6 +27,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import com.poweroftheword.poweroftheword.R
 import com.poweroftheword.poweroftheword.ui.components.AboutScreenSkeleton
 import com.poweroftheword.poweroftheword.util.localizedString
@@ -35,14 +39,15 @@ import com.poweroftheword.poweroftheword.util.localizedString
 fun AboutScreen(
     onBackClick: () -> Unit,
     onDonationClick: () -> Unit,
-    onSettingsClick: () -> Unit
+    onSettingsClick: () -> Unit,
+    viewModel: PastorViewModel = hiltViewModel()
 ) {
 
     val scrollState = rememberScrollState()
-    // In a real app, you would get isLoading from a ViewModel. 
-    // Since AboutScreen currently doesn't have a ViewModel, we'll assume it's loaded for now.
-    // If you add an API call here later, you can toggle this.
-    val isLoading = false 
+    val pastors by viewModel.pastor.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    
+    val pastor = pastors.firstOrNull()
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -87,26 +92,39 @@ fun AboutScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
 
-                    Image(
-                        painter = painterResource(id = R.drawable.dailword1),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(70.dp)
-                            .clip(CircleShape),
-                        contentScale = ContentScale.Crop
-                    )
+                    if (pastor != null) {
+                        AsyncImage(
+                            model = pastor.photo,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(70.dp)
+                                .clip(CircleShape),
+                            contentScale = ContentScale.Crop,
+                            placeholder = painterResource(id = R.drawable.dailword1),
+                            error = painterResource(id = R.drawable.dailword1)
+                        )
+                    } else {
+                        Image(
+                            painter = painterResource(id = R.drawable.dailword1),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(70.dp)
+                                .clip(CircleShape),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
 
                     Spacer(modifier = Modifier.width(12.dp))
 
                     Column {
                         Text(
-                            localizedString(R.string.pastor_name),
+                            text = pastor?.fullName ?: localizedString(R.string.pastor_name),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
 
                         Text(
-                            localizedString(R.string.pastor_title),
+                            text = localizedString(R.string.pastor_title),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -125,7 +143,7 @@ fun AboutScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        localizedString(R.string.about_description),
+                        text = pastor?.bio ?: localizedString(R.string.about_description),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -184,7 +202,7 @@ fun AboutScreen(
                 ContactItem(icon = R.drawable.youtube,size = 45, text = localizedString(R.string.youtube_page))
 
     // ⚙️ SYSTEM ACTIONS (icons)
-                ContactItem(iconVector = Icons.Default.Email, onClik = { onSettingsClick() }, text = "info@poweroftheword.com")
+                ContactItem(iconVector = Icons.Default.Email, onClik = { onSettingsClick() }, text = pastor?.email ?: "info@poweroftheword.com")
                 ContactItem(iconVector = Icons.Default.Favorite, onClik = { onDonationClick() }, text = localizedString(R.string.donate_power_word))
                 ContactItem(iconVector = Icons.Default.MenuBook, text = localizedString(R.string.power_word_story))
                 Spacer(modifier = Modifier.height(40.dp))
@@ -249,7 +267,7 @@ fun ContactItem(
                 .clickable { onClik }
                 .background(
                     when {
-                        text.contains("info@") -> Color(0xFFFF6B6B) // 🔴 Email
+                        text.contains("info@") || text.contains("@") -> Color(0xFFFF6B6B) // 🔴 Email
                         text.contains("Donate") || text.contains("Dons") || text.contains("Changia") || text.contains("Shigikira") -> Color(0xFFB36BFF) // 🟣 Donate
                         text.contains("Story") || text.contains("histoire") || text.contains("Hadithi") || text.contains("Amakuru") -> Color(0xFF4A90E2) // 🔵 Story
                         else -> MaterialTheme.colorScheme.surface
