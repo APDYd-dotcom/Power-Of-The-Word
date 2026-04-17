@@ -23,7 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.poweroftheword.poweroftheword.R
 import com.poweroftheword.poweroftheword.domain.model.FeedItem
-import com.poweroftheword.poweroftheword.ui.components.FeedItemCardSkeleton
+import com.poweroftheword.poweroftheword.ui.components.FeedDetailSkeleton
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,7 +57,7 @@ fun FeedScreen(
                         contentPadding = PaddingValues(vertical = 8.dp)
                     ) {
                         items(5) {
-                            FeedItemCardSkeleton()
+                            FeedDetailSkeleton()
                         }
                     }
                 }
