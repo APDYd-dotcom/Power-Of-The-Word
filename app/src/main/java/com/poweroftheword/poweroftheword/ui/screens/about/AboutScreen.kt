@@ -1,5 +1,6 @@
 package com.poweroftheword.poweroftheword.ui.screens.about
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,6 +37,8 @@ import coil.compose.AsyncImage
 import com.poweroftheword.poweroftheword.R
 import com.poweroftheword.poweroftheword.ui.components.AboutScreenSkeleton
 import com.poweroftheword.poweroftheword.ui.screens.program.ProgramViewModel
+import com.poweroftheword.poweroftheword.ui.screens.settings.SettingsViewModel
+import androidx.compose.foundation.isSystemInDarkTheme
 import com.poweroftheword.poweroftheword.util.localizedString
 
 
@@ -46,7 +49,8 @@ fun AboutScreen(
     onDonationClick: () -> Unit,
     onSettingsClick: () -> Unit,
     viewModel: PastorViewModel = hiltViewModel(),
-    programViewModel: ProgramViewModel = hiltViewModel()
+    programViewModel: ProgramViewModel = hiltViewModel(),
+    settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
 
     val scrollState = rememberScrollState()
@@ -56,18 +60,22 @@ fun AboutScreen(
     val programs by programViewModel.programs.collectAsState()
     val isProgramsLoading by programViewModel.isLoading.collectAsState()
 
+    val userDarkMode by settingsViewModel.isDarkMode.collectAsState()
+    val isDark = userDarkMode ?: isSystemInDarkTheme()
+
     val pastor = pastors.firstOrNull()
     val isRefreshing = isLoading || isProgramsLoading
 
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.98f),
+        containerColor = if (isDark) Color(0xFF121826) else MaterialTheme.colorScheme.surface.copy(alpha = 0.98f),
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
                         localizedString(R.string.about),
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.ExtraBold
+                        fontWeight = FontWeight.ExtraBold,
+                        color = if (isDark) Color.White else MaterialTheme.colorScheme.onSurface
                     )
                 },
                 navigationIcon = {
@@ -76,12 +84,12 @@ fun AboutScreen(
                         modifier = Modifier
                             .padding(8.dp)
                             .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                            .background(if (isDark) Color.White.copy(alpha = 0.1f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                     ) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack, 
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = if (isDark) Color.White else MaterialTheme.colorScheme.primary
                         )
                     }
                 },
@@ -113,9 +121,9 @@ fun AboutScreen(
                     Card(
                         modifier = Modifier.padding(16.dp),
                         shape = RoundedCornerShape(32.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                        border = CardDefaults.outlinedCardBorder()
+                        colors = CardDefaults.cardColors(containerColor = if (isDark) Color(0xFF1E2635) else MaterialTheme.colorScheme.surface),
+                        elevation = CardDefaults.cardElevation(defaultElevation = if (isDark) 0.dp else 2.dp),
+                        border = if (isDark) BorderStroke(1.dp, Color.White.copy(alpha = 0.05f)) else CardDefaults.outlinedCardBorder()
                     ) {
                         Row(
                             modifier = Modifier
@@ -152,13 +160,13 @@ fun AboutScreen(
                                     text = pastor?.fullName ?: localizedString(R.string.pastor_name),
                                     style = MaterialTheme.typography.titleLarge,
                                     fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onSurface
+                                    color = if (isDark) Color.White else MaterialTheme.colorScheme.onSurface
                                 )
 
                                 Text(
                                     text = localizedString(R.string.pastor_title),
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.primary,
+                                    color = if (isDark) Color(0xFF3D74F6) else MaterialTheme.colorScheme.primary,
                                     fontWeight = FontWeight.Medium
                                 )
                             }
@@ -170,7 +178,7 @@ fun AboutScreen(
                         Text(
                             text = localizedString(R.string.about_motto),
                             style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.primary,
+                            color = if (isDark) Color(0xFF3D74F6) else MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 0.5.sp
                         )
@@ -180,22 +188,22 @@ fun AboutScreen(
                         Text(
                             text = pastor?.bio ?: localizedString(R.string.about_description),
                             style = MaterialTheme.typography.bodyLarge.copy(lineHeight = 24.sp),
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+                            color = if (isDark) Color.White.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
                         )
                     }
 
                     Spacer(modifier = Modifier.height(32.dp))
 
                     // 📅 WEEKLY PROGRAM SECTION
-                    AboutSectionTitle(localizedString(R.string.weekly_program))
+                    AboutSectionTitle(localizedString(R.string.weekly_program), isDark)
 
                     Card(
                         modifier = Modifier
                             .padding(horizontal = 16.dp, vertical = 8.dp),
                         shape = RoundedCornerShape(28.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        colors = CardDefaults.cardColors(containerColor = if (isDark) Color(0xFF1E2635) else MaterialTheme.colorScheme.surface),
                         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-                        border = CardDefaults.outlinedCardBorder()
+                        border = if (isDark) BorderStroke(1.dp, Color.White.copy(alpha = 0.05f)) else CardDefaults.outlinedCardBorder()
                     ) {
                         Column {
                             if (programs.isEmpty()) {
@@ -203,19 +211,20 @@ fun AboutScreen(
                                     text = "No programs scheduled.",
                                     modifier = Modifier.padding(24.dp),
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = if (isDark) Color.Gray else MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             } else {
                                 programs.forEachIndexed { index, program ->
                                     ModernProgramRow(
                                         day = program.day,
                                         time = "${program.startHour} - ${program.endHour}",
-                                        title = program.title
+                                        title = program.title,
+                                        isDark = isDark
                                     )
                                     if (index != programs.lastIndex) {
                                         HorizontalDivider(
                                             modifier = Modifier.padding(horizontal = 24.dp),
-                                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                                            color = if (isDark) Color.White.copy(alpha = 0.05f) else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
                                         )
                                     }
                                 }
@@ -226,31 +235,31 @@ fun AboutScreen(
                     Spacer(modifier = Modifier.height(32.dp))
 
                     // 📞 CONTACTS SECTION
-                    AboutSectionTitle(localizedString(R.string.contacts))
+                    AboutSectionTitle(localizedString(R.string.contacts), isDark)
 
                     // Social Media & Actions
                     Column(modifier = Modifier.padding(horizontal = 8.dp)) {
                         Row(modifier = Modifier.fillMaxWidth()) {
                             Box(modifier = Modifier.weight(1f)) {
-                                ContactItem(icon = R.drawable.instagram, size = 30, text = localizedString(R.string.instagram_page))
+                                ContactItem(icon = R.drawable.instagram, size = 30, text = localizedString(R.string.instagram_page), isDark = isDark)
                             }
                             Box(modifier = Modifier.weight(1f)) {
-                                ContactItem(icon = R.drawable.facebook, size = 30, text = localizedString(R.string.facebook_page))
+                                ContactItem(icon = R.drawable.facebook, size = 30, text = localizedString(R.string.facebook_page), isDark = isDark)
                             }
                         }
                         Row(modifier = Modifier.fillMaxWidth()) {
                             Box(modifier = Modifier.weight(1f)) {
-                                ContactItem(icon = R.drawable.tiktok, size = 30, text = localizedString(R.string.tiktok_page))
+                                ContactItem(icon = R.drawable.tiktok, size = 30, text = localizedString(R.string.tiktok_page), isDark = isDark)
                             }
                             Box(modifier = Modifier.weight(1f)) {
-                                ContactItem(icon = R.drawable.youtube, size = 30, text = localizedString(R.string.youtube_page))
+                                ContactItem(icon = R.drawable.youtube, size = 30, text = localizedString(R.string.youtube_page), isDark = isDark)
                             }
                         }
                         
-                        ContactItem(iconVector = Icons.Default.Email, onClik = { onSettingsClick() }, text = pastor?.email ?: "info@poweroftheword.com")
-                        ContactItem(iconVector = Icons.Default.Favorite, onClik = { onDonationClick() }, text = localizedString(R.string.donate_power_word))
-                        ContactItem(iconVector = Icons.Default.MenuBook, text = localizedString(R.string.power_word_story))
-                        ContactItem(iconVector = Icons.Default.Settings, onClik = { onSettingsClick() }, text = localizedString(R.string.settings))
+                        ContactItem(iconVector = Icons.Default.Email, onClik = { onSettingsClick() }, text = pastor?.email ?: "info@poweroftheword.com", isDark = isDark)
+                        ContactItem(iconVector = Icons.Default.Favorite, onClik = { onDonationClick() }, text = localizedString(R.string.donate_power_word), isDark = isDark)
+                        ContactItem(iconVector = Icons.Default.MenuBook, text = localizedString(R.string.power_word_story), isDark = isDark)
+                        ContactItem(iconVector = Icons.Default.Settings, onClik = { onSettingsClick() }, text = localizedString(R.string.settings), isDark = isDark)
                     }
                     
                     Spacer(modifier = Modifier.height(40.dp))
@@ -261,19 +270,19 @@ fun AboutScreen(
 }
 
 @Composable
-fun AboutSectionTitle(title: String) {
+fun AboutSectionTitle(title: String, isDark: Boolean) {
     Text(
         text = title,
         modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
         style = MaterialTheme.typography.labelLarge,
         fontWeight = FontWeight.Bold,
-        color = MaterialTheme.colorScheme.primary,
+        color = if (isDark) Color(0xFF3D74F6) else MaterialTheme.colorScheme.primary,
         letterSpacing = 0.5.sp
     )
 }
 
 @Composable
-fun ModernProgramRow(day: String, time: String, title: String) {
+fun ModernProgramRow(day: String, time: String, title: String, isDark: Boolean) {
     Column(modifier = Modifier.padding(24.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -281,7 +290,7 @@ fun ModernProgramRow(day: String, time: String, title: String) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Surface(
-                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f),
+                color = if (isDark) Color(0xFF3D74F6).copy(alpha = 0.1f) else MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f),
                 shape = RoundedCornerShape(8.dp)
             ) {
                 Text(
@@ -289,13 +298,13 @@ fun ModernProgramRow(day: String, time: String, title: String) {
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    color = if (isDark) Color(0xFF3D74F6) else MaterialTheme.colorScheme.primary
                 )
             }
             Text(
                 text = time,
                 style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = if (isDark) Color.Gray else MaterialTheme.colorScheme.onSurfaceVariant,
                 fontWeight = FontWeight.Medium
             )
         }
@@ -306,7 +315,7 @@ fun ModernProgramRow(day: String, time: String, title: String) {
             text = title,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
+            color = if (isDark) Color.White else MaterialTheme.colorScheme.onSurface
         )
     }
 }
@@ -317,7 +326,8 @@ fun ContactItem(
     iconVector: ImageVector? = null,
     onClik: () -> Unit = {},
     size: Int = 22,
-    text: String
+    text: String,
+    isDark: Boolean
 ) {
     Card(
         modifier = Modifier
@@ -325,9 +335,9 @@ fun ContactItem(
             .fillMaxWidth()
             .clickable { onClik() },
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        colors = CardDefaults.cardColors(containerColor = if (isDark) Color(0xFF1E2635) else MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        border = CardDefaults.outlinedCardBorder()
+        border = if (isDark) BorderStroke(1.dp, Color.White.copy(alpha = 0.05f)) else CardDefaults.outlinedCardBorder()
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -342,8 +352,8 @@ fun ContactItem(
                             text.contains("info@") || text.contains("@") -> Color(0xFFFF6B6B).copy(alpha = 0.1f)
                             text.contains("Donate") || text.contains("Dons") || text.contains("Shigikira") || text.contains("Changia") -> Color(0xFFB36BFF).copy(alpha = 0.1f)
                             text.contains("Story") || text.contains("histoire") || text.contains("Hadithi") || text.contains("Amakuru") -> Color(0xFF4A90E2).copy(alpha = 0.1f)
-                            text.contains("Settings") || text.contains("Paramètres") || text.contains("Igenamiterere") || text.contains("Mipangilio") -> MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-                            else -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
+                            text.contains("Settings") || text.contains("Paramètres") || text.contains("Igenamiterere") || text.contains("Mipangilio") -> (if (isDark) Color(0xFF3D74F6) else MaterialTheme.colorScheme.primary).copy(alpha = 0.1f)
+                            else -> (if (isDark) Color(0xFF3D74F6) else MaterialTheme.colorScheme.primaryContainer).copy(alpha = 0.4f)
                         }
                     ),
                 contentAlignment = Alignment.Center
@@ -363,7 +373,7 @@ fun ContactItem(
                             text.contains("info@") || text.contains("@") -> Color(0xFFFF6B6B)
                             text.contains("Donate") || text.contains("Dons") || text.contains("Shigikira") || text.contains("Changia") -> Color(0xFFB36BFF)
                             text.contains("Story") || text.contains("histoire") || text.contains("Hadithi") || text.contains("Amakuru") -> Color(0xFF4A90E2)
-                            else -> MaterialTheme.colorScheme.primary
+                            else -> if (isDark) Color(0xFF3D74F6) else MaterialTheme.colorScheme.primary
                         },
                         modifier = Modifier.size(20.dp)
                     )
@@ -376,7 +386,7 @@ fun ContactItem(
                 text = text,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = if (isDark) Color.White else MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.weight(1f),
                 maxLines = 1
             )
@@ -384,7 +394,7 @@ fun ContactItem(
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.outlineVariant,
+                tint = if (isDark) Color.Gray else MaterialTheme.colorScheme.outlineVariant,
                 modifier = Modifier.size(16.dp)
             )
         }
