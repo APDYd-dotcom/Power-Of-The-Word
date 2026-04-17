@@ -7,7 +7,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material3.*
@@ -22,6 +24,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
@@ -107,7 +110,7 @@ fun DynamicHero(
                     text = "Power of the Word".truncate(20),
                     color = Color.White,
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                    fontWeight = FontWeight.Bold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -168,7 +171,6 @@ fun ProLanguageDropdown(
     selectedLang: String,
     onLangChange: (String) -> Unit
 ) {
-
     var expanded by remember { mutableStateOf(false) }
 
     val languages = listOf(
@@ -179,49 +181,94 @@ fun ProLanguageDropdown(
     )
 
     Box {
-        Row(
-            modifier = Modifier
-                .clip(RoundedCornerShape(20.dp))
-                .background(Color.White.copy(alpha = 0.25f))
-                .clickable { expanded = true }
-                .padding(horizontal = 12.dp, vertical = 6.dp),
-            verticalAlignment = Alignment.CenterVertically
+        Surface(
+            onClick = { expanded = true },
+            color = Color.White.copy(alpha = 0.15f),
+            shape = RoundedCornerShape(24.dp),
+            contentColor = Color.White,
+            modifier = Modifier.height(40.dp)
         ) {
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 14.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Language,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp)
+                )
 
-            Text(selectedLang, color = Color.White)
+                Text(
+                    text = selectedLang,
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Bold
+                )
 
-            Spacer(modifier = Modifier.width(6.dp))
-
-            Icon(
-                imageVector = Icons.Default.Language,
-                contentDescription = null,
-                tint = Color.White,
-                modifier = Modifier.size(16.dp)
-            )
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowDown,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
         }
 
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
             modifier = Modifier
-                .clip(RoundedCornerShape(16.dp))
-                .background(Color(0xFF1E1E1E))
+                .widthIn(min = 160.dp)
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFF2B313F),
+                            Color(0xFF1B1F29)
+                        )
+                    ),
+                    shape = RoundedCornerShape(20.dp)
+                ),
+            containerColor = Color.Transparent,
+            tonalElevation = 0.dp
         ) {
+            Text(
+                text = "Select Language",
+                style = MaterialTheme.typography.labelSmall,
+                color = Color.White.copy(alpha = 0.5f),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            )
 
             languages.forEach { (code, name) ->
+                val isSelected = code == selectedLang
                 DropdownMenuItem(
                     text = {
-                        Text(
-                            text = name,
-                            color = if (code == selectedLang)
-                                Color(0xFF66FF99)
-                            else Color.White
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = name,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = if (isSelected) Color(0xFF66FF99) else Color.White,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                modifier = Modifier.weight(1f)
+                            )
+                            if (isSelected) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = null,
+                                    tint = Color(0xFF66FF99),
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                        }
                     },
                     onClick = {
                         onLangChange(code)
                         expanded = false
-                    }
+                    },
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
                 )
             }
         }
