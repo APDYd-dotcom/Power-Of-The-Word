@@ -17,20 +17,19 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = FigmaBrightBlue,        // 🔵 PLAY button
-    secondary = WebRed,
+    primary = FigmaBrightBlue,
+    secondary = FigmaGreen,
     tertiary = FigmaPurple,
-
-    background = FigmaDarkNavy,       // 🌑 main background
-    surface = Color(0xFF252B3B),      // 📦 cards (slightly lighter)
-    surfaceVariant = Color(0xFF2E3445),
-
+    background = Color(0xFF12141C),
+    surface = Color(0xFF1E232E),
+    surfaceVariant = Color(0xFF2B313F),
     onPrimary = Color.White,
     onSecondary = Color.White,
-
-    onBackground = Color(0xFFE5E7EB), // text
+    onBackground = Color(0xFFE5E7EB),
     onSurface = Color(0xFFE5E7EB),
-    onSurfaceVariant = FigmaGray
+    onSurfaceVariant = FigmaGray,
+    outline = Color(0xFF3F4451),
+    outlineVariant = Color(0xFF2B313F)
 )
 
 //private val DarkColorScheme = darkColorScheme(
@@ -51,17 +50,16 @@ private val LightColorScheme = lightColorScheme(
     primary = FigmaBrightBlue,
     secondary = FigmaGreen,
     tertiary = FigmaPurple,
-
-    background = FigmaLightBg,
+    background = Color(0xFFF8F9FA),
     surface = Color.White,
     surfaceVariant = Color(0xFFF1F3F5),
-
     onPrimary = Color.White,
     onSecondary = Color.White,
-
-    onBackground = Color.Black,
-    onSurface = Color.Black,
-    onSurfaceVariant = FigmaGray
+    onBackground = Color(0xFF1A1C1E),
+    onSurface = Color(0xFF1A1C1E),
+    onSurfaceVariant = Color(0xFF44474E),
+    outline = Color(0xFF74777F),
+    outlineVariant = Color(0xFFC4C6CF)
 )
 
 //private val LightColorScheme = lightColorScheme(

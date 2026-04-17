@@ -9,11 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.GraphicEq
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -30,18 +26,19 @@ import androidx.compose.ui.unit.sp
 import com.poweroftheword.poweroftheword.domain.model.AudioItem
 import com.poweroftheword.poweroftheword.util.formatTime
 import com.poweroftheword.poweroftheword.util.formatDate
+import com.poweroftheword.poweroftheword.util.download.DownloadProgress
 import kotlinx.coroutines.delay
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AudioPlayerComponent(
     context: Context,
     audio: AudioItem,
-    viewModel : AudioListViewModel,
+    viewModel: AudioListViewModel,
     isLiked: Boolean,
 ) {
     val mediaPlayer = remember { MediaPlayer() }
+    val downloadManager = viewModel.downloadManager
 
     var isPrepared by remember { mutableStateOf(false) }
     val (isPlaying, setIsPlaying) = rememberSaveable { mutableStateOf(false) }
@@ -49,11 +46,25 @@ fun AudioPlayerComponent(
     var duration by remember { mutableFloatStateOf(0f) }
     var position by remember { mutableFloatStateOf(0f) }
 
-    //  LOAD AUDIO FROM URL
-    LaunchedEffect(audio.file) {
+    val downloadedIds by viewModel.downloadedAudioIds.collectAsState()
+    val isDownloaded = downloadedIds.contains(audio.id)
+    
+    var isDownloading by remember { mutableStateOf(false) }
+
+    //  LOAD AUDIO FROM FILE OR URL
+    LaunchedEffect(audio.file, isDownloaded) {
         try {
             mediaPlayer.reset()
-            mediaPlayer.setDataSource( "https://poweroftheword.bi${audio.file}")
+            if (isDownloaded) {
+                val file = downloadManager.getAudioFile(audio.id)
+                if (file.exists()) {
+                    mediaPlayer.setDataSource(file.absolutePath)
+                } else {
+                    mediaPlayer.setDataSource("https://poweroftheword.bi${audio.file}")
+                }
+            } else {
+                mediaPlayer.setDataSource("https://poweroftheword.bi${audio.file}")
+            }
 
             mediaPlayer.setOnPreparedListener {
                 isPrepared = true
@@ -81,12 +92,12 @@ fun AudioPlayerComponent(
             .fillMaxWidth()
             .height(220.dp)
             .padding(12.dp),
-        elevation = CardDefaults.cardElevation(4.dp),
-        shape = RoundedCornerShape(20.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF2A3442)
+            containerColor = MaterialTheme.colorScheme.surface
         ),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.18f))
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
     ) {
         Column(
             modifier = Modifier
@@ -115,50 +126,65 @@ fun AudioPlayerComponent(
                         modifier = Modifier.size(32.dp)
                     )
                 }
-            Column {
-                Text(
-                    text = formatDate(audio.date),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
-                    color = Color.White
-                )
-                Text(
-                    text = formatTime(audio.visibleTime ?: "04:00h"),
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(top = 2.dp),
-                    fontSize = 12.sp,
-                    color = Color.White
-                )
-            }
+                Column {
+                    Text(
+                        text = formatDate(audio.date),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = formatTime(audio.visibleTime ?: "04:00h"),
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(top = 2.dp),
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
 
-
-                // PLAY BUTTON
+                // PLAY / DOWNLOAD BUTTON
                 Button(
                     onClick = {
-                        if (!isPrepared) return@Button
-
-                        if (mediaPlayer.isPlaying) {
-                            mediaPlayer.pause()
-                            setIsPlaying(false)
-                        } else {
-                            mediaPlayer.start()
-                            setIsPlaying(true)
-                            viewModel.onAudioListened(audio.id)
+                        if (isDownloaded) {
+                            if (!isPrepared) return@Button
+                            if (mediaPlayer.isPlaying) {
+                                mediaPlayer.pause()
+                                setIsPlaying(false)
+                            } else {
+                                mediaPlayer.start()
+                                setIsPlaying(true)
+                                viewModel.onAudioListened(audio.id)
+                            }
+                        } else if (!isDownloading) {
+                            isDownloading = true
+                            viewModel.downloadAudio(audio)
                         }
                     },
                     shape = CircleShape,
                     contentPadding = PaddingValues(0.dp),
                     modifier = Modifier.size(54.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary
+                        containerColor = if (isDownloaded) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
                     )
                 ) {
-                    Icon(
-                        imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-                        contentDescription = null,
-                        modifier = Modifier.size(35.dp),
-                        tint = Color.White
-                    )
+                    if (isDownloading && !isDownloaded) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = Color.White,
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Icon(
+                            imageVector = if (isDownloaded) {
+                                if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow
+                            } else {
+                                Icons.Default.Download
+                            },
+                            contentDescription = null,
+                            modifier = Modifier.size(35.dp),
+                            tint = Color.White
+                        )
+                    }
                 }
             }
 
@@ -171,6 +197,7 @@ fun AudioPlayerComponent(
                     position = it
                     mediaPlayer.seekTo(it.toInt())
                 },
+                enabled = isDownloaded,
                 valueRange = 0f..maxOf(duration, 1f),
                 modifier = Modifier.fillMaxWidth(),
                 track = {
@@ -183,9 +210,7 @@ fun AudioPlayerComponent(
                                 CircleShape
                             )
                     ) {
-                        val progress =
-                            if (duration > 0f) position / duration else 0f
-
+                        val progress = if (duration > 0f) position / duration else 0f
                         Box(
                             modifier = Modifier
                                 .height(6.dp)
@@ -205,7 +230,7 @@ fun AudioPlayerComponent(
                             .background(MaterialTheme.colorScheme.surface, CircleShape)
                             .border(
                                 2.5f.dp,
-                                MaterialTheme.colorScheme.primary,
+                                if (isDownloaded) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
                                 CircleShape
                             )
                     )
@@ -218,8 +243,16 @@ fun AudioPlayerComponent(
                     .padding(top = 2.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(formatTime(position), fontSize = 11.sp)
-                Text(formatTime(duration), fontSize = 11.sp)
+                Text(
+                    text = formatTime(position),
+                    fontSize = 11.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = formatTime(duration),
+                    fontSize = 11.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
 
             Spacer(modifier = Modifier.weight(1f))
@@ -231,10 +264,11 @@ fun AudioPlayerComponent(
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        audio.title,
+                        text = audio.title,
                         fontWeight = FontWeight.Bold,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
 
@@ -245,14 +279,23 @@ fun AudioPlayerComponent(
                     Icon(
                         imageVector = if (isLiked) Icons.Default.ThumbUp else Icons.Outlined.ThumbUp,
                         tint = if (isLiked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-                        contentDescription = null)
+                        contentDescription = null
+                    )
                 }
 
                 // SHARE BUTTON
                 IconButton(onClick = {
-                    viewModel.shareAudio(audio)
+                    if (isDownloaded) {
+                        viewModel.shareDownloadedAudio(audio)
+                    } else {
+                        viewModel.shareAudio(audio)
+                    }
                 }) {
-                    Icon(Icons.Default.Share, contentDescription = null)
+                    Icon(
+                        imageVector = Icons.Default.Share,
+                        contentDescription = null,
+                        tint = if (isDownloaded) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
         }

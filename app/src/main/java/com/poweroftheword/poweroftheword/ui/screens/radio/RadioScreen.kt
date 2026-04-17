@@ -28,23 +28,38 @@ import com.poweroftheword.poweroftheword.BuildConfig
 import com.poweroftheword.poweroftheword.domain.model.Radio
 import com.poweroftheword.poweroftheword.ui.components.RadioHeaderSkeleton
 import com.poweroftheword.poweroftheword.ui.components.RadioStationCardSkeleton
+import com.poweroftheword.poweroftheword.ui.screens.settings.SettingsViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.foundation.isSystemInDarkTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RadioScreen(
-    viewModel: RadioViewModel
+    viewModel: RadioViewModel,
+    settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
     val radioStatus by viewModel.radioStatus.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val currentlyPlayingId by viewModel.currentlyPlayingId.collectAsState()
     val isPlaying by viewModel.isPlaying.collectAsState()
+    
+    val userDarkMode by settingsViewModel.isDarkMode.collectAsState()
+    val isDark = userDarkMode ?: isSystemInDarkTheme()
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    listOf(Color(0xFF1F2A3A), Color(0xFF0D1B2A), Color(0xFF0D1B2A), MaterialTheme.colorScheme.background)
+                    if (isDark) {
+                        listOf(Color(0xFF1F2A3A), Color(0xFF0D1B2A), Color(0xFF0D1B2A), MaterialTheme.colorScheme.background.copy(alpha = 1f))
+                    } else {
+                        listOf(
+                            MaterialTheme.colorScheme.surfaceVariant,
+                            MaterialTheme.colorScheme.surface,
+                            MaterialTheme.colorScheme.background
+                        )
+                    }
                 )
             )
     ) {
@@ -55,7 +70,7 @@ fun RadioScreen(
                     title = {
                         Text(
                             "Radio",
-                            color = Color.White,
+                            color = if (isDark) Color.White else MaterialTheme.colorScheme.onBackground,
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp
                         )
@@ -85,7 +100,7 @@ fun RadioScreen(
                         item {
                             Text(
                                 "ALL STATIONS",
-                                color = Color.LightGray,
+                                color = if (isDark) Color.LightGray else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.Bold
                             )
@@ -108,7 +123,7 @@ fun RadioScreen(
                                     modifier = Modifier
                                         .size(140.dp)
                                         .clip(RoundedCornerShape(24.dp))
-                                        .background(Color(0xFF2A3442)),
+                                        .background(if (isDark) Color(0xFF2A3442) else MaterialTheme.colorScheme.surfaceVariant),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     if (playingRadio != null) {
@@ -122,7 +137,7 @@ fun RadioScreen(
                                         Icon(
                                             Icons.Default.Radio,
                                             contentDescription = null,
-                                            tint = Color(0xFF4DA3FF),
+                                            tint = if (isDark) Color(0xFF4DA3FF) else MaterialTheme.colorScheme.primary,
                                             modifier = Modifier.size(64.dp)
                                         )
                                     }
@@ -132,7 +147,7 @@ fun RadioScreen(
 
                                 Text(
                                     if (isPlaying && playingRadio != null) playingRadio.name else "Radio",
-                                    color = Color.White,
+                                    color = if (isDark) Color.White else MaterialTheme.colorScheme.onBackground,
                                     fontSize = 22.sp,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -143,7 +158,7 @@ fun RadioScreen(
                         item {
                             Text(
                                 "ALL STATIONS",
-                                color = Color.LightGray,
+                                color = if (isDark) Color.LightGray else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.Bold
                             )
@@ -155,6 +170,7 @@ fun RadioScreen(
                                 radio = radio,
                                 isCurrentlyPlaying = radio.id == currentlyPlayingId,
                                 isPlaying = isPlaying,
+                                isDark = isDark,
                                 onPlayClick = { viewModel.togglePlay(radio) }
                             )
                         }
@@ -170,6 +186,7 @@ fun RadioStationCard(
     radio: Radio,
     isCurrentlyPlaying: Boolean,
     isPlaying: Boolean,
+    isDark: Boolean,
     onPlayClick: () -> Unit
 ) {
     Card(
@@ -178,9 +195,9 @@ fun RadioStationCard(
             .height(95.dp),
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF2A3442)
+            containerColor = if (isDark) Color(0xFF2A3442) else MaterialTheme.colorScheme.surface
         ),
-        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.05f))
+        border = BorderStroke(1.dp, if (isDark) Color.White.copy(alpha = 0.05f) else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
     ) {
         Row(
             modifier = Modifier
@@ -195,7 +212,7 @@ fun RadioStationCard(
                     modifier = Modifier
                         .size(70.dp)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(Color.DarkGray),
+                        .background(if (isDark) Color.DarkGray else MaterialTheme.colorScheme.surfaceVariant),
                     contentAlignment = Alignment.Center
                 ) {
                     AsyncImage(
@@ -231,7 +248,7 @@ fun RadioStationCard(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = radio.name,
-                    color = Color.White,
+                    color = if (isDark) Color.White else MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold,
                     fontSize = 15.sp,
                     maxLines = 1,
@@ -240,7 +257,8 @@ fun RadioStationCard(
 
                 Text(
                     if (isCurrentlyPlaying) "Currently playing" else "Radio Station",
-                    color = if (isCurrentlyPlaying) Color(0xFF4DA3FF) else Color.Gray,
+                    color = if (isCurrentlyPlaying) (if (isDark) Color(0xFF4DA3FF) else MaterialTheme.colorScheme.primary) 
+                            else (if (isDark) Color.Gray else MaterialTheme.colorScheme.onSurfaceVariant),
                     fontSize = 12.sp
                 )
             }
@@ -250,7 +268,8 @@ fun RadioStationCard(
                 onClick = onPlayClick,
                 shape = RoundedCornerShape(50),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (isCurrentlyPlaying && isPlaying) Color.Red.copy(alpha = 0.8f) else Color(0xFF2F6BFF)
+                    containerColor = if (isCurrentlyPlaying && isPlaying) Color.Red.copy(alpha = 0.8f) 
+                                     else (if (isDark) Color(0xFF2F6BFF) else MaterialTheme.colorScheme.primary)
                 ),
                 contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp)
             ) {

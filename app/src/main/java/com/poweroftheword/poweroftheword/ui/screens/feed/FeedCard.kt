@@ -1,5 +1,6 @@
 package com.poweroftheword.poweroftheword.ui.screens.feed
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -42,9 +43,14 @@ fun FeedItemCard(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable { onClick() },
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
-        elevation = CardDefaults.cardElevation(4.dp)
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        border = if (MaterialTheme.colorScheme.surface == Color.White) 
+            BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+            else null
     ) {
 
         Column {
@@ -132,7 +138,8 @@ fun FeedItemCard(
 
                     Text(
                         text = formatDate(feed.date),
-                        fontSize = 12.sp
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -158,7 +165,8 @@ fun FeedItemCard(
 
                         Text(
                             text = "${feed.views} views",
-                            fontSize = 12.sp
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
