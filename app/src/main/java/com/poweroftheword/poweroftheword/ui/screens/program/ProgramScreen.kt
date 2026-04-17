@@ -26,7 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.poweroftheword.poweroftheword.domain.model.Program
-import com.poweroftheword.poweroftheword.ui.components.HoraireScreenSkeleton
+import com.poweroftheword.poweroftheword.ui.components.ProgramScreenSkeleton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,7 +78,7 @@ fun ProgramScreen(
                 .fillMaxSize()
         ) {
             if (isLoading && programs.isEmpty()) {
-                HoraireScreenSkeleton()
+                ProgramScreenSkeleton()
             } else if (error != null && programs.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {

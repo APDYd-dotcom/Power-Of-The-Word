@@ -54,6 +54,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val settingsViewModel: SettingsViewModel = hiltViewModel()
             val currentLanguage by settingsViewModel.currentLanguage.collectAsState()
+            val isDarkMode by settingsViewModel.isDarkMode.collectAsState()
             
             val context = LocalContext.current
             
@@ -66,7 +67,9 @@ class MainActivity : ComponentActivity() {
                 LocalContext provides localizedContext,
                 LocalLocalizedContext provides localizedContext
             ) {
-                PowerOfTheWordTheme {
+                PowerOfTheWordTheme(
+                    darkTheme = isDarkMode ?: androidx.compose.foundation.isSystemInDarkTheme()
+                ) {
                     Surface(
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background

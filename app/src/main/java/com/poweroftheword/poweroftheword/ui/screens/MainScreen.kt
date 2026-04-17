@@ -70,6 +70,9 @@ fun MainScreen() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
+    val settingsViewModel: SettingsViewModel = hiltViewModel()
+    val isDarkMode by settingsViewModel.isDarkMode.collectAsState()
+
     val bottomNavItems = listOf(
         Screen.Home,
         Screen.Videos,
@@ -98,6 +101,8 @@ fun MainScreen() {
                 val viewModel: HomeViewModel = hiltViewModel()
                 HomeScreen(
                     viewModel = viewModel,
+                    isDarkMode = isDarkMode ?: androidx.compose.foundation.isSystemInDarkTheme(),
+                    onThemeToggle = { settingsViewModel.setTheme(it) },
                     onVideoClick = { video ->
                         navController.navigate(Screen.VideoDetail.createRoute(video.id))
                     },

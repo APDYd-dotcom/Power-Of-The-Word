@@ -35,14 +35,15 @@ import com.poweroftheword.poweroftheword.util.truncate
 fun DynamicHero(
     dailyWord: DailyWord?,
     currentLanguage: String,
-    onLanguageChange: (String) -> Unit
+    isDarkMode: Boolean,
+    onLanguageChange: (String) -> Unit,
+    onThemeToggle: (Boolean) -> Unit
 ) {
 
     val context = LocalContext.current
     val view = LocalView.current
 
     var dominantColor by remember { mutableStateOf(Color.Black) }
-    var isDarkMode by remember { mutableStateOf(true) }
     val item = dailyWord?.dailywords?.firstOrNull()
 
     if (!view.isInEditMode) {
@@ -62,75 +63,72 @@ fun DynamicHero(
         }
     }
 
-    AppTheme(isDarkMode) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(260.dp)
+    ) {
 
+        AsyncImage(
+            model = "${BuildConfig.BASE_URL}${item?.photo}",
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
+
+        // Gradient
         Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(260.dp)
-        ) {
-
-            AsyncImage(
-                model = "${BuildConfig.BASE_URL}${item?.photo}",
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
-            )
-
-            // Gradient
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        Brush.verticalGradient(
-                            listOf(
-                                dominantColor.copy(alpha = 0.1f),
-                                Color.Black.copy(alpha = 0.1f)
-                            )
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        listOf(
+                            dominantColor.copy(alpha = 0.1f),
+                            Color.Black.copy(alpha = 0.1f)
                         )
                     )
-            )
+                )
+        )
 
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "Power of the Word".truncate(20),
+                    color = Color.White,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
 
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
 
-                    Text(
-                        text = "Power of the Word".truncate(20),
-                        color = Color.White,
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                    //  Language dropdown connected to ViewModel
+                    ProLanguageDropdown(
+                        selectedLang = currentLanguage,
+                        onLangChange = onLanguageChange
                     )
 
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                    Spacer(modifier = Modifier.width(8.dp))
 
-                        //  Language dropdown connected to ViewModel
-                        ProLanguageDropdown(
-                            selectedLang = currentLanguage,
-                            onLangChange = onLanguageChange
-                        )
-
-                        Spacer(modifier = Modifier.width(8.dp))
-
-                        //  Theme toggle icon
-                        ThemeToggleButton(
-                            isDarkMode = isDarkMode,
-                            onToggle = { isDarkMode = !isDarkMode }
-                        )
-                    }
+                    //  Theme toggle icon
+                    ThemeToggleButton(
+                        isDarkMode = isDarkMode,
+                        onToggle = { onThemeToggle(!isDarkMode) }
+                    )
                 }
             }
         }
@@ -255,15 +253,4 @@ fun ThemeToggleButton(
             modifier = Modifier.size(18.dp)
         )
     }
-}
-
-@Composable
-fun AppTheme(
-    isDarkMode: Boolean,
-    content: @Composable () -> Unit
-) {
-    MaterialTheme(
-        colorScheme = if (isDarkMode) darkColorScheme() else lightColorScheme(),
-        content = content
-    )
 }

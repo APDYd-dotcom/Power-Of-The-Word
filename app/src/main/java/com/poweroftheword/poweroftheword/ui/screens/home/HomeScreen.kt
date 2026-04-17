@@ -48,6 +48,8 @@ import com.poweroftheword.poweroftheword.util.truncate
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
+    isDarkMode: Boolean,
+    onThemeToggle: (Boolean) -> Unit,
     onVideoClick: (VideoItem) -> Unit,
     onFeedClick: (FeedItem) -> Unit,
     onLiveClick: (String) -> Unit,
@@ -82,7 +84,9 @@ fun HomeScreen(
                         DynamicHero(
                             dailyWord = state.dailyWord,
                             currentLanguage = state.currentLanguage,
-                            onLanguageChange = { viewModel.changeLanguage(it) }
+                            isDarkMode = isDarkMode,
+                            onLanguageChange = { viewModel.changeLanguage(it) },
+                            onThemeToggle = onThemeToggle
                         )
                     }
 

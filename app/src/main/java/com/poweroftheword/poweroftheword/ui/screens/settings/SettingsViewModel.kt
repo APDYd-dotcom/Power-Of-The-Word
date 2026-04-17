@@ -22,9 +22,22 @@ class SettingsViewModel @Inject constructor(
             initialValue = "EN"
         )
 
+    val isDarkMode: StateFlow<Boolean?> = repository.getSavedTheme()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null
+        )
+
     fun setLanguage(language: String) {
         viewModelScope.launch {
             repository.saveLanguage(language)
+        }
+    }
+
+    fun setTheme(isDark: Boolean?) {
+        viewModelScope.launch {
+            repository.saveTheme(isDark)
         }
     }
 }

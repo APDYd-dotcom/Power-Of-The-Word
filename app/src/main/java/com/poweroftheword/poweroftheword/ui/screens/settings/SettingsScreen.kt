@@ -41,6 +41,7 @@ fun SettingsScreen(
     onNavigateToContact: () -> Unit
 ) {
     val currentLanguage by viewModel.currentLanguage.collectAsState()
+    val isDarkMode by viewModel.isDarkMode.collectAsState()
     val context = LocalContext.current
     val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
     val versionName = packageInfo.versionName
@@ -99,6 +100,42 @@ fun SettingsScreen(
                             )
                         }
                     }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            SettingsSectionTitle("Theme")
+            Card(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                border = CardDefaults.outlinedCardBorder()
+            ) {
+                Column {
+                    ThemeOptionItem(
+                        title = "System Default",
+                        selected = isDarkMode == null,
+                        onClick = { viewModel.setTheme(null) }
+                    )
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                    )
+                    ThemeOptionItem(
+                        title = "Light Mode",
+                        selected = isDarkMode == false,
+                        onClick = { viewModel.setTheme(false) }
+                    )
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                    )
+                    ThemeOptionItem(
+                        title = "Dark Mode",
+                        selected = isDarkMode == true,
+                        onClick = { viewModel.setTheme(true) }
+                    )
                 }
             }
 
@@ -244,6 +281,29 @@ fun LanguageItem(name: String, selected: Boolean, onClick: () -> Unit) {
                     .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
             )
         }
+    }
+}
+
+@Composable
+fun ThemeOptionItem(title: String, selected: Boolean, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(20.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
+            color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+        )
+        RadioButton(
+            selected = selected,
+            onClick = null // Handled by row clickable
+        )
     }
 }
 

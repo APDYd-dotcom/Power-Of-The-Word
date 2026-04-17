@@ -14,6 +14,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.MenuBook
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -22,12 +23,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.poweroftheword.poweroftheword.R
@@ -57,24 +60,33 @@ fun AboutScreen(
     val isRefreshing = isLoading || isProgramsLoading
 
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-
+        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.98f),
         topBar = {
-            TopAppBar(
+            CenterAlignedTopAppBar(
                 title = {
                     Text(
                         localizedString(R.string.about),
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.ExtraBold
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                    IconButton(
+                        onClick = onBackClick,
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                    ) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack, 
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.Transparent
                 )
             )
         }
@@ -97,108 +109,113 @@ fun AboutScreen(
                         .verticalScroll(scrollState)
                 ) {
 
-                    // 👤 HEADER
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                    // 👤 HEADER / PROFILE
+                    Card(
+                        modifier = Modifier.padding(16.dp),
+                        shape = RoundedCornerShape(32.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                        border = CardDefaults.outlinedCardBorder()
                     ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(24.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            if (pastor != null) {
+                                AsyncImage(
+                                    model = pastor.photo,
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(80.dp)
+                                        .clip(RoundedCornerShape(20.dp)),
+                                    contentScale = ContentScale.Crop,
+                                    placeholder = painterResource(id = R.drawable.dailword1),
+                                    error = painterResource(id = R.drawable.dailword1)
+                                )
+                            } else {
+                                Image(
+                                    painter = painterResource(id = R.drawable.dailword1),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(80.dp)
+                                        .clip(RoundedCornerShape(20.dp)),
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
 
-                        if (pastor != null) {
-                            AsyncImage(
-                                model = pastor.photo,
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(70.dp)
-                                    .clip(CircleShape),
-                                contentScale = ContentScale.Crop,
-                                placeholder = painterResource(id = R.drawable.dailword1),
-                                error = painterResource(id = R.drawable.dailword1)
-                            )
-                        } else {
-                            Image(
-                                painter = painterResource(id = R.drawable.dailword1),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(70.dp)
-                                    .clip(CircleShape),
-                                contentScale = ContentScale.Crop
-                            )
-                        }
+                            Spacer(modifier = Modifier.width(20.dp))
 
-                        Spacer(modifier = Modifier.width(12.dp))
+                            Column {
+                                Text(
+                                    text = pastor?.fullName ?: localizedString(R.string.pastor_name),
+                                    style = MaterialTheme.typography.titleLarge,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
 
-                        Column {
-                            Text(
-                                text = pastor?.fullName ?: localizedString(R.string.pastor_name),
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
-                            )
-
-                            Text(
-                                text = localizedString(R.string.pastor_title),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                                Text(
+                                    text = localizedString(R.string.pastor_title),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
                         }
                     }
 
-                    // 📝 DESCRIPTION
-                    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-
+                    // 📝 DESCRIPTION SECTION
+                    Column(modifier = Modifier.padding(horizontal = 24.dp)) {
                         Text(
-                            localizedString(R.string.about_motto),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
+                            text = localizedString(R.string.about_motto),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 0.5.sp
                         )
 
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
 
                         Text(
                             text = pastor?.bio ?: localizedString(R.string.about_description),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            style = MaterialTheme.typography.bodyLarge.copy(lineHeight = 24.sp),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(32.dp))
 
-                    // 📅 WEEKLY PROGRAM
-                    SectionTitle(localizedString(R.string.weekly_program))
+                    // 📅 WEEKLY PROGRAM SECTION
+                    AboutSectionTitle(localizedString(R.string.weekly_program))
 
                     Card(
                         modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .fillMaxWidth(),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant
-                        )
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        shape = RoundedCornerShape(28.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                        border = CardDefaults.outlinedCardBorder()
                     ) {
-
                         Column {
                             if (programs.isEmpty()) {
                                 Text(
                                     text = "No programs scheduled.",
-                                    modifier = Modifier.padding(16.dp),
+                                    modifier = Modifier.padding(24.dp),
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             } else {
                                 programs.forEachIndexed { index, program ->
-                                    ProgramRow(
-                                        Triple(
-                                            program.day,
-                                            "${program.startHour} - ${program.endHour}",
-                                            program.title
-                                        )
+                                    ModernProgramRow(
+                                        day = program.day,
+                                        time = "${program.startHour} - ${program.endHour}",
+                                        title = program.title
                                     )
                                     if (index != programs.lastIndex) {
                                         HorizontalDivider(
-                                            Modifier,
-                                            DividerDefaults.Thickness,
-                                            color = MaterialTheme.colorScheme.outline.copy(0.2f)
+                                            modifier = Modifier.padding(horizontal = 24.dp),
+                                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
                                         )
                                     }
                                 }
@@ -206,23 +223,36 @@ fun AboutScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(32.dp))
 
-                    // 📞 CONTACTS (🔥 CLONED STYLE)
-                    SectionTitle(localizedString(R.string.contacts))
+                    // 📞 CONTACTS SECTION
+                    AboutSectionTitle(localizedString(R.string.contacts))
 
-                    // 🌐 SOCIAL MEDIA (images)
-                    ContactItem(icon = R.drawable.whatsapp,size = 35, text = localizedString(R.string.give_testimony))
-                    ContactItem(icon = R.drawable.whatsapp,size = 35, text = localizedString(R.string.contact_us))
-                    ContactItem(icon = R.drawable.facebook, size = 35, text = localizedString(R.string.facebook_page))
-                    ContactItem(icon = R.drawable.tiktok,size = 35, text = localizedString(R.string.tiktok_page))
-                    ContactItem(icon = R.drawable.instagram,size = 30, text = localizedString(R.string.instagram_page))
-                    ContactItem(icon = R.drawable.youtube,size = 45, text = localizedString(R.string.youtube_page))
-
-                    // ⚙️ SYSTEM ACTIONS (icons)
-                    ContactItem(iconVector = Icons.Default.Email, onClik = { onSettingsClick() }, text = pastor?.email ?: "info@poweroftheword.com")
-                    ContactItem(iconVector = Icons.Default.Favorite, onClik = { onDonationClick() }, text = localizedString(R.string.donate_power_word))
-                    ContactItem(iconVector = Icons.Default.MenuBook, text = localizedString(R.string.power_word_story))
+                    // Social Media & Actions
+                    Column(modifier = Modifier.padding(horizontal = 8.dp)) {
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            Box(modifier = Modifier.weight(1f)) {
+                                ContactItem(icon = R.drawable.instagram, size = 30, text = localizedString(R.string.instagram_page))
+                            }
+                            Box(modifier = Modifier.weight(1f)) {
+                                ContactItem(icon = R.drawable.facebook, size = 30, text = localizedString(R.string.facebook_page))
+                            }
+                        }
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            Box(modifier = Modifier.weight(1f)) {
+                                ContactItem(icon = R.drawable.tiktok, size = 30, text = localizedString(R.string.tiktok_page))
+                            }
+                            Box(modifier = Modifier.weight(1f)) {
+                                ContactItem(icon = R.drawable.youtube, size = 30, text = localizedString(R.string.youtube_page))
+                            }
+                        }
+                        
+                        ContactItem(iconVector = Icons.Default.Email, onClik = { onSettingsClick() }, text = pastor?.email ?: "info@poweroftheword.com")
+                        ContactItem(iconVector = Icons.Default.Favorite, onClik = { onDonationClick() }, text = localizedString(R.string.donate_power_word))
+                        ContactItem(iconVector = Icons.Default.MenuBook, text = localizedString(R.string.power_word_story))
+                        ContactItem(iconVector = Icons.Default.Settings, onClik = { onSettingsClick() }, text = localizedString(R.string.settings))
+                    }
+                    
                     Spacer(modifier = Modifier.height(40.dp))
                 }
             }
@@ -231,103 +261,132 @@ fun AboutScreen(
 }
 
 @Composable
-fun SectionTitle(title: String) {
+fun AboutSectionTitle(title: String) {
     Text(
         text = title,
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-        style = MaterialTheme.typography.titleMedium,
-        fontWeight = FontWeight.Bold
+        modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
+        style = MaterialTheme.typography.labelLarge,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.primary,
+        letterSpacing = 0.5.sp
     )
 }
 
 @Composable
-fun ProgramRow(item: Triple<String, String, String>) {
-
-    Column(modifier = Modifier.padding(16.dp)) {
-
-        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-            Text(item.first, fontWeight = FontWeight.Bold,color = MaterialTheme.colorScheme.onBackground)
-            Text(item.second, style = MaterialTheme.typography.bodySmall,color = MaterialTheme.colorScheme.onBackground)
+fun ModernProgramRow(day: String, time: String, title: String) {
+    Column(modifier = Modifier.padding(24.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Surface(
+                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text(
+                    text = day.uppercase(),
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+            Text(
+                text = time,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontWeight = FontWeight.Medium
+            )
         }
 
+        Spacer(modifier = Modifier.height(12.dp))
+
         Text(
-            item.third,
-            color = MaterialTheme.colorScheme.onBackground,
-            style = MaterialTheme.typography.bodySmall
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }
 
 @Composable
 fun ContactItem(
-    icon: Int? = null, // for images (social media)
-    iconVector: ImageVector? = null, // for material icons,
-    onClik: () -> Unit? = {},
+    icon: Int? = null,
+    iconVector: ImageVector? = null,
+    onClik: () -> Unit = {},
     size: Int = 22,
     text: String
 ) {
-
-    Row(
+    Card(
         modifier = Modifier
-            .padding(horizontal = 16.dp, vertical = 6.dp)
+            .padding(8.dp)
             .fillMaxWidth()
-            .clip(RoundedCornerShape(14.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant)
-            .clickable { onClik() }
-            .padding(14.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .clickable { onClik() },
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        border = CardDefaults.outlinedCardBorder()
     ) {
-
-        // 🔥 ICON CONTAINER
-        Box(
-            modifier = Modifier
-                .size(42.dp)
-                .clip(CircleShape)
-                .clickable { onClik }
-                .background(
-                    when {
-                        text.contains("info@") || text.contains("@") -> Color(0xFFFF6B6B) // 🔴 Email
-                        text.contains("Donate") || text.contains("Dons") || text.contains("Changia") || text.contains("Shigikira") -> Color(0xFFB36BFF) // 🟣 Donate
-                        text.contains("Story") || text.contains("histoire") || text.contains("Hadithi") || text.contains("Amakuru") -> Color(0xFF4A90E2) // 🔵 Story
-                        else -> MaterialTheme.colorScheme.surface
-                    }
-                ),
-            contentAlignment = Alignment.Center
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-
-            when {
-                icon != null -> {
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(
+                        when {
+                            text.contains("info@") || text.contains("@") -> Color(0xFFFF6B6B).copy(alpha = 0.1f)
+                            text.contains("Donate") || text.contains("Dons") || text.contains("Shigikira") || text.contains("Changia") -> Color(0xFFB36BFF).copy(alpha = 0.1f)
+                            text.contains("Story") || text.contains("histoire") || text.contains("Hadithi") || text.contains("Amakuru") -> Color(0xFF4A90E2).copy(alpha = 0.1f)
+                            text.contains("Settings") || text.contains("Paramètres") || text.contains("Igenamiterere") || text.contains("Mipangilio") -> MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                            else -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
+                        }
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                if (icon != null) {
                     Image(
                         painter = painterResource(id = icon),
                         contentDescription = null,
                         modifier = Modifier.size(size.dp),
                         contentScale = ContentScale.Fit
                     )
-                }
-
-                iconVector != null -> {
+                } else if (iconVector != null) {
                     Icon(
                         imageVector = iconVector,
                         contentDescription = null,
-                        tint = Color.White,
+                        tint = when {
+                            text.contains("info@") || text.contains("@") -> Color(0xFFFF6B6B)
+                            text.contains("Donate") || text.contains("Dons") || text.contains("Shigikira") || text.contains("Changia") -> Color(0xFFB36BFF)
+                            text.contains("Story") || text.contains("histoire") || text.contains("Hadithi") || text.contains("Amakuru") -> Color(0xFF4A90E2)
+                            else -> MaterialTheme.colorScheme.primary
+                        },
                         modifier = Modifier.size(20.dp)
                     )
                 }
             }
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Text(
+                text = text,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.weight(1f),
+                maxLines = 1
+            )
+
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.outlineVariant,
+                modifier = Modifier.size(16.dp)
+            )
         }
-
-        Spacer(modifier = Modifier.width(12.dp))
-
-        Text(
-            text = text,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.weight(1f)
-        )
-
-        Icon(
-            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
-        )
     }
 }

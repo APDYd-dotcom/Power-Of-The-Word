@@ -53,6 +53,7 @@ class ChurchRepositoryImpl @Inject constructor(
 
     private val BASE_URL = BuildConfig.BASE_URLAPI
     private val LANGUAGE_KEY = stringPreferencesKey("language_preference")
+    private val THEME_KEY = stringPreferencesKey("theme_preference")
 
     private val json = Json {
         ignoreUnknownKeys = true
@@ -394,6 +395,22 @@ class ChurchRepositoryImpl @Inject constructor(
     override suspend fun saveLanguage(language: String) {
         context.dataStore.edit { preferences ->
             preferences[LANGUAGE_KEY] = language
+        }
+    }
+
+    override fun getSavedTheme(): Flow<Boolean?> {
+        return context.dataStore.data.map { preferences ->
+            preferences[THEME_KEY]?.toBooleanStrictOrNull()
+        }
+    }
+
+    override suspend fun saveTheme(isDark: Boolean?) {
+        context.dataStore.edit { preferences ->
+            if (isDark == null) {
+                preferences.remove(THEME_KEY)
+            } else {
+                preferences[THEME_KEY] = isDark.toString()
+            }
         }
     }
 

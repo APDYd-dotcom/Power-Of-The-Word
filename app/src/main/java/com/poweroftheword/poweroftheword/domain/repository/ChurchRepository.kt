@@ -50,6 +50,8 @@ interface ChurchRepository {
     // Settings
     fun getSavedLanguage(): Flow<String>
     suspend fun saveLanguage(language: String)
+    fun getSavedTheme(): Flow<Boolean?>
+    suspend fun saveTheme(isDark: Boolean?)
 
     // Offline-first Likes
     suspend fun toggleVideoLikeLocal(videoId: String, deviceId: String)
