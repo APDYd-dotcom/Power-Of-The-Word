@@ -31,8 +31,10 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,17 +43,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.poweroftheword.poweroftheword.R
+import com.poweroftheword.poweroftheword.ui.screens.settings.SettingsViewModel
+import androidx.compose.foundation.isSystemInDarkTheme
 import com.poweroftheword.poweroftheword.util.localizedString
 import com.poweroftheword.poweroftheword.util.truncate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DonationScreen(onBackClick: () -> Unit) {
+fun DonationScreen(
+    onBackClick: () -> Unit,
+    settingsViewModel: SettingsViewModel = hiltViewModel()
+) {
+
+    val userDarkMode by settingsViewModel.isDarkMode.collectAsState()
+    val isDark = userDarkMode ?: isSystemInDarkTheme()
 
     var selectedAmount by remember { mutableStateOf<Int?>(null) }
     var customAmount by remember { mutableStateOf("") }
@@ -63,17 +75,17 @@ fun DonationScreen(onBackClick: () -> Unit) {
     )
 
     Scaffold(
-        containerColor = Color(0xFF121826),
+        containerColor = if (isDark) Color(0xFF121826) else MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text(localizedString(R.string.donate), fontWeight = FontWeight.Bold, color = Color.White) },
+                title = { Text(localizedString(R.string.donate), fontWeight = FontWeight.Bold, color = if (isDark) Color.White else MaterialTheme.colorScheme.onSurface) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = Color.White)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = if (isDark) Color.White else MaterialTheme.colorScheme.onSurface)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF121826)
+                    containerColor = if (isDark) Color(0xFF121826) else MaterialTheme.colorScheme.surface
                 )
             )
         }
@@ -135,9 +147,9 @@ fun DonationScreen(onBackClick: () -> Unit) {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    StatCard("5000+", localizedString(R.string.lives_touched).truncate(12), Color(0xFF3D74F6), Modifier.weight(1f))
-                    StatCard("100+", localizedString(R.string.countries).truncate(12), Color(0xFF9B59B6), Modifier.weight(1f))
-                    StatCard("24/7", localizedString(R.string.broadcast).truncate(12), Color(0xFFE84393), Modifier.weight(1f))
+                    StatCard("5000+", localizedString(R.string.lives_touched).truncate(12), Color(0xFF3D74F6), Modifier.weight(1f), isDark)
+                    StatCard("100+", localizedString(R.string.countries).truncate(12), Color(0xFF9B59B6), Modifier.weight(1f), isDark)
+                    StatCard("24/7", localizedString(R.string.broadcast).truncate(12), Color(0xFFE84393), Modifier.weight(1f), isDark)
                 }
             }
 
@@ -145,10 +157,10 @@ fun DonationScreen(onBackClick: () -> Unit) {
 
             // AMOUNT
             item {
-                CardShape {
+                CardShape(isDark) {
                     Column {
 
-                        Text(localizedString(R.string.select_amount), fontWeight = FontWeight.Bold, color = Color.White)
+                        Text(localizedString(R.string.select_amount), fontWeight = FontWeight.Bold, color = if (isDark) Color.White else MaterialTheme.colorScheme.onSurface)
 
                         Spacer(Modifier.height(12.dp))
 
@@ -163,7 +175,8 @@ fun DonationScreen(onBackClick: () -> Unit) {
                                     AmountChip(
                                         amount = amount,
                                         selected = selectedAmount == amount,
-                                        modifier = Modifier.weight(1f)
+                                        modifier = Modifier.weight(1f),
+                                        isDark = isDark
                                     ) {
                                         selectedAmount = amount
                                         customAmount = ""
@@ -193,14 +206,14 @@ fun DonationScreen(onBackClick: () -> Unit) {
 
             // MONTHLY
             item {
-                CardShape {
+                CardShape(isDark) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Checkbox(
                             checked = isMonthly,
                             onCheckedChange = { isMonthly = it }
                         )
                         Column {
-                            Text(localizedString(R.string.make_monthly), color = Color.White)
+                            Text(localizedString(R.string.make_monthly), color = if (isDark) Color.White else MaterialTheme.colorScheme.onSurface)
                             Text(
                                 localizedString(R.string.recurring_donation),
                                 fontSize = 12.sp,
@@ -215,9 +228,9 @@ fun DonationScreen(onBackClick: () -> Unit) {
 
             // PAYMENT
             item {
-                CardShape {
+                CardShape(isDark) {
                     Column {
-                        Text(localizedString(R.string.payment_method), fontWeight = FontWeight.Bold, color = Color.White)
+                        Text(localizedString(R.string.payment_method), fontWeight = FontWeight.Bold, color = if (isDark) Color.White else MaterialTheme.colorScheme.onSurface)
 
                         Spacer(Modifier.height(12.dp))
 
@@ -229,7 +242,7 @@ fun DonationScreen(onBackClick: () -> Unit) {
                             localizedString(R.string.bankobu_payment) to "Bankobu",
                             localizedString(R.string.ihela_payment) to "Ihela"
                         ).forEach { (display, key) ->
-                            PaymentOption(display, selectedPayment == key) {
+                            PaymentOption(display, selectedPayment == key, isDark) {
                                 selectedPayment = key
                             }
                         }
@@ -243,15 +256,15 @@ fun DonationScreen(onBackClick: () -> Unit) {
             item {
                 when (selectedPayment) {
 
-                    "Bank Transfer" -> BankDetailsCard()
+                    "Bank Transfer" -> BankDetailsCard(isDark)
 
-                    "Lumicash" -> LumicashCard()
+                    "Lumicash" -> LumicashCard(isDark)
 
-                    "Ecocash" -> EcocashCard()
+                    "Ecocash" -> EcocashCard(isDark)
 
-                    "Bankobu" -> BankobuCard()
+                    "Bankobu" -> BankobuCard(isDark)
 
-                    "Ihela" -> IhelaCard()
+                    "Ihela" -> IhelaCard(isDark)
                 }
             }
 
@@ -288,10 +301,11 @@ fun DonationScreen(onBackClick: () -> Unit) {
 }
 
 @Composable
-fun CardShape(content: @Composable ColumnScope.() -> Unit) {
+fun CardShape(isDark: Boolean, content: @Composable ColumnScope.() -> Unit) {
     Card(
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF1E2635)),
+        colors = CardDefaults.cardColors(containerColor = if (isDark) Color(0xFF1E2635) else MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = if (isDark) 0.dp else 2.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(Modifier.padding(16.dp), content = content)
@@ -303,13 +317,14 @@ fun AmountChip(
     amount: Int,
     selected: Boolean,
     modifier: Modifier,
+    isDark: Boolean,
     onClick: () -> Unit
 ) {
     Box(
         modifier = modifier
             .background(
                 if (selected) Color(0xFF3D74F6)
-                else Color(0xFF2A3142),
+                else if (isDark) Color(0xFF2A3142) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                 RoundedCornerShape(12.dp)
             )
             .clickable { onClick() }
@@ -318,7 +333,7 @@ fun AmountChip(
     ) {
         Text(
             "$$amount",
-            color = if (selected) Color.White else Color.LightGray,
+            color = if (selected) Color.White else if (isDark) Color.LightGray else MaterialTheme.colorScheme.onSurfaceVariant,
             fontWeight = FontWeight.Bold
         )
     }
@@ -328,6 +343,7 @@ fun AmountChip(
 fun PaymentOption(
     title: String,
     isSelected: Boolean,
+    isDark: Boolean,
     onClick: () -> Unit
 ) {
     Row(
@@ -335,16 +351,16 @@ fun PaymentOption(
             .fillMaxWidth()
             .background(
                 if (isSelected) Color(0xFF2D4FFF)
-                else Color(0xFF2A3142),
+                else if (isDark) Color(0xFF2A3142) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                 RoundedCornerShape(12.dp)
             )
             .clickable { onClick() }
             .padding(14.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(Icons.Default.CreditCard, null, tint = Color.White)
+        Icon(Icons.Default.CreditCard, null, tint = if (isSelected || isDark) Color.White else MaterialTheme.colorScheme.onSurface)
         Spacer(Modifier.width(10.dp))
-        Text(title, modifier = Modifier.weight(1f), color = Color.White)
+        Text(title, modifier = Modifier.weight(1f), color = if (isSelected || isDark) Color.White else MaterialTheme.colorScheme.onSurface)
 
         if (isSelected) {
             Icon(Icons.Default.Check, null, tint = Color.White)
@@ -359,11 +375,13 @@ fun StatCard(
     value: String,
     label: String,
     color: Color,
-    modifier: Modifier
+    modifier: Modifier,
+    isDark: Boolean
 ) {
     Card(
         modifier = modifier,
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF1E2635)),
+        colors = CardDefaults.cardColors(containerColor = if (isDark) Color(0xFF1E2635) else MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = if (isDark) 0.dp else 2.dp),
         shape = RoundedCornerShape(16.dp)
     ) {
         Column(
@@ -385,17 +403,17 @@ fun StatCard(
 
 
 @Composable
-fun BankDetailsCard() {
-    GradientBorderCard(borderColor = Color(0xFF3D74F6)) {
+fun BankDetailsCard(isDark: Boolean) {
+    GradientBorderCard(borderColor = Color(0xFF3D74F6), isDark = isDark) {
         Column {
-            Text(localizedString(R.string.bank_transfer_details), color = Color.White, fontWeight = FontWeight.Bold)
+            Text(localizedString(R.string.bank_transfer_details), color = if (isDark) Color.White else MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
 
             Spacer(Modifier.height(12.dp))
 
-            InfoRow(localizedString(R.string.bank_name), "First National Bank")
-            InfoRow(localizedString(R.string.account_name), "Power of the Word Ministry")
-            InfoRow(localizedString(R.string.account_number), "1234567890")
-            InfoRow(localizedString(R.string.swift_code), "FNBXXX123")
+            InfoRow(localizedString(R.string.bank_name), "First National Bank", isDark)
+            InfoRow(localizedString(R.string.account_name), "Power of the Word Ministry", isDark)
+            InfoRow(localizedString(R.string.account_number), "1234567890", isDark)
+            InfoRow(localizedString(R.string.swift_code), "FNBXXX123", isDark)
         }
     }
 }
@@ -404,16 +422,16 @@ fun BankDetailsCard() {
 
 
 @Composable
-fun LumicashCard() {
-    GradientBorderCard(borderColor = Color(0xFFFF6A00)) {
+fun LumicashCard(isDark: Boolean) {
+    GradientBorderCard(borderColor = Color(0xFFFF6A00), isDark = isDark) {
 
         Column {
-            PaymentHeader(localizedString(R.string.lumicash_payment), Color(0xFFFF6A00))
+            PaymentHeader(localizedString(R.string.lumicash_payment), Color(0xFFFF6A00), isDark)
 
             Spacer(Modifier.height(12.dp))
 
-            InfoBox("+257 79 XX XX XX", localizedString(R.string.lumicash_number))
-            InfoBox("Power of the Word", localizedString(R.string.account_name))
+            InfoBox("+257 79 XX XX XX", localizedString(R.string.lumicash_number), isDark)
+            InfoBox("Power of the Word", localizedString(R.string.account_name), isDark)
 
             InstructionBox(
                 steps = listOf(
@@ -423,7 +441,7 @@ fun LumicashCard() {
                     "Enter amount and confirm",
                     localizedString(R.string.keep_sms_receipt)
                 ),
-                color = Color(0xFF5A2A1A)
+                color = if (isDark) Color(0xFF5A2A1A) else Color(0xFFFFEBDD)
             )
         }
     }
@@ -432,16 +450,16 @@ fun LumicashCard() {
 
 
 @Composable
-fun EcocashCard() {
-    GradientBorderCard(borderColor = Color(0xFF00C853)) {
+fun EcocashCard(isDark: Boolean) {
+    GradientBorderCard(borderColor = Color(0xFF00C853), isDark = isDark) {
 
         Column {
-            PaymentHeader(localizedString(R.string.ecocash_payment), Color(0xFF00C853))
+            PaymentHeader(localizedString(R.string.ecocash_payment), Color(0xFF00C853), isDark)
 
             Spacer(Modifier.height(12.dp))
 
-            InfoBox("+257 71 XX XX XX", localizedString(R.string.ecocash_number))
-            InfoBox("Power of the Word", localizedString(R.string.account_name))
+            InfoBox("+257 71 XX XX XX", localizedString(R.string.ecocash_number), isDark)
+            InfoBox("Power of the Word", localizedString(R.string.account_name), isDark)
 
             InstructionBox(
                 listOf(
@@ -451,7 +469,7 @@ fun EcocashCard() {
                     "Enter PIN",
                     localizedString(R.string.save_confirmation_sms)
                 ),
-                color = Color(0xFF0F3D2E)
+                color = if (isDark) Color(0xFF0F3D2E) else Color(0xFFE8F5E9)
             )
         }
     }
@@ -459,16 +477,16 @@ fun EcocashCard() {
 
 
 @Composable
-fun BankobuCard() {
-    GradientBorderCard(borderColor = Color(0xFF2962FF)) {
+fun BankobuCard(isDark: Boolean) {
+    GradientBorderCard(borderColor = Color(0xFF2962FF), isDark = isDark) {
 
         Column {
-            PaymentHeader(localizedString(R.string.bankobu_payment), Color(0xFF2962FF))
+            PaymentHeader(localizedString(R.string.bankobu_payment), Color(0xFF2962FF), isDark)
 
             Spacer(Modifier.height(12.dp))
 
-            InfoBox("+257 76 XX XX XX", localizedString(R.string.bankobu_account))
-            InfoBox("Power of the Word Ministry", localizedString(R.string.account_name))
+            InfoBox("+257 76 XX XX XX", localizedString(R.string.bankobu_account), isDark)
+            InfoBox("Power of the Word Ministry", localizedString(R.string.account_name), isDark)
 
             InstructionBox(
                 listOf(
@@ -478,7 +496,7 @@ fun BankobuCard() {
                     "Enter amount",
                     "Confirm PIN"
                 ),
-                color = Color(0xFF1A2F5A)
+                color = if (isDark) Color(0xFF1A2F5A) else Color(0xFFE3F2FD)
             )
         }
     }
@@ -486,16 +504,16 @@ fun BankobuCard() {
 
 
 @Composable
-fun IhelaCard() {
-    GradientBorderCard(borderColor = Color(0xFF8E44AD)) {
+fun IhelaCard(isDark: Boolean) {
+    GradientBorderCard(borderColor = Color(0xFF8E44AD), isDark = isDark) {
 
         Column {
-            PaymentHeader(localizedString(R.string.ihela_payment), Color(0xFF8E44AD))
+            PaymentHeader(localizedString(R.string.ihela_payment), Color(0xFF8E44AD), isDark)
 
             Spacer(Modifier.height(12.dp))
 
-            InfoBox("+257 22 XX XX XX", localizedString(R.string.ihela_number))
-            InfoBox("Power of the Word", localizedString(R.string.account_name))
+            InfoBox("+257 22 XX XX XX", localizedString(R.string.ihela_number), isDark)
+            InfoBox("Power of the Word", localizedString(R.string.account_name), isDark)
 
             InstructionBox(
                 listOf(
@@ -505,7 +523,7 @@ fun IhelaCard() {
                     "Enter amount",
                     localizedString(R.string.keep_reference)
                 ),
-                color = Color(0xFF3A1F4F)
+                color = if (isDark) Color(0xFF3A1F4F) else Color(0xFFF3E5F5)
             )
         }
     }
@@ -513,27 +531,27 @@ fun IhelaCard() {
 
 
 @Composable
-fun InfoRow(label: String, value: String) {
+fun InfoRow(label: String, value: String, isDark: Boolean) {
     Row(modifier = Modifier.padding(vertical = 4.dp)) {
         Text(label, color = Color.Gray)
         Spacer(Modifier.width(6.dp))
-        Text(value, fontWeight = FontWeight.Medium, color = Color.White)
+        Text(value, fontWeight = FontWeight.Medium, color = if (isDark) Color.White else MaterialTheme.colorScheme.onSurface)
     }
 }
 
 
 
 @Composable
-fun InfoBox(value: String, label: String) {
+fun InfoBox(value: String, label: String, isDark: Boolean) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFF2A3142), RoundedCornerShape(12.dp))
+            .background(if (isDark) Color(0xFF2A3142) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f), RoundedCornerShape(12.dp))
             .padding(12.dp)
     ) {
         Column {
             Text(label, color = Color.Gray, fontSize = 12.sp)
-            Text(value, color = Color.White, fontWeight = FontWeight.Bold)
+            Text(value, color = if (isDark) Color.White else MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
         }
     }
 
@@ -542,15 +560,15 @@ fun InfoBox(value: String, label: String) {
 
 
 @Composable
-fun InstructionBox(steps: List<String>) {
+fun InstructionBox(steps: List<String>, isDark: Boolean) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFF2A3142), RoundedCornerShape(12.dp))
+            .background(if (isDark) Color(0xFF2A3142) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f), RoundedCornerShape(12.dp))
             .padding(12.dp)
     ) {
         Column {
-            Text(localizedString(R.string.instructions), fontWeight = FontWeight.Bold, color = Color.White)
+            Text(localizedString(R.string.instructions), fontWeight = FontWeight.Bold, color = if (isDark) Color.White else MaterialTheme.colorScheme.onSurface)
 
             Spacer(Modifier.height(6.dp))
 
@@ -558,7 +576,7 @@ fun InstructionBox(steps: List<String>) {
                 Text(
                     "${index + 1}. $step",
                     fontSize = 12.sp,
-                    color = Color.LightGray
+                    color = if (isDark) Color.LightGray else MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -571,6 +589,7 @@ fun InstructionBox(steps: List<String>) {
 @Composable
 fun GradientBorderCard(
     borderColor: Color,
+    isDark: Boolean,
     content: @Composable ColumnScope.() -> Unit
 ) {
     Box(
@@ -586,7 +605,7 @@ fun GradientBorderCard(
     ) {
         Column(
             modifier = Modifier
-                .background(Color(0xFF1E2635), RoundedCornerShape(18.dp))
+                .background(if (isDark) Color(0xFF1E2635) else MaterialTheme.colorScheme.surface, RoundedCornerShape(18.dp))
                 .padding(16.dp)
         ) {
             content()
@@ -596,7 +615,7 @@ fun GradientBorderCard(
 
 
 @Composable
-fun PaymentHeader(title: String, color: Color) {
+fun PaymentHeader(title: String, color: Color, isDark: Boolean) {
     Row(verticalAlignment = Alignment.CenterVertically) {
 
         Box(
@@ -610,7 +629,7 @@ fun PaymentHeader(title: String, color: Color) {
 
         Spacer(Modifier.width(12.dp))
 
-        Text(title, color = Color.White, fontWeight = FontWeight.Bold)
+        Text(title, color = if (isDark) Color.White else MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
     }
 }
 
@@ -627,14 +646,14 @@ fun InstructionBox(
             .padding(12.dp)
     ) {
         Column {
-            Text(localizedString(R.string.instructions), color = Color.White, fontWeight = FontWeight.Bold)
+            Text(localizedString(R.string.instructions), color = if (color.luminance() < 0.5) Color.White else Color.Black, fontWeight = FontWeight.Bold)
 
             Spacer(Modifier.height(6.dp))
 
             steps.forEachIndexed { i, step ->
                 Text(
                     "${i + 1}. $step",
-                    color = Color.LightGray,
+                    color = if (color.luminance() < 0.5) Color.White.copy(alpha = 0.8f) else Color.Black.copy(alpha = 0.7f),
                     fontSize = 12.sp
                 )
             }
