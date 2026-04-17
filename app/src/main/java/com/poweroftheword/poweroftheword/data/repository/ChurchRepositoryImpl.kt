@@ -194,14 +194,16 @@ class ChurchRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getHoraire(language: String): List<Horaire> {
+    override suspend fun getHoraire(language: String): List<HoraireItem> {
         return try {
             Log.d("ChurchRepo", "getHoraire | Language: $language")
-            val result: List<Horaire> = client.get("$BASE_URL/horaire/") {
-                parameter("language", language)
-            }.body()
-            Log.d("ChurchRepo", "getHoraire | Found ${result.size} entries")
-            result
+            val response: String = client.get("$BASE_URL/horaire/") {
+                contentType(ContentType.Application.Json)
+                setBody(mapOf("language" to language))
+            }.bodyAsText()
+            Log.d("ChurchRepo", "getHoraire | Found ${response} entries")
+            val res = json.decodeFromString<Horaire>(response)
+            res.results
         } catch (e: Exception) {
             Log.e("ChurchRepo", "getHoraire | Error: ${e.message}")
             emptyList()

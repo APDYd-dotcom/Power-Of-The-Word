@@ -265,7 +265,10 @@ fun MainScreen() {
 
             composable(Screen.Horaire.route) {
                 val viewModel: HoraireViewModel = hiltViewModel()
-                HoraireScreen(viewModel = viewModel)
+                HoraireScreen(
+                    viewModel = viewModel,
+                    onBackClick = {navController.popBackStack()}
+                )
             }
 
             composable(Screen.Programs.route) {

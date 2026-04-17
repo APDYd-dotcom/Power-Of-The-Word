@@ -3,12 +3,22 @@ package com.poweroftheword.poweroftheword.domain.model
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+
 @Serializable
 data class Horaire(
-    val id: String,
+    val count: Int,
+    val next: String? = null,
+    val previous: String? = null,
+    val results: List<HoraireItem>
+)
+@Serializable
+data class HoraireItem(
+    val id: Int,
+    val day: String,
+    @SerialName("full_name")
     val name: String,
-    @SerialName("contact_number")
+    val language: String,
+    @SerialName("number")
     val contactNumber: String,
-    val availability: String,
-    val language: String
+    val date: String,
 )
