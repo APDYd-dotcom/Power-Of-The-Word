@@ -281,7 +281,6 @@ fun AudioPlayerComponent(
                         AnimatedContent(
                             targetState = when {
                                 showCheck -> Icons.Rounded.Check
-                                !isPlaying -> Icons.Rounded.Download
                                 isPlaying -> Icons.Rounded.Pause
                                 isDownloading && !isDownloaded -> Icons.Rounded.Close
                                 isDownloaded || isPrepared -> Icons.Rounded.PlayArrow

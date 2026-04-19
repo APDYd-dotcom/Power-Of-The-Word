@@ -13,7 +13,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
@@ -42,6 +45,7 @@ fun AudioListScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val selectedMonth by viewModel.selectedMonth.collectAsState()
     val selectedYear by viewModel.selectedYear.collectAsState()
+    val currentLanguage by viewModel.currentLanguage.collectAsState()
 
     var showMonthMenu by remember { mutableStateOf(false) }
     var showYearMenu by remember { mutableStateOf(false) }
@@ -70,41 +74,24 @@ fun AudioListScreen(
                     title = {
                         Text(
                             stringResource(R.string.archives),
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp,
-                            color = MaterialTheme.colorScheme.onBackground
+                            style = MaterialTheme.typography.titleLarge.copy(
+                                fontWeight = FontWeight.ExtraBold,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
                         )
                     },
                     actions = {
-                        Surface(
-                            color = Color.Transparent,
-                            shape = RoundedCornerShape(4.dp),
-                            border = BorderStroke(
-                                1.dp,
-                                MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f)
-                            ),
-                            modifier = Modifier.padding(end = 8.dp)
-                        ) {
-                            Text(
-                                "EN",
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                        IconButton(onClick = { /* Search */ }) {
-                            Icon(
-                                Icons.Default.Search,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onBackground
+                        Box(modifier = Modifier.padding(end = 16.dp)) {
+                            LanguageDropdownWrapper(
+                                selectedLang = currentLanguage,
+                                onLangChange = { viewModel.onLanguageChange(it) }
                             )
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
                 )
 
-                // Date Filter Selector
+                // RESTORED: Original Date Filter Selector
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -204,7 +191,7 @@ fun AudioListScreen(
                         }
                     }
                 }
-                HorizontalDivider(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.1f))
+                HorizontalDivider(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.05f))
             }
         }
     ) { paddingValues ->
@@ -251,6 +238,102 @@ fun AudioListScreen(
                         )
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun LanguageDropdownWrapper(
+    selectedLang: String,
+    onLangChange: (String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    val languages = listOf(
+        "EN" to "English",
+        "KI" to "Kirundi",
+        "FR" to "Français",
+        "SW" to "Swahili"
+    )
+
+    Box {
+        Surface(
+            onClick = { expanded = true },
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.08f),
+            shape = RoundedCornerShape(24.dp),
+            modifier = Modifier.height(36.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Language,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                    tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                )
+
+                Text(
+                    text = selectedLang,
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
+                )
+
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowDown,
+                    contentDescription = null,
+                    modifier = Modifier.size(14.dp),
+                    tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                )
+            }
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier
+                .widthIn(min = 160.dp)
+                .background(
+                    MaterialTheme.colorScheme.surface,
+                    shape = RoundedCornerShape(16.dp)
+                )
+        ) {
+            languages.forEach { (code, name) ->
+                val isSelected = code == selectedLang
+                DropdownMenuItem(
+                    text = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = name,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                modifier = Modifier.weight(1f)
+                            )
+                            if (isSelected) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                        }
+                    },
+                    onClick = {
+                        onLangChange(code)
+                        expanded = false
+                    }
+                )
             }
         }
     }

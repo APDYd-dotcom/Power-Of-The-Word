@@ -71,11 +71,14 @@ class AudioListViewModel @Inject constructor(
             }
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    init {
-        refreshDownloadedList()
-        repository.getSavedLanguage()
-            .onEach { loadAudios() }
-            .launchIn(viewModelScope)
+    val currentLanguage: StateFlow<String> = repository.getSavedLanguage()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "EN")
+
+    fun onLanguageChange(lang: String) {
+        viewModelScope.launch {
+            repository.saveLanguage(lang)
+            loadAudios()
+        }
     }
 
     private fun refreshDownloadedList() {
