@@ -28,12 +28,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Download
-import androidx.compose.material.icons.filled.GraphicEq
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Download
+import androidx.compose.material.icons.rounded.GraphicEq
+import androidx.compose.material.icons.rounded.Pause
+import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.outlined.ThumbUp
@@ -116,6 +116,11 @@ fun AudioPlayerComponent(
 
     //  LOAD AUDIO FROM FILE OR URL
     LaunchedEffect(audio.file, isDownloaded) {
+        val wasPlaying = isPlaying
+        val lastPosition = if (isPrepared) {
+            try { mediaPlayer.currentPosition } catch (e: Exception) { 0 }
+        } else 0
+
         try {
             isPrepared = false
             mediaPlayer.reset()
@@ -130,9 +135,15 @@ fun AudioPlayerComponent(
                 mediaPlayer.setDataSource("https://poweroftheword.bi${audio.file}")
             }
 
-            mediaPlayer.setOnPreparedListener {
+            mediaPlayer.setOnPreparedListener { mp ->
                 isPrepared = true
-                duration = it.duration.toFloat()
+                duration = mp.duration.toFloat()
+                if (lastPosition > 0) {
+                    mp.seekTo(lastPosition)
+                }
+                if (wasPlaying) {
+                    mp.start()
+                }
             }
 
             mediaPlayer.prepareAsync()
@@ -184,7 +195,7 @@ fun AudioPlayerComponent(
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        imageVector = Icons.Default.GraphicEq,
+                        imageVector = Icons.Rounded.GraphicEq,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(32.dp)
@@ -230,15 +241,15 @@ fun AudioPlayerComponent(
                     val buttonColor by animateColorAsState(
                         targetValue = when {
                             showCheck -> Color(0xFF4CAF50)
+                            isPlaying -> MaterialTheme.colorScheme.primary
                             isDownloaded -> MaterialTheme.colorScheme.primary
-                            isPlaying -> MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
                             else -> MaterialTheme.colorScheme.secondary
                         },
                         label = "buttonColor"
                     )
 
                     val iconTint by animateColorAsState(
-                        targetValue = if (isPlaying && isDownloaded) MaterialTheme.colorScheme.primary else Color.White,
+                        targetValue = if (isPlaying) Color.White else Color.White,
                         label = "iconTint"
                     )
 
@@ -260,7 +271,7 @@ fun AudioPlayerComponent(
                                 viewModel.downloadAudio(audio)
                             }
                         },
-                        modifier = Modifier.size(if (isDownloading && !isDownloaded) 40.dp else 52.dp),
+                        modifier = Modifier.size(if (isDownloading && !isDownloaded) 38.dp else 50.dp),
                         colors = IconButtonDefaults.filledIconButtonColors(
                             containerColor = buttonColor,
                             contentColor = iconTint
@@ -269,11 +280,12 @@ fun AudioPlayerComponent(
                     ) {
                         AnimatedContent(
                             targetState = when {
-                                showCheck -> Icons.Default.Check
-                                isDownloading && !isDownloaded -> Icons.Default.Close
-                                isPlaying -> Icons.Default.Pause
-                                isDownloaded || isPrepared -> Icons.Default.PlayArrow
-                                else -> Icons.Default.Download
+                                showCheck -> Icons.Rounded.Check
+                                !isPlaying -> Icons.Rounded.Download
+                                isPlaying -> Icons.Rounded.Pause
+                                isDownloading && !isDownloaded -> Icons.Rounded.Close
+                                isDownloaded || isPrepared -> Icons.Rounded.PlayArrow
+                                else -> Icons.Rounded.Download
                             },
                             transitionSpec = {
                                 fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut()
@@ -283,7 +295,7 @@ fun AudioPlayerComponent(
                             Icon(
                                 imageVector = icon,
                                 contentDescription = null,
-                                modifier = Modifier.size(if (icon == Icons.Default.Close) 20.dp else 30.dp)
+                                modifier = Modifier.size(if (icon == Icons.Rounded.Close) 18.dp else 28.dp)
                             )
                         }
                     }
