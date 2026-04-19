@@ -34,6 +34,9 @@ class AudioListViewModel @Inject constructor(
     private val _downloadedAudioIds = MutableStateFlow<Set<Int>>(emptySet())
     val downloadedAudioIds: StateFlow<Set<Int>> = _downloadedAudioIds.asStateFlow()
 
+    private val _downloadProgress = MutableStateFlow<Map<Int, Float>>(emptyMap())
+    val downloadProgress: StateFlow<Map<Int, Float>> = _downloadProgress.asStateFlow()
+
     val likedAudioIds: StateFlow<Set<String>> = audioLikeDao.getAllLikesFlow()
         .map { likes -> likes.filter { it.isLiked }.map { it.audioId }.toSet() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptySet())
@@ -96,10 +99,23 @@ class AudioListViewModel @Inject constructor(
 
     fun downloadAudio(audio: AudioItem) {
         viewModelScope.launch {
+            // Set initial progress to 0 to show the loading indicator immediately
+            _downloadProgress.value = _downloadProgress.value + (audio.id to 0f)
+
             downloadManager.downloadAudio(audio.id, "https://poweroftheword.bi${audio.file}")
                 .collect { progress ->
-                    if (progress is DownloadProgress.Success) {
-                        _downloadedAudioIds.value = _downloadedAudioIds.value + audio.id
+                    when (progress) {
+                        is DownloadProgress.Running -> {
+                            _downloadProgress.value = _downloadProgress.value + (audio.id to progress.progress)
+                        }
+                        is DownloadProgress.Success -> {
+                            _downloadedAudioIds.value = _downloadedAudioIds.value + audio.id
+                            _downloadProgress.value = _downloadProgress.value - audio.id
+                        }
+                        is DownloadProgress.Error -> {
+                            _downloadProgress.value = _downloadProgress.value - audio.id
+                            Log.e("AudioVM", "Download error: ${progress.message}")
+                        }
                     }
                 }
         }
