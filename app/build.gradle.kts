@@ -1,5 +1,3 @@
-import io.netty.util.ReferenceCountUtil.release
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -12,9 +10,6 @@ plugins {
 
 android {
     namespace = "com.poweroftheword.poweroftheword"
-//    compileSdk {
-//        version = release(35)
-//    }
     compileSdk = 35
 
     defaultConfig {
@@ -26,12 +21,11 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        val baseUrl: String = project.findProperty("BASE_URL") as String
+        val baseUrl: String = project.findProperty("BASE_URL") as String? ?: ""
         buildConfigField("String", "BASE_URL", "\"$baseUrl\"")
 
-        val baseUrlApi: String = project.findProperty("BASE_URLAPI") as String
+        val baseUrlApi: String = project.findProperty("BASE_URLAPI") as String? ?: ""
         buildConfigField("String", "BASE_URLAPI", "\"$baseUrlApi\"")
-
     }
 
     buildTypes {
@@ -55,6 +49,11 @@ android {
         compose = true
         buildConfig = true
     }
+
+    kapt {
+        correctErrorTypes = true
+    }
+
     splits {
         abi {
             isEnable = true
@@ -99,11 +98,8 @@ dependencies {
     // Palette for dynamic colors
     implementation("androidx.palette:palette-ktx:1.0.0")
 
-    //accompanist compose
+    // accompanist compose
     implementation("com.google.accompanist:accompanist-placeholder-material:0.36.0")
-
-    //custom dependencies
-    // Coroutines & Serialization
     implementation("com.google.accompanist:accompanist-flowlayout:0.34.0")
 
     // Coroutines & Serialization
@@ -124,17 +120,17 @@ dependencies {
     implementation(libs.androidx.media3.ui)
     implementation(libs.androidx.media3.common)
 
-    //dataStore
+    // DataStore
     implementation("androidx.datastore:datastore-preferences:1.0.0")
-    //coil for images
+    // Coil for images
     implementation("io.coil-kt:coil-compose:2.4.0")
     // YouTube Player library
-    implementation("com.pierfrancescosoffritti.androidyoutubeplayer:core:12.1.0")
+    implementation(libs.youtube.player)
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.8.4")
-    //viewmodel
+    // ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
-    //Hilt
+    // Hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
@@ -144,7 +140,7 @@ dependencies {
     implementation(libs.androidx.hilt.work)
     kapt(libs.androidx.hilt.compiler)
 
-    //splash theme
+    // Splash theme
     implementation("androidx.core:core-splashscreen:1.0.1")
 
     implementation("androidx.palette:palette-ktx:1.0.0")

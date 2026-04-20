@@ -49,6 +49,7 @@ import com.poweroftheword.poweroftheword.ui.screens.home.HomeScreen
 import com.poweroftheword.poweroftheword.ui.screens.home.HomeViewModel
 import com.poweroftheword.poweroftheword.ui.screens.horaire.HoraireScreen
 import com.poweroftheword.poweroftheword.ui.screens.horaire.HoraireViewModel
+import com.poweroftheword.poweroftheword.ui.screens.live.LivePlayerScreen
 import com.poweroftheword.poweroftheword.ui.screens.live.LiveScreen
 import com.poweroftheword.poweroftheword.ui.screens.live.LiveViewModel
 import com.poweroftheword.poweroftheword.ui.screens.program.ProgramScreen
@@ -110,7 +111,7 @@ fun MainScreen() {
                         navController.navigate(Screen.FeedDetail.createRoute(feed.id))
                     },
                     onLiveClick = { url ->
-//                        navController.navigate(Screen.VideoPlayer.createRoute(url))
+                        navController.navigate(Screen.LivePlayer.createRoute(url))
                     },
                     onRadioClick = {
                         navController.navigate(Screen.Radio.route)
@@ -147,8 +148,19 @@ fun MainScreen() {
                 LiveScreen(
                     viewModel = viewModel,
                     onLiveClick = { live ->
-//                        navController.navigate(Screen.VideoPlayer.createRoute(live.streamUrl))
+                        navController.navigate(Screen.LivePlayer.createRoute(live.streamUrl))
                     }
+                )
+            }
+
+            composable(
+                route = Screen.LivePlayer.route,
+                arguments = listOf(navArgument("videoUrl") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val videoUrl = backStackEntry.arguments?.getString("videoUrl") ?: ""
+                LivePlayerScreen(
+                    videoUrl = java.net.URLDecoder.decode(videoUrl, "UTF-8"),
+                    onBackClick = { navController.popBackStack() }
                 )
             }
 

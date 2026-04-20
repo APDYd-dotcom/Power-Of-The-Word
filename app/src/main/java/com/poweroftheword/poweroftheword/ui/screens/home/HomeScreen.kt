@@ -35,11 +35,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.poweroftheword.poweroftheword.R
 import com.poweroftheword.poweroftheword.domain.model.FeedItem
+import com.poweroftheword.poweroftheword.domain.model.LiveItem
 import com.poweroftheword.poweroftheword.domain.model.VideoItem
 import com.poweroftheword.poweroftheword.ui.components.DynamicHeroSkeleton
 import com.poweroftheword.poweroftheword.ui.components.FeedItemCardSkeleton
 import com.poweroftheword.poweroftheword.ui.components.VideoCardSkeleton
 import com.poweroftheword.poweroftheword.ui.screens.feed.FeedItemCard
+import com.poweroftheword.poweroftheword.ui.screens.live.LiveYouTubeStyleItem
 import com.poweroftheword.poweroftheword.ui.screens.video.VideoCard
 import com.poweroftheword.poweroftheword.util.shimmerEffect
 import com.poweroftheword.poweroftheword.util.truncate
@@ -88,6 +90,22 @@ fun HomeScreen(
                             onLanguageChange = { viewModel.changeLanguage(it) },
                             onThemeToggle = onThemeToggle
                         )
+                    }
+
+                    if (state.liveStreams.any { it.isActive }) {
+                        val activeLive = state.liveStreams.first { it.isActive }
+                        item {
+                            SectionHeader(
+                                title = "Live Now",
+                                onSeeAllClick = { /* Navigate to Live Screen */ }
+                            )
+                        }
+                        item {
+                            LiveYouTubeStyleItem(
+                                live = activeLive,
+                                onClick = { onLiveClick(activeLive.streamUrl) }
+                            )
+                        }
                     }
 
                     if (state.latestVideos.isNotEmpty()) {

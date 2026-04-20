@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 interface ChurchRepository {
     // Media Fetching
     suspend fun getVideos(language: String): List<VideoItem>
-    suspend fun getLiveStreams(): List<Live>
+    suspend fun getLiveStreams(language: String): List<LiveItem>
     suspend fun getAudio(language: String): List<AudioItem>
     suspend fun getFeeds(language: String): List<FeedItem>
     suspend fun getDailyWord(language: String): List<DailyWordItem>
@@ -38,12 +38,13 @@ interface ChurchRepository {
 
     suspend fun getPastor(): List<PastorItem>
 
-    
+    suspend fun updateAudioStatus(audioId: Int, status: String)
+
     suspend fun recordAudioListen(audioId: Int, deviceId: String)
     suspend fun likeAudio(audioId: Int, deviceId: String)
     suspend fun shareAudio(audioId: Int, deviceId: String)
 
-    suspend fun registerLiveViewer(liveId: String, deviceId: String)
+    suspend fun registerLiveViewer(liveId: Int, deviceId: String)
 
     suspend fun shareFeed(feedId: Int, deviceId: String)
 

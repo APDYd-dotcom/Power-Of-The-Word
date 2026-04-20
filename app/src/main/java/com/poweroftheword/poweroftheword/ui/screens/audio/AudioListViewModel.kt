@@ -17,7 +17,10 @@ import com.poweroftheword.poweroftheword.util.download.DownloadProgress
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.io.File
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -59,20 +62,19 @@ class AudioListViewModel @Inject constructor(
             val monthNumber = String.format("%02d", month + 1)
             
             audios.filter { audio ->
+                val isPublic = audio.status.lowercase() == "public"
                 val matchesQuery = query.isBlank() || audio.title.contains(query, true)
                 
-                // The issue was likely matching partial strings or incorrect month logic.
-                // We should match the year AND either the full month name or the month number (MM)
-                // specifically in a way that doesn't conflict (e.g., "03" shouldn't match "2023" unless it's the month).
                 val matchesYear = audio.date.contains(year.toString())
                 val matchesMonth = audio.date.contains(monthName, true) || audio.date.contains("-$monthNumber-") || audio.date.contains("/$monthNumber/")
                 
-                matchesQuery && matchesYear && matchesMonth
+                isPublic && matchesQuery && matchesYear && matchesMonth
             }
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val currentLanguage: StateFlow<String> = repository.getSavedLanguage()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "EN")
+
 
     fun onLanguageChange(lang: String) {
         viewModelScope.launch {
@@ -164,6 +166,8 @@ class AudioListViewModel @Inject constructor(
                 val result = repository.getAudio(language)
                 _audios.value = result
                 
+                checkAndScheduleAudioVisibility(result)
+
                 val deviceId = DeviceUtils.getDeviceId(context)
                 repository.syncMissingAudioLikes(result, deviceId)
 
@@ -172,6 +176,33 @@ class AudioListViewModel @Inject constructor(
             } finally {
                 _isLoading.value = false
             }
+        }
+    }
+
+    private fun checkAndScheduleAudioVisibility(audios: List<AudioItem>) {
+        val now = Date()
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+
+        audios.filter { it.status.lowercase() != "public" }.forEach { audio ->
+            if (audio.visibleDate != null && audio.visibleTime != null) {
+                try {
+                    val scheduledDateTime = dateFormat.parse("${audio.visibleDate} ${audio.visibleTime}")
+                    if (scheduledDateTime != null && scheduledDateTime.before(now)) {
+                        updateAudioToPublic(audio.id)
+                    }
+                } catch (e: Exception) {
+                    Log.e("AudioVM", "Date parsing failed for audio ${audio.id}: ${e.message}")
+                }
+            }
+        }
+    }
+
+    private fun updateAudioToPublic(audioId: Int) {
+        viewModelScope.launch {
+            repository.updateAudioStatus(audioId, "public")
+            // Optionally refresh the list after updating
+            val language = repository.getSavedLanguage().first()
+            _audios.value = repository.getAudio(language)
         }
     }
 

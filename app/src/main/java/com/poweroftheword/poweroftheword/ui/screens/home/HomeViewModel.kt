@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 data class HomeState(
     val dailyWord: DailyWord? = null,
-    val liveStreams: List<Live> = emptyList(),
+    val liveStreams: List<LiveItem> = emptyList(),
     val latestVideos: List<VideoItem> = emptyList(),
     val latestFeeds: List<FeedItem> = emptyList(),
     val radioStatus: Radio? = null,
@@ -67,7 +67,7 @@ class HomeViewModel @Inject constructor(
             try {
                 val language = repository.getSavedLanguage().first()
                 val dailyWordItems = repository.getDailyWord(language)
-                val liveStreams = repository.getLiveStreams()
+                val liveStreams = repository.getLiveStreams(language)
                 val latestVideos = repository.getVideos(language)
                 val latestFeeds = repository.getFeeds(language)
 

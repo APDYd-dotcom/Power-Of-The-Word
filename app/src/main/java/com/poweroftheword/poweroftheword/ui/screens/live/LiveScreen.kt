@@ -15,16 +15,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import com.poweroftheword.poweroftheword.BuildConfig
 import com.poweroftheword.poweroftheword.domain.model.Live
+import com.poweroftheword.poweroftheword.domain.model.LiveItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LiveScreen(
     viewModel: LiveViewModel,
-    onLiveClick: (Live) -> Unit
+    onLiveClick: (LiveItem) -> Unit
 ) {
     val liveStreams by viewModel.liveStreams.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -73,7 +77,7 @@ fun LiveScreen(
 }
 
 @Composable
-fun LiveYouTubeStyleItem(live: Live, onClick: () -> Unit) {
+fun LiveYouTubeStyleItem(live: LiveItem, onClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -86,7 +90,14 @@ fun LiveYouTubeStyleItem(live: Live, onClick: () -> Unit) {
                 .height(210.dp)
                 .background(Color.Black)
         ) {
-            // Placeholder for live thumbnail/video
+            AsyncImage(
+                model = "${BuildConfig.BASE_URL}${live.thumbnail}",
+                contentDescription = live.title,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+
+            // Optional: Overlay the Play button
             Icon(
                 Icons.Default.PlayArrow, 
                 contentDescription = null, 
@@ -119,7 +130,7 @@ fun LiveYouTubeStyleItem(live: Live, onClick: () -> Unit) {
                     shape = MaterialTheme.shapes.extraSmall
                 ) {
                     Text(
-                        text = "${live.viewers} watching",
+                        text = "${live.view} watching",
                         modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                         color = Color.White,
                         fontSize = 12.sp

@@ -28,7 +28,7 @@ import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
-import io.ktor.client.request.parameter
+import io.ktor.client.request.patch
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
@@ -82,12 +82,21 @@ class ChurchRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getLiveStreams(): List<Live> {
+    override suspend fun getLiveStreams(language: String): List<LiveItem> {
         return try {
             Log.d("ChurchRepo", "getLiveStreams | Fetching...")
-            val result: List<Live> = client.get("$BASE_URL/live/").body()
-            Log.d("ChurchRepo", "getLiveStreams | Found ${result.size} streams")
-            result
+            val response: String = client.get("$BASE_URL/getlive/") {
+                setBody(
+                    TextContent(
+                        "language=$language",
+                        ContentType.Application.FormUrlEncoded
+                    )
+                )
+            }.bodyAsText()
+
+            val res = json.decodeFromString<Live>(response)
+            Log.d("ChurchRepo", "getLiveStreams | Found ${res.lives.size} streams")
+            res.lives
         } catch (e: Exception) {
             Log.e("ChurchRepo", "getLiveStreams | Error: ${e.message}")
             emptyList()
@@ -199,8 +208,12 @@ class ChurchRepositoryImpl @Inject constructor(
         return try {
             Log.d("ChurchRepo", "getHoraire | Language: $language")
             val response: String = client.get("$BASE_URL/horaire/") {
-                contentType(ContentType.Application.Json)
-                setBody(mapOf("language" to language))
+                setBody(
+                    TextContent(
+                        "language=$language",
+                        ContentType.Application.FormUrlEncoded
+                    )
+                )
             }.bodyAsText()
             Log.d("ChurchRepo", "getHoraire | Found ${response} entries")
             val res = json.decodeFromString<Horaire>(response)
@@ -326,6 +339,23 @@ class ChurchRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun updateAudioStatus(audioId: Int, status: String) {
+        try {
+            Log.d("ChurchRepo", "updateAudioStatus | audioId: $audioId, status: $status")
+            // Use TextContent to avoid Ktor serialization issues with mixed types in Map
+            client.patch("$BASE_URL/audio/") {
+                setBody(
+                    TextContent(
+                        "id=$audioId&status=$status",
+                        ContentType.Application.FormUrlEncoded
+                    )
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("ChurchRepo", "updateAudioStatus | Error: ${e.message}")
+        }
+    }
+
     override suspend fun recordAudioListen(audioId: Int, deviceId: String) {
         try {
             Log.d("ChurchRepo", "recordAudioListen | audioId: $audioId")
@@ -362,7 +392,7 @@ class ChurchRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun registerLiveViewer(liveId: String, deviceId: String) {
+    override suspend fun registerLiveViewer(liveId: Int, deviceId: String) {
         try {
             Log.d("ChurchRepo", "registerLiveViewer | liveId: $liveId")
             client.post("$BASE_URL/viewlive/") {

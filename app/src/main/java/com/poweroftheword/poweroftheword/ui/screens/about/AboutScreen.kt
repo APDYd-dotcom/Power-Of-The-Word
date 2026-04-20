@@ -158,7 +158,7 @@ fun AboutScreen(
                             Column {
                                 Text(
                                     text = pastor?.fullName ?: localizedString(R.string.pastor_name),
-                                    style = MaterialTheme.typography.titleLarge,
+                                    style = MaterialTheme.typography.titleSmall,
                                     fontWeight = FontWeight.Bold,
                                     color = if (isDark) Color.White else MaterialTheme.colorScheme.onSurface
                                 )
@@ -178,7 +178,7 @@ fun AboutScreen(
                         Text(
                             text = localizedString(R.string.about_motto),
                             style = MaterialTheme.typography.labelLarge,
-                            color = if (isDark) Color(0xFF3D74F6) else MaterialTheme.colorScheme.primary,
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 0.5.sp
                         )
