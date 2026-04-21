@@ -113,6 +113,9 @@ fun MainScreen() {
                     onLiveClick = { url ->
                         navController.navigate(Screen.LivePlayer.createRoute(url))
                     },
+                    onSeeAllLive = {
+                        navController.navigate(Screen.Live.route)
+                    },
                     onRadioClick = {
                         navController.navigate(Screen.Radio.route)
                     },
@@ -149,7 +152,8 @@ fun MainScreen() {
                     viewModel = viewModel,
                     onLiveClick = { live ->
                         navController.navigate(Screen.LivePlayer.createRoute(live.streamUrl))
-                    }
+                    },
+                    onBackClick = {navController.popBackStack()}
                 )
             }
 

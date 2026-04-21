@@ -14,6 +14,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 import javax.inject.Inject
 
 data class HomeState(
@@ -21,7 +24,7 @@ data class HomeState(
     val liveStreams: List<LiveItem> = emptyList(),
     val latestVideos: List<VideoItem> = emptyList(),
     val latestFeeds: List<FeedItem> = emptyList(),
-    val radioStatus: Radio? = null,
+    val radioStatus: List<Radio> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null,
     val currentLanguage: String = "EN"
@@ -70,6 +73,10 @@ class HomeViewModel @Inject constructor(
                 val liveStreams = repository.getLiveStreams(language)
                 val latestVideos = repository.getVideos(language)
                 val latestFeeds = repository.getFeeds(language)
+                val rawRadios = repository.getRadioStatus()
+                val radioStatus = rawRadios.map { radio ->
+                    radio.copy(isActive = isRadioCurrentlyActive(radio.startHour, radio.endHour))
+                }
 
                 _state.update {
                     it.copy(
@@ -77,6 +84,7 @@ class HomeViewModel @Inject constructor(
                         liveStreams = liveStreams,
                         latestVideos = latestVideos,
                         latestFeeds = latestFeeds,
+                        radioStatus = radioStatus,
                         isLoading = false
                     )
                 }
@@ -127,6 +135,33 @@ class HomeViewModel @Inject constructor(
                 context,
                 "Check out this sermon:\n${video.title}\n${video.url}"
             )
+        }
+    }
+
+    private fun isRadioCurrentlyActive(startHour: String, endHour: String): Boolean {
+        return try {
+            val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
+            val currentTime = Calendar.getInstance()
+            val nowStr = sdf.format(currentTime.time)
+            val now = sdf.parse(nowStr)
+
+            val start = sdf.parse(startHour)
+            val end = sdf.parse(endHour)
+
+            if (start != null && end != null && now != null) {
+                if (start.before(end)) {
+                    // Normal range (e.g., 08:00 - 20:00)
+                    now in start..end
+                } else {
+                    // Overnight range (e.g., 22:00 - 04:00)
+                    now.after(start) || now.before(end)
+                }
+            } else {
+                false
+            }
+        } catch (e: Exception) {
+            Log.e("HomeViewModel", "Error parsing time", e)
+            false
         }
     }
 }

@@ -103,9 +103,10 @@ fun DynamicHero(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .statusBarsPadding()
                 .padding(16.dp)
         ) {
+            Spacer(modifier = Modifier.height(16.dp))
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
