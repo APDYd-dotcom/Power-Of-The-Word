@@ -39,6 +39,9 @@ import com.poweroftheword.poweroftheword.ui.components.AboutScreenSkeleton
 import com.poweroftheword.poweroftheword.ui.screens.program.ProgramViewModel
 import com.poweroftheword.poweroftheword.ui.screens.settings.SettingsViewModel
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import com.poweroftheword.poweroftheword.ui.theme.LocalStatusBarAppearance
 import com.poweroftheword.poweroftheword.util.localizedString
 
 
@@ -62,6 +65,17 @@ fun AboutScreen(
 
     val userDarkMode by settingsViewModel.isDarkMode.collectAsState()
     val isDark = userDarkMode ?: isSystemInDarkTheme()
+    val statusBarAppearance = LocalStatusBarAppearance.current
+
+    LaunchedEffect(isDark) {
+        statusBarAppearance.isDarkIcons = !isDark
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            statusBarAppearance.isDarkIcons = null
+        }
+    }
 
     val pastor = pastors.firstOrNull()
     val isRefreshing = isLoading || isProgramsLoading

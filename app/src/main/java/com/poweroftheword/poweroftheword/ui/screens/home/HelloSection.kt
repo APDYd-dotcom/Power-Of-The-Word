@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -32,6 +33,8 @@ import androidx.palette.graphics.Palette
 import coil.compose.AsyncImage
 import com.poweroftheword.poweroftheword.domain.model.DailyWord
 import com.poweroftheword.poweroftheword.BuildConfig
+import com.poweroftheword.poweroftheword.ui.theme.LocalStatusBarAppearance
+import com.poweroftheword.poweroftheword.ui.util.getDominantColorFromUrl
 import com.poweroftheword.poweroftheword.util.truncate
 
 @Composable
@@ -42,36 +45,40 @@ fun DynamicHero(
     onLanguageChange: (String) -> Unit,
     onThemeToggle: (Boolean) -> Unit
 ) {
-
     val context = LocalContext.current
-    val view = LocalView.current
+    val statusBarAppearance = LocalStatusBarAppearance.current
 
-    var dominantColor by remember { mutableStateOf(Color.Black) }
+    val defaultDominantColor = if (isDarkMode) Color(0xFF12141C) else Color(0xFFF8F9FA)
+    var dominantColor by remember(isDarkMode) { mutableStateOf(defaultDominantColor) }
     val item = dailyWord?.dailywords?.firstOrNull()
 
-    if (!view.isInEditMode) {
-        SideEffect {
-            val window = (view.context as Activity).window
-            window.statusBarColor = dominantColor.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = 
-                dominantColor.luminance() > 0.5f
+    // Sync status bar icons with dominant color luminance
+    LaunchedEffect(dominantColor) {
+        statusBarAppearance.isDarkIcons = dominantColor.luminance() > 0.5f
+    }
+
+    // Clean up when leaving this section to restore theme defaults
+    DisposableEffect(Unit) {
+        onDispose {
+            statusBarAppearance.isDarkIcons = null
         }
     }
 
-    LaunchedEffect(item?.photo) {
+    LaunchedEffect(item?.photo, isDarkMode) {
         if (item?.photo != null) {
             getDominantColorFromUrl(context, "${BuildConfig.BASE_URL}${item.photo}") {
                 dominantColor = it
             }
+        } else {
+            dominantColor = defaultDominantColor
         }
     }
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(260.dp)
+            .height(280.dp)
     ) {
-
         AsyncImage(
             model = "${BuildConfig.BASE_URL}${item?.photo}",
             contentDescription = null,
@@ -87,7 +94,7 @@ fun DynamicHero(
                     Brush.verticalGradient(
                         listOf(
                             dominantColor.copy(alpha = 0.1f),
-                            Color.Black.copy(alpha = 0.1f)
+                            Color.Black.copy(alpha = 0.4f)
                         )
                     )
                 )
@@ -96,16 +103,14 @@ fun DynamicHero(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .statusBarsPadding()
                 .padding(16.dp)
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-
                 Text(
                     text = "Power of the Word".truncate(20),
                     color = Color.White,
@@ -118,8 +123,6 @@ fun DynamicHero(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-
-                    //  Language dropdown connected to ViewModel
                     ProLanguageDropdown(
                         selectedLang = currentLanguage,
                         onLangChange = onLanguageChange
@@ -127,7 +130,6 @@ fun DynamicHero(
 
                     Spacer(modifier = Modifier.width(8.dp))
 
-                    //  Theme toggle icon
                     ThemeToggleButton(
                         isDarkMode = isDarkMode,
                         onToggle = { onThemeToggle(!isDarkMode) }
@@ -137,34 +139,6 @@ fun DynamicHero(
         }
     }
 }
-
-suspend fun getDominantColorFromUrl(
-    context: Context,
-    imageUrl: String?,
-    onColorReady: (Color) -> Unit
-) {
-    try {
-        val loader = coil.ImageLoader(context)
-
-        val request = coil.request.ImageRequest.Builder(context)
-            .data(imageUrl)
-            .allowHardware(false) // ⚠️ VERY IMPORTANT for Palette
-            .build()
-
-        val result = (loader.execute(request) as coil.request.SuccessResult)
-
-        val bitmap = (result.drawable as android.graphics.drawable.BitmapDrawable).bitmap
-
-        val palette = Palette.from(bitmap).generate()
-        val color = palette.dominantSwatch?.rgb ?: Color.Black.toArgb()
-
-        onColorReady(Color(color))
-
-    } catch (e: Exception) {
-        onColorReady(Color.Black)
-    }
-}
-
 
 @Composable
 fun ProLanguageDropdown(

@@ -9,21 +9,23 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.poweroftheword.poweroftheword.BuildConfig
+import com.poweroftheword.poweroftheword.ui.theme.LocalStatusBarAppearance
+import com.poweroftheword.poweroftheword.ui.util.getDominantColorFromUrl
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,6 +36,34 @@ fun DailyWordScreen(
 
     val state by viewModel.state.collectAsState()
     val item = state.data?.firstOrNull()
+    val context = LocalContext.current
+    val statusBarAppearance = LocalStatusBarAppearance.current
+
+    val isDarkTheme = androidx.compose.foundation.isSystemInDarkTheme()
+    val defaultDominantColor = if (isDarkTheme) Color(0xFF12141C) else Color(0xFFF8F9FA)
+    var dominantColor by remember(isDarkTheme) { mutableStateOf(defaultDominantColor) }
+
+    // Sync status bar icons with dominant color luminance
+    LaunchedEffect(dominantColor) {
+        statusBarAppearance.isDarkIcons = dominantColor.luminance() > 0.5f
+    }
+
+    // Reset status bar on leave
+    DisposableEffect(Unit) {
+        onDispose {
+            statusBarAppearance.isDarkIcons = null
+        }
+    }
+
+    LaunchedEffect(item?.photo, isDarkTheme) {
+        if (item?.photo != null) {
+            getDominantColorFromUrl(context, "${BuildConfig.BASE_URL}${item.photo}") {
+                dominantColor = it
+            }
+        } else {
+            dominantColor = defaultDominantColor
+        }
+    }
 
     Scaffold(
         topBar = {
