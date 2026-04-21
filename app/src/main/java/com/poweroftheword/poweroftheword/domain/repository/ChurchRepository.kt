@@ -7,6 +7,7 @@ interface ChurchRepository {
     // Media Fetching
     suspend fun getVideos(language: String): List<VideoItem>
     suspend fun getLiveStreams(language: String): List<LiveItem>
+    suspend fun getSocialMedia(): List<SocialMediaItem>
     suspend fun getAudio(language: String): List<AudioItem>
     suspend fun getFeeds(language: String): List<FeedItem>
     suspend fun getDailyWord(language: String): List<DailyWordItem>

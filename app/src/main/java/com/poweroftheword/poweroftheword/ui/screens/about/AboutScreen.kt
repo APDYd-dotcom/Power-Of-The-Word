@@ -41,6 +41,7 @@ import com.poweroftheword.poweroftheword.ui.screens.settings.SettingsViewModel
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import com.poweroftheword.poweroftheword.BuildConfig.BASE_URL
 import com.poweroftheword.poweroftheword.ui.theme.LocalStatusBarAppearance
 import com.poweroftheword.poweroftheword.util.localizedString
 
@@ -53,15 +54,20 @@ fun AboutScreen(
     onSettingsClick: () -> Unit,
     viewModel: PastorViewModel = hiltViewModel(),
     programViewModel: ProgramViewModel = hiltViewModel(),
-    settingsViewModel: SettingsViewModel = hiltViewModel()
+    settingsViewModel: SettingsViewModel = hiltViewModel(),
+    socialMediaViewModel: SocialMediaViewModel = hiltViewModel()
 ) {
 
+    val context = androidx.compose.ui.platform.LocalContext.current
     val scrollState = rememberScrollState()
     val pastors by viewModel.pastor.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     
     val programs by programViewModel.programs.collectAsState()
     val isProgramsLoading by programViewModel.isLoading.collectAsState()
+
+    val socialMediaList by socialMediaViewModel.socialMedia.collectAsState()
+    val isSocialMediaLoading by socialMediaViewModel.isLoading.collectAsState()
 
     val userDarkMode by settingsViewModel.isDarkMode.collectAsState()
     val isDark = userDarkMode ?: isSystemInDarkTheme()
@@ -78,7 +84,7 @@ fun AboutScreen(
     }
 
     val pastor = pastors.firstOrNull()
-    val isRefreshing = isLoading || isProgramsLoading
+    val isRefreshing = isLoading || isProgramsLoading || isSocialMediaLoading
 
     Scaffold(
         containerColor = if (isDark) Color(0xFF121826) else MaterialTheme.colorScheme.surface.copy(alpha = 0.98f),
@@ -119,10 +125,11 @@ fun AboutScreen(
             onRefresh = {
                 viewModel.loadPastor()
                 programViewModel.loadPrograms()
+                socialMediaViewModel.loadSocialMedia()
             },
             modifier = Modifier.padding(padding)
         ) {
-            if (isRefreshing && pastors.isEmpty() && programs.isEmpty()) {
+            if (isRefreshing && pastors.isEmpty() && programs.isEmpty() && socialMediaList.isEmpty()) {
                 AboutScreenSkeleton()
             } else {
                 Column(
@@ -253,24 +260,38 @@ fun AboutScreen(
 
                     // Social Media & Actions
                     Column(modifier = Modifier.padding(horizontal = 8.dp)) {
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            Box(modifier = Modifier.weight(1f)) {
-                                ContactItem(icon = R.drawable.instagram, size = 30, text = localizedString(R.string.instagram_page), isDark = isDark)
-                            }
-                            Box(modifier = Modifier.weight(1f)) {
-                                ContactItem(icon = R.drawable.facebook, size = 30, text = localizedString(R.string.facebook_page), isDark = isDark)
-                            }
-                        }
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            Box(modifier = Modifier.weight(1f)) {
-                                ContactItem(icon = R.drawable.tiktok, size = 30, text = localizedString(R.string.tiktok_page), isDark = isDark)
-                            }
-                            Box(modifier = Modifier.weight(1f)) {
-                                ContactItem(icon = R.drawable.youtube, size = 30, text = localizedString(R.string.youtube_page), isDark = isDark)
+                        socialMediaList.chunked(2).forEach { rowItems ->
+                            Row(modifier = Modifier.fillMaxWidth()) {
+                                rowItems.forEach { social ->
+                                    Box(modifier = Modifier.weight(1f)) {
+                                        ContactItem(
+                                            imageUrl = social.logo,
+                                            size = 30,
+                                            text = social.name,
+                                            isDark = isDark,
+                                            onClik = {
+                                                try {
+                                                    val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(social.url))
+                                                    context.startActivity(intent)
+                                                } catch (e: Exception) {
+                                                    // Fallback or error handling
+                                                }
+                                            }
+                                        )
+                                    }
+                                }
+                                if (rowItems.size == 1) {
+                                    Spacer(modifier = Modifier.weight(1f))
+                                }
                             }
                         }
                         
-                        ContactItem(iconVector = Icons.Default.Email, onClik = { onSettingsClick() }, text = pastor?.email ?: "info@poweroftheword.com", isDark = isDark)
+                        ContactItem(iconVector = Icons.Default.Email, onClik = { 
+                            val intent = android.content.Intent(android.content.Intent.ACTION_SENDTO).apply {
+                                data = android.net.Uri.parse("mailto:${pastor?.email ?: "info@poweroftheword.com"}")
+                            }
+                            context.startActivity(intent)
+                        }, text = pastor?.email ?: "info@poweroftheword.com", isDark = isDark)
                         ContactItem(iconVector = Icons.Default.Favorite, onClik = { onDonationClick() }, text = localizedString(R.string.donate_power_word), isDark = isDark)
                         ContactItem(iconVector = Icons.Default.MenuBook, text = localizedString(R.string.power_word_story), isDark = isDark)
                         ContactItem(iconVector = Icons.Default.Settings, onClik = { onSettingsClick() }, text = localizedString(R.string.settings), isDark = isDark)
@@ -337,6 +358,7 @@ fun ModernProgramRow(day: String, time: String, title: String, isDark: Boolean) 
 @Composable
 fun ContactItem(
     icon: Int? = null,
+    imageUrl: String? = null,
     iconVector: ImageVector? = null,
     onClik: () -> Unit = {},
     size: Int = 22,
@@ -363,7 +385,7 @@ fun ContactItem(
                     .clip(CircleShape)
                     .background(
                         when {
-                            text.contains("info@") || text.contains("@") -> Color(0xFFFF6B6B).copy(alpha = 0.1f)
+                            text.contains("info@") || text.contains("@") || text.lowercase().contains("email") -> Color(0xFFFF6B6B).copy(alpha = 0.1f)
                             text.contains("Donate") || text.contains("Dons") || text.contains("Shigikira") || text.contains("Changia") -> Color(0xFFB36BFF).copy(alpha = 0.1f)
                             text.contains("Story") || text.contains("histoire") || text.contains("Hadithi") || text.contains("Amakuru") -> Color(0xFF4A90E2).copy(alpha = 0.1f)
                             text.contains("Settings") || text.contains("Paramètres") || text.contains("Igenamiterere") || text.contains("Mipangilio") -> (if (isDark) Color(0xFF3D74F6) else MaterialTheme.colorScheme.primary).copy(alpha = 0.1f)
@@ -372,7 +394,14 @@ fun ContactItem(
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                if (icon != null) {
+                if (imageUrl != null) {
+                    AsyncImage(
+                        model = imageUrl,
+                        contentDescription = null,
+                        modifier = Modifier.size(size.dp),
+                        contentScale = ContentScale.Fit
+                    )
+                } else if (icon != null) {
                     Image(
                         painter = painterResource(id = icon),
                         contentDescription = null,
@@ -384,7 +413,7 @@ fun ContactItem(
                         imageVector = iconVector,
                         contentDescription = null,
                         tint = when {
-                            text.contains("info@") || text.contains("@") -> Color(0xFFFF6B6B)
+                            text.contains("info@") || text.contains("@") || text.lowercase().contains("email") -> Color(0xFFFF6B6B)
                             text.contains("Donate") || text.contains("Dons") || text.contains("Shigikira") || text.contains("Changia") -> Color(0xFFB36BFF)
                             text.contains("Story") || text.contains("histoire") || text.contains("Hadithi") || text.contains("Amakuru") -> Color(0xFF4A90E2)
                             else -> if (isDark) Color(0xFF3D74F6) else MaterialTheme.colorScheme.primary

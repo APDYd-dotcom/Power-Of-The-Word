@@ -103,6 +103,20 @@ class ChurchRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getSocialMedia(): List<SocialMediaItem> {
+        return try {
+            val response: String = client.get("$BASE_URL/social-media/") {
+                contentType(ContentType.Application.Json)
+            }.bodyAsText()
+            val res = json.decodeFromString<SocialMedia>(response)
+            Log.d("ChurchRepo", "getSocialMedia | Found ${res.results.size} social media")
+            res.results
+        } catch (e: Exception) {
+            Log.e("ChurchRepo", "getSocialMedia | Error: ${e.message}")
+            emptyList()
+        }
+    }
+
     override suspend fun getAudio(language: String): List<AudioItem> {
         return try {
             Log.d("ChurchRepo", "getAudio | Language: $language")
