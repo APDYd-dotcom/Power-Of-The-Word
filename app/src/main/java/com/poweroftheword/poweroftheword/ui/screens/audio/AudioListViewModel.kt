@@ -158,6 +158,9 @@ class AudioListViewModel @Inject constructor(
         _selectedYear.value = year
     }
 
+    init {
+        loadAudios()
+    }
     fun loadAudios() {
         viewModelScope.launch {
             _isLoading.value = true

@@ -21,34 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
-
-fun Modifier.shimmerEffect(): Modifier = composed {
-    var size by remember {
-        mutableStateOf(androidx.compose.ui.geometry.Size.Zero)
-    }
-    val transition = rememberInfiniteTransition(label = "")
-    val startOffsetX by transition.animateFloat(
-        initialValue = -2 * size.width,
-        targetValue = 2 * size.width,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1000)
-        ), label = ""
-    )
-
-    background(
-        brush = Brush.linearGradient(
-            colors = listOf(
-                Color.LightGray.copy(alpha = 0.6f),
-                Color.LightGray.copy(alpha = 0.2f),
-                Color.LightGray.copy(alpha = 0.6f),
-            ),
-            start = Offset(startOffsetX, 0f),
-            end = Offset(startOffsetX + size.width, size.height)
-        )
-    ).onGloballyPositioned {
-        size = it.size.toSize()
-    }
-}
+import com.poweroftheword.poweroftheword.util.shimmerEffect
 
 @Composable
 fun VideoCardSkeleton() {
@@ -56,7 +29,7 @@ fun VideoCardSkeleton() {
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 16.dp)
-            .background(Color(0xFF2A3442).copy(alpha = 0.5f))
+            .background(MaterialTheme.colorScheme.surfaceVariant)
     ) {
         Box(
             modifier = Modifier
@@ -107,7 +80,7 @@ fun FeedItemCardSkeleton() {
             .padding(horizontal = 16.dp, vertical = 8.dp),
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF2A3442).copy(alpha = 0.5f))
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
         Column {
             Box(
@@ -166,6 +139,7 @@ fun FeedDetailSkeleton() {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(240.dp)
+                .background(MaterialTheme.colorScheme.surfaceVariant)
                 .shimmerEffect()
         )
 
@@ -269,7 +243,7 @@ fun DynamicHeroSkeleton() {
         modifier = Modifier
             .fillMaxWidth()
             .height(260.dp)
-            .background(Color(0xFF2A3442).copy(alpha = 0.5f))
+            .background(MaterialTheme.colorScheme.surfaceVariant)
             .shimmerEffect()
     )
 }
@@ -282,7 +256,7 @@ fun RadioStationCardSkeleton() {
             .height(95.dp),
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF2A3442).copy(alpha = 0.5f)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
         Row(
@@ -373,7 +347,7 @@ fun HoraireScreenSkeleton() {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.LightGray.copy(alpha = 0.1f))
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
             ) {
                 Column(modifier = Modifier.padding(20.dp)) {
                     Row(
@@ -407,7 +381,7 @@ fun HoraireScreenSkeleton() {
                     }
                     
                     Spacer(modifier = Modifier.height(16.dp))
-                    Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(Color.LightGray.copy(alpha = 0.2f)))
+                    Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)))
                     Spacer(modifier = Modifier.height(16.dp))
 
                     repeat(2) {
@@ -447,7 +421,7 @@ fun AboutScreenSkeleton() {
         Card(
             modifier = Modifier.padding(16.dp),
             shape = RoundedCornerShape(32.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.LightGray.copy(alpha = 0.1f))
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
         ) {
             Row(
                 modifier = Modifier
@@ -524,7 +498,7 @@ fun AboutScreenSkeleton() {
         Card(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             shape = RoundedCornerShape(28.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.LightGray.copy(alpha = 0.1f))
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
         ) {
             Column {
                 repeat(3) { index ->
@@ -545,7 +519,7 @@ fun AboutScreenSkeleton() {
                                 .padding(horizontal = 24.dp)
                                 .fillMaxWidth()
                                 .height(1.dp)
-                                .background(Color.LightGray.copy(alpha = 0.2f))
+                                .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
                         )
                     }
                 }
@@ -573,7 +547,7 @@ fun AboutScreenSkeleton() {
                             Card(
                                 modifier = Modifier.fillMaxWidth().height(72.dp),
                                 shape = RoundedCornerShape(20.dp),
-                                colors = CardDefaults.cardColors(containerColor = Color.LightGray.copy(alpha = 0.1f))
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
                             ) {
                                 Row(
                                     modifier = Modifier.fillMaxSize().padding(16.dp),
@@ -594,7 +568,7 @@ fun AboutScreenSkeleton() {
                     Card(
                         modifier = Modifier.fillMaxWidth().height(72.dp),
                         shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.LightGray.copy(alpha = 0.1f))
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
                     ) {
                         Row(
                             modifier = Modifier.fillMaxSize().padding(16.dp),
@@ -627,6 +601,7 @@ fun ContactScreenSkeleton() {
                 .height(180.dp)
                 .padding(16.dp)
                 .clip(RoundedCornerShape(32.dp))
+                .background(MaterialTheme.colorScheme.surfaceVariant)
                 .shimmerEffect()
         )
         
@@ -646,7 +621,7 @@ fun ContactScreenSkeleton() {
         Card(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             shape = RoundedCornerShape(28.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.LightGray.copy(alpha = 0.1f))
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
         ) {
             Column {
                 repeat(3) { index ->
@@ -698,7 +673,7 @@ fun ContactScreenSkeleton() {
                                 .padding(horizontal = 20.dp)
                                 .fillMaxWidth()
                                 .height(1.dp)
-                                .background(Color.LightGray.copy(alpha = 0.2f))
+                                .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
                         )
                     }
                 }
@@ -721,7 +696,7 @@ fun ContactScreenSkeleton() {
         Card(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             shape = RoundedCornerShape(28.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.LightGray.copy(alpha = 0.1f))
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
         ) {
             Row(
                 modifier = Modifier
@@ -815,7 +790,7 @@ fun ProgramScreenSkeleton() {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(28.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.LightGray.copy(alpha = 0.1f))
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
             ) {
                 Column(modifier = Modifier.padding(24.dp)) {
                     Row(
@@ -849,7 +824,7 @@ fun ProgramScreenSkeleton() {
                     }
                     
                     Spacer(modifier = Modifier.height(20.dp))
-                    Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(Color.LightGray.copy(alpha = 0.2f)))
+                    Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)))
                     Spacer(modifier = Modifier.height(20.dp))
                     
                     repeat(2) {

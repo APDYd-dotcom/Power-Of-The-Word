@@ -29,6 +29,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -211,14 +212,14 @@ fun SectionHeaderSkeleton() {
             modifier = Modifier
                 .width(150.dp)
                 .height(24.dp)
-                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f), RoundedCornerShape(4.dp))
+                .clip(RoundedCornerShape(4.dp))
                 .shimmerEffect()
         )
         Box(
             modifier = Modifier
                 .width(60.dp)
                 .height(18.dp)
-                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f), RoundedCornerShape(4.dp))
+                .clip(RoundedCornerShape(4.dp))
                 .shimmerEffect()
         )
     }
