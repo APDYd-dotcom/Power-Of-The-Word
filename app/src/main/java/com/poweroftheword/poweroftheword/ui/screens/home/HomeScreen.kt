@@ -59,12 +59,12 @@ import com.poweroftheword.poweroftheword.util.shimmerEffect
 import com.poweroftheword.poweroftheword.util.truncate
 
 @Composable
-fun LiveSection(live: LiveItem, onLiveClick: (String) -> Unit) {
+fun LiveSection(live: LiveItem, onLiveClick: (LiveItem) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable { onLiveClick(live.streamUrl) },
+            .clickable { onLiveClick(live) },
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
@@ -174,7 +174,7 @@ fun HomeScreen(
     onThemeToggle: (Boolean) -> Unit,
     onVideoClick: (VideoItem) -> Unit,
     onFeedClick: (FeedItem) -> Unit,
-    onLiveClick: (String) -> Unit,
+    onLiveClick: (LiveItem) -> Unit,
     onSeeAllLive: () -> Unit,
     onRadioClick: (com.poweroftheword.poweroftheword.domain.model.Radio) -> Unit,
     onSeeAllVideos: () -> Unit,
@@ -227,7 +227,7 @@ fun HomeScreen(
                         items(activeLiveStreams) { live ->
                             LiveSection(
                                 live = live,
-                                onLiveClick = { onLiveClick(live.streamUrl) }
+                                onLiveClick = { onLiveClick(live) }
                             )
                         }
 

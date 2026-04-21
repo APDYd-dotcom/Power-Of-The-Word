@@ -48,10 +48,28 @@ class LiveViewModel @Inject constructor(
         }
     }
 
+    fun onLikeClicked(liveId: Int) {
+        viewModelScope.launch {
+            val deviceId = DeviceUtils.getDeviceId(context)
+            try {
+                // Assuming there's a general interaction endpoint or live-specific one
+                // For now using the existing infrastructure if applicable
+                repository.likeVideo(liveId.toString(), deviceId) // Placeholder: adjust to live if needed
+                loadLiveStreams() // Refresh to get updated counts
+            } catch (e: Exception) {
+                Log.e("LiveViewModel", "Failed to like live", e)
+            }
+        }
+    }
+
     fun onLiveClicked(liveId: Int) {
         viewModelScope.launch {
             val deviceId = DeviceUtils.getDeviceId(context)
-            repository.registerLiveViewer(liveId, deviceId)
+            try {
+                repository.recordVideoView(liveId.toString(), deviceId)
+            } catch (e: Exception) {
+                Log.e("LiveViewModel", "Failed to record live view", e)
+            }
         }
     }
 }

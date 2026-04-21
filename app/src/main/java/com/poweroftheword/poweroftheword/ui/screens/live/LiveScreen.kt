@@ -103,6 +103,7 @@ fun LiveYouTubeStyleItem(live: LiveItem, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .statusBarsPadding()
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),

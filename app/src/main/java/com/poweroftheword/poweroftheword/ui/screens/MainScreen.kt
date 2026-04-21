@@ -35,6 +35,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.poweroftheword.poweroftheword.domain.model.FeedItem
+import com.poweroftheword.poweroftheword.domain.model.LiveItem
+import com.poweroftheword.poweroftheword.domain.model.VideoItem
 import com.poweroftheword.poweroftheword.ui.navigation.Screen
 import com.poweroftheword.poweroftheword.ui.screens.about.AboutScreen
 import com.poweroftheword.poweroftheword.ui.screens.audio.AudioListScreen
@@ -105,14 +108,14 @@ fun MainScreen() {
                     viewModel = viewModel,
                     isDarkMode = isDarkMode ?: androidx.compose.foundation.isSystemInDarkTheme(),
                     onThemeToggle = { settingsViewModel.setTheme(it) },
-                    onVideoClick = { video ->
+                    onVideoClick = { video: VideoItem ->
                         navController.navigate(Screen.VideoDetail.createRoute(video.id))
                     },
-                    onFeedClick = { feed ->
+                    onFeedClick = { feed: FeedItem ->
                         navController.navigate(Screen.FeedDetail.createRoute(feed.id))
                     },
-                    onLiveClick = { url ->
-                        navController.navigate(Screen.LivePlayer.createRoute(url))
+                    onLiveClick = { live: LiveItem ->
+                        navController.navigate(Screen.LivePlayer.createRoute(live.id))
                     },
                     onSeeAllLive = {
                         navController.navigate(Screen.Live.route)
@@ -153,7 +156,7 @@ fun MainScreen() {
                 LiveScreen(
                     viewModel = viewModel,
                     onLiveClick = { live ->
-                        navController.navigate(Screen.LivePlayer.createRoute(live.streamUrl))
+                        navController.navigate(Screen.LivePlayer.createRoute(live.id))
                     },
                     onBackClick = {navController.popBackStack()}
                 )
@@ -161,12 +164,19 @@ fun MainScreen() {
 
             composable(
                 route = Screen.LivePlayer.route,
-                arguments = listOf(navArgument("videoUrl") { type = NavType.StringType })
+                arguments = listOf(navArgument("liveId") { type = NavType.IntType })
             ) { backStackEntry ->
-                val videoUrl = backStackEntry.arguments?.getString("videoUrl") ?: ""
+                val liveId = backStackEntry.arguments?.getInt("liveId") ?: 0
+                val viewModel: LiveViewModel = hiltViewModel()
+                val videoViewModel: VideoListViewModel = hiltViewModel()
                 LivePlayerScreen(
-                    videoUrl = java.net.URLDecoder.decode(videoUrl, "UTF-8"),
-                    onBackClick = { navController.popBackStack() }
+                    liveId = liveId,
+                    viewModel = viewModel,
+                    videoViewModel = videoViewModel,
+                    onBackClick = { navController.popBackStack() },
+                    onVideoClick = { video ->
+                        navController.navigate(Screen.VideoDetail.createRoute(video.id))
+                    }
                 )
             }
 

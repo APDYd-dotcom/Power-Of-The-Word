@@ -18,8 +18,8 @@ sealed class Screen(val route: String, @StringRes val titleResId: Int, val icon:
     // Non-bottom bar screens
     object Live : Screen("live", R.string.live, Icons.Outlined.LiveTv)
     
-    object LivePlayer : Screen("live_player/{videoUrl}", R.string.live) {
-        fun createRoute(videoUrl: String) = "live_player/${java.net.URLEncoder.encode(videoUrl, "UTF-8")}"
+    object LivePlayer : Screen("live_player/{liveId}", R.string.live) {
+        fun createRoute(liveId: Int) = "live_player/$liveId"
     }
 
     object DailyWord : Screen("daily_word", R.string.daily_word, Icons.Default.Favorite)
