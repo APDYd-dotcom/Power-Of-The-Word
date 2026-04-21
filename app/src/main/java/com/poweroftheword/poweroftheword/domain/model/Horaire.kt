@@ -20,5 +20,9 @@ data class HoraireItem(
     val language: String,
     @SerialName("number")
     val contactNumber: String,
+    @SerialName("start_hour")
+    val startHour: String,
+    @SerialName("end_hour")
+    val endHour: String,
     val date: String,
 )
