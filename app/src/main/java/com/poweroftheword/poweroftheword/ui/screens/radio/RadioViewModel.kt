@@ -54,6 +54,33 @@ class RadioViewModel @Inject constructor(
         })
     }
 
+    fun playById(id: Int) {
+        viewModelScope.launch {
+            // Ensure radio data is loaded first if not already
+            if (_radioStatus.value.isEmpty()) {
+                val rawRadios = repository.getRadioStatus()
+                _radioStatus.value = rawRadios.map { radio ->
+                    radio.copy(isActive = isRadioCurrentlyActive(radio.startHour, radio.endHour))
+                }
+            }
+            
+            val radio = _radioStatus.value.find { it.id == id }
+            if (radio != null) {
+                if (_currentlyPlayingId.value != radio.id) {
+                    exoPlayer.stop()
+                    exoPlayer.clearMediaItems()
+                    val mediaItem = MediaItem.fromUri(radio.url)
+                    exoPlayer.setMediaItem(mediaItem)
+                    exoPlayer.prepare()
+                    exoPlayer.play()
+                    _currentlyPlayingId.value = radio.id
+                } else if (!_isPlaying.value) {
+                    exoPlayer.play()
+                }
+            }
+        }
+    }
+
     fun loadRadioData() {
         viewModelScope.launch {
             _isLoading.value = true

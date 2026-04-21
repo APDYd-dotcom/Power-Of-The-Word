@@ -54,6 +54,7 @@ import com.poweroftheword.poweroftheword.ui.components.VideoCardSkeleton
 import com.poweroftheword.poweroftheword.ui.screens.feed.FeedItemCard
 import com.poweroftheword.poweroftheword.ui.screens.live.LiveYouTubeStyleItem
 import com.poweroftheword.poweroftheword.ui.screens.video.VideoCard
+import com.poweroftheword.poweroftheword.util.formatDate
 import com.poweroftheword.poweroftheword.util.shimmerEffect
 import com.poweroftheword.poweroftheword.util.truncate
 
@@ -142,7 +143,7 @@ fun LiveSection(live: LiveItem, onLiveClick: (String) -> Unit) {
                 )
                 
                 Text(
-                    text = "${live.view} people are watching",
+                    text = formatDate(live.date) ,
                     style = MaterialTheme.typography.bodySmall.copy(
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     )
@@ -175,7 +176,7 @@ fun HomeScreen(
     onFeedClick: (FeedItem) -> Unit,
     onLiveClick: (String) -> Unit,
     onSeeAllLive: () -> Unit,
-    onRadioClick: () -> Unit,
+    onRadioClick: (com.poweroftheword.poweroftheword.domain.model.Radio) -> Unit,
     onSeeAllVideos: () -> Unit,
     onSeeAllFeeds: () -> Unit
 ) {
@@ -212,33 +213,29 @@ fun HomeScreen(
                         )
                     }
 
-                    val activeLive = state.liveStreams.find { it.isActive }
-                    val activeRadio = state.radioStatus.find { it.isActive }
+                    val activeLiveStreams = state.liveStreams.filter { it.isActive }
+                    val activeRadios = state.radioStatus.filter { it.isActive }
 
-                    if (activeLive != null || activeRadio != null) {
+                    if (activeLiveStreams.isNotEmpty() || activeRadios.isNotEmpty()) {
                         item {
                             SectionHeader(
                                 title = "Live Stream",
                                 onSeeAllClick = { onSeeAllLive() }
                             )
                         }
-                        
-                        if (activeLive != null) {
-                            item {
-                                LiveSection(
-                                    live = activeLive,
-                                    onLiveClick = { onLiveClick(activeLive.streamUrl) }
-                                )
-                            }
+
+                        items(activeLiveStreams) { live ->
+                            LiveSection(
+                                live = live,
+                                onLiveClick = { onLiveClick(live.streamUrl) }
+                            )
                         }
 
-                        if (activeRadio != null) {
-                            item {
-                                RadioLiveSection(
-                                    radio = activeRadio,
-                                    onRadioClick = onRadioClick
-                                )
-                            }
+                        items(activeRadios) { radio ->
+                            RadioLiveSection(
+                                radio = radio,
+                                onRadioClick = { onRadioClick(radio) }
+                            )
                         }
                     }
 
@@ -333,12 +330,12 @@ fun SectionHeader(
 }
 
 @Composable
-fun RadioLiveSection(radio: com.poweroftheword.poweroftheword.domain.model.Radio, onRadioClick: () -> Unit) {
+fun RadioLiveSection(radio: com.poweroftheword.poweroftheword.domain.model.Radio, onRadioClick: (com.poweroftheword.poweroftheword.domain.model.Radio) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable { onRadioClick() },
+            .clickable { onRadioClick(radio) },
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
@@ -377,7 +374,7 @@ fun RadioLiveSection(radio: com.poweroftheword.poweroftheword.domain.model.Radio
                     modifier = Modifier
                         .align(Alignment.TopStart)
                         .padding(4.dp),
-                    color = MaterialTheme.colorScheme.primary,
+                    color = Color.Blue,
                     shape = RoundedCornerShape(4.dp)
                 ) {
                     Text(

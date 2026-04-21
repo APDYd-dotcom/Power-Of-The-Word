@@ -72,6 +72,7 @@ fun MainScreen() {
     val currentDestination = navBackStackEntry?.destination
 
     val settingsViewModel: SettingsViewModel = hiltViewModel()
+    val radioViewModel: RadioViewModel = hiltViewModel()
     val isDarkMode by settingsViewModel.isDarkMode.collectAsState()
 
     val bottomNavItems = listOf(
@@ -116,7 +117,8 @@ fun MainScreen() {
                     onSeeAllLive = {
                         navController.navigate(Screen.Live.route)
                     },
-                    onRadioClick = {
+                    onRadioClick = { radio ->
+                        radioViewModel.playById(radio.id)
                         navController.navigate(Screen.Radio.route)
                     },
                     onSeeAllVideos = {
@@ -169,9 +171,8 @@ fun MainScreen() {
             }
 
             composable(Screen.Radio.route) {
-                val viewModel: RadioViewModel = hiltViewModel()
                 RadioScreen(
-                    viewModel = viewModel
+                    viewModel = radioViewModel
                 )
             }
 
