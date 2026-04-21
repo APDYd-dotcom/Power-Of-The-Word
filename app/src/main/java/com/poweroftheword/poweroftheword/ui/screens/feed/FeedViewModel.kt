@@ -31,12 +31,25 @@ class FeedViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+    val currentLanguage: StateFlow<String> = repository.getSavedLanguage()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, "EN")
+
     val likedFeedIds: StateFlow<Set<String>> = feedLikeDao.getAllLikesFlow()
         .map { likes -> likes.filter { it.isLiked }.map { it.feedId }.toSet() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptySet())
 
     init {
-        loadFeeds()
+        viewModelScope.launch {
+            currentLanguage.collect {
+                loadFeeds()
+            }
+        }
+    }
+
+    fun onLanguageChange(language: String) {
+        viewModelScope.launch {
+            repository.saveLanguage(language)
+        }
     }
 
     fun loadFeeds() {

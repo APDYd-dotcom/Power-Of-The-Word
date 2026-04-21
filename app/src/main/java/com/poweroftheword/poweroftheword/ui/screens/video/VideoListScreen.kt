@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.poweroftheword.poweroftheword.R
 import com.poweroftheword.poweroftheword.domain.model.VideoItem
+import com.poweroftheword.poweroftheword.ui.components.LanguageDropdownWrapper
 import com.poweroftheword.poweroftheword.ui.components.VideoCardSkeleton
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -33,6 +34,7 @@ fun VideoListScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val selectedType by viewModel.selectedType.collectAsState()
     val error by viewModel.error.collectAsState()
+    val currentLanguage by viewModel.currentLanguage.collectAsState()
 
     val videoTypes = listOf("preach", "testimony", "live")
 
@@ -49,22 +51,11 @@ fun VideoListScreen(
                         )
                     },
                     actions = {
-                        Surface(
-                            color = Color.Transparent,
-                            shape = RoundedCornerShape(4.dp),
-                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)),
-                            modifier = Modifier.padding(end = 8.dp)
-                        ) {
-                            Text(
-                                "EN",
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold
+                        Box(modifier = Modifier.padding(end = 16.dp)) {
+                            LanguageDropdownWrapper(
+                                selectedLang = currentLanguage,
+                                onLangChange = { viewModel.onLanguageChange(it) }
                             )
-                        }
-                        IconButton(onClick = { /* Search */ }) {
-                            Icon(Icons.Default.Search, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface)
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)

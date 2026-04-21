@@ -23,7 +23,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.poweroftheword.poweroftheword.R
 import com.poweroftheword.poweroftheword.domain.model.FeedItem
-import com.poweroftheword.poweroftheword.ui.components.FeedDetailSkeleton
+import com.poweroftheword.poweroftheword.ui.components.FeedItemCardSkeleton
+import com.poweroftheword.poweroftheword.ui.components.LanguageDropdownWrapper
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,11 +36,18 @@ fun FeedScreen(
     val feeds by viewModel.feeds.collectAsState()
     val likedFeedIds by viewModel.likedFeedIds.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val currentLanguage by viewModel.currentLanguage.collectAsState()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.feed), fontWeight = FontWeight.Bold) }
+                title = { Text(stringResource(R.string.feed), fontWeight = FontWeight.Bold) },
+                actions = {
+                    LanguageDropdownWrapper(
+                        selectedLang = currentLanguage,
+                        onLangChange = { viewModel.onLanguageChange(it) }
+                    )
+                }
             )
         }
     ) { padding ->
@@ -57,7 +65,7 @@ fun FeedScreen(
                         contentPadding = PaddingValues(vertical = 8.dp)
                     ) {
                         items(5) {
-                            FeedDetailSkeleton()
+                            FeedItemCardSkeleton()
                         }
                     }
                 }

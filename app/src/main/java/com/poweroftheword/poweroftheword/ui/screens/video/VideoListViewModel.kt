@@ -82,6 +82,16 @@ class VideoListViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
+    val currentLanguage: StateFlow<String> = repository.getSavedLanguage()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "EN")
+
+    fun onLanguageChange(lang: String) {
+        viewModelScope.launch {
+            repository.saveLanguage(lang)
+            loadVideos()
+        }
+    }
+
     fun onSearchQueryChange(query: String) {
         _searchQuery.value = query
     }
