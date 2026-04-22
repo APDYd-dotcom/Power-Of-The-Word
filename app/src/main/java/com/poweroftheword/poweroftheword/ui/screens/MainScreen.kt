@@ -87,9 +87,24 @@ fun MainScreen() {
         Screen.Feed
     )
 
-    val isBottomBarVisible = bottomNavItems.any { screen ->
-        currentDestination?.hierarchy?.any { it.route == screen.route } == true
-    } && currentDestination?.route != Screen.VideoDetail.route && currentDestination?.route != Screen.FeedDetail.route
+    // Helper for tab navigation logic
+    fun navigateToTab(route: String) {
+        navController.navigate(route) {
+            popUpTo(navController.graph.findStartDestination().id) {
+                saveState = true
+            }
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
+
+    // Hide bottom bar ONLY on detail and player screens
+    val hideBottomBarRoutes = listOf(
+        Screen.VideoDetail.route,
+        Screen.FeedDetail.route,
+        Screen.LivePlayer.route
+    )
+    val isBottomBarVisible = currentDestination?.route !in hideBottomBarRoutes
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -122,13 +137,13 @@ fun MainScreen() {
                     },
                     onRadioClick = { radio ->
                         radioViewModel.playById(radio.id)
-                        navController.navigate(Screen.Radio.route)
+                        navigateToTab(Screen.Radio.route)
                     },
                     onSeeAllVideos = {
-                        navController.navigate(Screen.Videos.route)
+                        navigateToTab(Screen.Videos.route)
                     },
                     onSeeAllFeeds = {
-                        navController.navigate(Screen.Feed.route)
+                        navigateToTab(Screen.Feed.route)
                     }
                 )
             }
@@ -230,11 +245,7 @@ fun MainScreen() {
                     viewModel = viewModel,
                     onBackClick = { 
                         if (!navController.popBackStack()) {
-                            navController.navigate(Screen.Home.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    inclusive = true
-                                }
-                            }
+                            navigateToTab(Screen.Home.route)
                         }
                     }
                 )
@@ -273,11 +284,7 @@ fun MainScreen() {
                     viewModel = viewModel,
                     onBackClick = { 
                         if (!navController.popBackStack()) {
-                            navController.navigate(Screen.Home.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    inclusive = true
-                                }
-                            }
+                            navigateToTab(Screen.Home.route)
                         }
                     },
                     onVideoClick = { v ->
@@ -333,23 +340,16 @@ fun MainScreen() {
                 val viewModel: SettingsViewModel = hiltViewModel()
                 SettingsScreen(
                     viewModel = viewModel,
-                    onNavigateToFeed = { navController.navigate(Screen.Feed.route) },
+                    onBackClick = { navController.popBackStack() },
+                    onNavigateToFeed = { navigateToTab(Screen.Feed.route) },
                     onNavigateToDailyWord = { navController.navigate(Screen.DailyWord.route) },
                     onNavigateToHoraire = { navController.navigate(Screen.Horaire.route) },
                     onNavigateToPrograms = { navController.navigate(Screen.Programs.route) },
                     onNavigateToDonation = { navController.navigate(Screen.Donation.route) },
-                    onNavigateToAbout = { navController.navigate(Screen.About.route) },
+                    onNavigateToAbout = { navigateToTab(Screen.About.route) },
                     onNavigateToContact = { navController.navigate(Screen.Contact.route) }
                 )
             }
-
-//            composable(
-//                route = Screen.VideoPlayer.route,
-//                arguments = listOf(navArgument("videoUrl") { type = NavType.StringType })
-//            ) { backStackEntry ->
-//                val videoUrl = backStackEntry.arguments?.getString("videoUrl") ?: ""
-////                VideoPlayerScreen(videoUrl = videoUrl, onBackClick = { navController.popBackStack() })
-//            }
         }
 
 

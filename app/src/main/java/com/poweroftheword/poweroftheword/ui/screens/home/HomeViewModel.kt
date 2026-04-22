@@ -56,6 +56,23 @@ class HomeViewModel @Inject constructor(
                 loadHomeData()
             }
             .launchIn(viewModelScope)
+            
+        startActiveStatusTicker()
+    }
+
+    private fun startActiveStatusTicker() {
+        viewModelScope.launch {
+            while (true) {
+                kotlinx.coroutines.delay(60000) // Update every minute
+                _state.update { currentState ->
+                    currentState.copy(
+                        radioStatus = currentState.radioStatus.map { radio ->
+                            radio.copy(isActive = isRadioCurrentlyActive(radio))
+                        }
+                    )
+                }
+            }
+        }
     }
 
     fun changeLanguage(langCode: String) {
@@ -75,7 +92,7 @@ class HomeViewModel @Inject constructor(
                 val latestFeeds = repository.getFeeds(language)
                 val rawRadios = repository.getRadioStatus()
                 val radioStatus = rawRadios.map { radio ->
-                    radio.copy(isActive = isRadioCurrentlyActive(radio.startHour, radio.endHour))
+                    radio.copy(isActive = isRadioCurrentlyActive(radio))
                 }
 
                 _state.update {
@@ -138,15 +155,25 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun isRadioCurrentlyActive(startHour: String, endHour: String): Boolean {
+    private fun isRadioCurrentlyActive(radio: Radio): Boolean {
         return try {
-            val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
-            val currentTime = Calendar.getInstance()
-            val nowStr = sdf.format(currentTime.time)
-            val now = sdf.parse(nowStr)
+            val calendar = Calendar.getInstance()
+            // Get current day abbreviation in English (e.g., "Mon", "Sun")
+            val currentDay = SimpleDateFormat("EEE", Locale.ENGLISH).format(calendar.time).lowercase()
 
-            val start = sdf.parse(startHour)
-            val end = sdf.parse(endHour)
+            // 1. Check if today is a broadcasting day
+            if (radio.days.isNotEmpty()) {
+                val isBroadcastingToday = radio.days.any { it.equals(currentDay, ignoreCase = true) }
+                if (!isBroadcastingToday) return false
+            }
+
+            // 2. Check if current time is within broadcasting hours
+            val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
+            val nowStr = sdf.format(calendar.time)
+            val now = sdf.parse(nowStr)
+            
+            val start = sdf.parse(radio.startHour)
+            val end = sdf.parse(radio.endHour)
 
             if (start != null && end != null && now != null) {
                 if (start.before(end)) {
@@ -154,13 +181,13 @@ class HomeViewModel @Inject constructor(
                     now in start..end
                 } else {
                     // Overnight range (e.g., 22:00 - 04:00)
-                    now.after(start) || now.before(end)
+                    now >= start || now <= end
                 }
             } else {
                 false
             }
         } catch (e: Exception) {
-            Log.e("HomeViewModel", "Error parsing time", e)
+            Log.e("HomeViewModel", "Error parsing time or day", e)
             false
         }
     }

@@ -52,7 +52,6 @@ import com.poweroftheword.poweroftheword.ui.components.DynamicHeroSkeleton
 import com.poweroftheword.poweroftheword.ui.components.FeedItemCardSkeleton
 import com.poweroftheword.poweroftheword.ui.components.VideoCardSkeleton
 import com.poweroftheword.poweroftheword.ui.screens.feed.FeedItemCard
-import com.poweroftheword.poweroftheword.ui.screens.live.LiveYouTubeStyleItem
 import com.poweroftheword.poweroftheword.ui.screens.video.VideoCard
 import com.poweroftheword.poweroftheword.util.formatDate
 import com.poweroftheword.poweroftheword.util.shimmerEffect
@@ -338,14 +337,14 @@ fun RadioLiveSection(radio: com.poweroftheword.poweroftheword.domain.model.Radio
             .clickable { onRadioClick(radio) },
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
         ),
         border = androidx.compose.foundation.BorderStroke(
             1.dp,
             androidx.compose.ui.graphics.Brush.horizontalGradient(
                 listOf(
-                    MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
-                    MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f)
+                    Color(0xFF2196F3).copy(alpha = 0.5f),
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
                 )
             )
         )
@@ -360,25 +359,24 @@ fun RadioLiveSection(radio: com.poweroftheword.poweroftheword.domain.model.Radio
                 modifier = Modifier
                     .size(80.dp)
                     .clip(RoundedCornerShape(16.dp))
-                    .background(MaterialTheme.colorScheme.primary)
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
             ) {
                 AsyncImage(
                     model = radio.photo,
                     contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .align(Alignment.Center)
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
                 )
                 
                 Surface(
                     modifier = Modifier
                         .align(Alignment.TopStart)
                         .padding(4.dp),
-                    color = Color.Blue,
+                    color = Color.Red, // Changed to Red for "Live" consistency
                     shape = RoundedCornerShape(4.dp)
                 ) {
                     Text(
-                        "RADIO",
+                        "LIVE",
                         modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
                         color = Color.White,
                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold)
@@ -394,13 +392,13 @@ fun RadioLiveSection(radio: com.poweroftheword.poweroftheword.domain.model.Radio
                         Icons.Default.Sensors,
                         contentDescription = null,
                         modifier = Modifier.size(14.dp),
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = Color.Red
                     )
                     Spacer(Modifier.width(4.dp))
                     Text(
                         text = "RADIO ON AIR",
                         style = MaterialTheme.typography.labelMedium.copy(
-                            color = MaterialTheme.colorScheme.primary,
+                            color = Color.Red,
                             fontWeight = FontWeight.ExtraBold,
                             letterSpacing = 0.5.sp
                         )
@@ -424,7 +422,7 @@ fun RadioLiveSection(radio: com.poweroftheword.poweroftheword.domain.model.Radio
             
             Surface(
                 modifier = Modifier.size(40.dp),
-                color = MaterialTheme.colorScheme.secondary,
+                color = MaterialTheme.colorScheme.primary,
                 shape = CircleShape
             ) {
                 Icon(
