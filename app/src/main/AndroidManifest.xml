@@ -4,6 +4,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
 
     <application
         android:name=".PowerOfTheWordApp"
@@ -14,7 +16,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/mySplashScecc">
+        android:theme="@style/Theme.PowerOfTheWord.Splash">
 
         <activity
             android:name=".MainActivity"
@@ -23,7 +25,7 @@
             android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboard|keyboardHidden"
             android:supportsPictureInPicture="true"
             android:label="@string/app_name"
-            android:theme="@style/mySplashScecc">
+            android:theme="@style/Theme.PowerOfTheWord.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -36,6 +38,15 @@
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".service.PlaybackService"
+            android:foregroundServiceType="mediaPlayback"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="androidx.media3.session.MediaSessionService" />
             </intent-filter>
         </service>
 

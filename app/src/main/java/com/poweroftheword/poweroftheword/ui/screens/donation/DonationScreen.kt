@@ -70,6 +70,7 @@ fun DonationScreen(
     var isMonthly by remember { mutableStateOf(false) }
     var selectedPayment by remember { mutableStateOf("Credit/Debit Card") }
 
+    val context = androidx.compose.ui.platform.LocalContext.current
     val gradientButton = Brush.horizontalGradient(
         listOf(Color(0xFF3D74F6), Color(0xFF8E44AD))
     )
@@ -281,7 +282,15 @@ fun DonationScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(gradientButton, RoundedCornerShape(14.dp))
-                        .clickable { }
+                        .clickable {
+                            if (finalAmount != null) {
+                                android.widget.Toast.makeText(
+                                    context,
+                                    "Proceeding with donation of $$finalAmount via $selectedPayment",
+                                    android.widget.Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        }
                         .padding(16.dp),
                     contentAlignment = Alignment.Center
                 ) {

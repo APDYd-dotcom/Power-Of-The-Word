@@ -22,5 +22,6 @@ data class Radio(
     @SerialName("end_hour")
     val endHour: String,
     @SerialName("is_active")
-    val isActive: Boolean
+    val isActive: Boolean,
+    val days : List<String>
 )

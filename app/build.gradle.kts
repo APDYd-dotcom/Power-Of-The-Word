@@ -53,15 +53,6 @@ android {
     kapt {
         correctErrorTypes = true
     }
-
-    splits {
-        abi {
-            isEnable = true
-            reset()
-            include("arm64-v8a")
-            isUniversalApk = false
-        }
-    }
 }
 
 dependencies {
@@ -119,6 +110,7 @@ dependencies {
     implementation(libs.androidx.media3.exoplayer.hls)
     implementation(libs.androidx.media3.ui)
     implementation(libs.androidx.media3.common)
+    implementation("androidx.media3:media3-session:1.4.1")
 
     // DataStore
     implementation("androidx.datastore:datastore-preferences:1.0.0")

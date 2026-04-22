@@ -1,21 +1,30 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# Hilt
+-keep public class * extends android.app.Service
+-keep public class * extends android.app.Application
+-keep public class * extends android.content.ContentProvider
+-keep public class * extends android.app.Activity
+-keep public class * extends android.content.BroadcastReceiver
+-keep public class * extends androidx.fragment.app.Fragment
+-keep public class * extends androidx.viewmodel.ViewModel
+-keep class androidx.hilt.lifecycle.ViewModelFactoryModules { *; }
+-keep class com.google.dagger.hilt.android.internal.managers.ViewComponentManager$FragmentContextWrapper { *; }
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# Ktor
+-keep class io.ktor.** { *; }
+-keep class kotlinx.serialization.** { *; }
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# Media3
+-keep class androidx.media3.** { *; }
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Navigation
+-keep class androidx.navigation.** { *; }
+
+# Room
+-keep class * extends androidx.room.RoomDatabase
+-keep class androidx.room.util.TableInfo { *; }
+-keep class androidx.room.util.TableInfo$Column { *; }
+-keep class androidx.room.util.TableInfo$ForeignKey { *; }
+-keep class androidx.room.util.TableInfo$Index { *; }
+
+# Data Models (keep for serialization)
+-keep @kotlinx.serialization.Serializable class com.poweroftheword.poweroftheword.domain.model.** { *; }
