@@ -183,10 +183,10 @@ class ChurchRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getRadioStatus(): List<Radio> {
+    override suspend fun getRadioStatus(): List<RadioItem> {
         return try {
             Log.d("ChurchRepo", "getRadioStatus | Fetching...")
-            val response: String = client.get("$BASE_URL/radio/").bodyAsText()
+            val response: String = client.get("$BASE_URL/radio-schedules/").bodyAsText()
             val res = json.decodeFromString<RadioResponse>(response)
             Log.d("ChurchRepo", "getRadioStatus | Status: ${res.results.size}")
             res.results

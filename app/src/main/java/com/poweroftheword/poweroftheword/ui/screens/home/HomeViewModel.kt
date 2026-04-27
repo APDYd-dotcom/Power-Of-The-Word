@@ -64,12 +64,14 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             while (true) {
                 kotlinx.coroutines.delay(60000) // Update every minute
-                _state.update { currentState ->
-                    currentState.copy(
-                        radioStatus = currentState.radioStatus.map { radio ->
-                            radio.copy(isActive = isRadioCurrentlyActive(radio))
-                        }
+                val rawRadios = repository.getRadioStatus()
+                val radioStatus = rawRadios.map { radioItem ->
+                    radioItem.radio.copy(
+                        isActive = isRadioCurrentlyActive(radioItem)
                     )
+                }
+                _state.update { currentState ->
+                    currentState.copy(radioStatus = radioStatus)
                 }
             }
         }
@@ -91,8 +93,10 @@ class HomeViewModel @Inject constructor(
                 val latestVideos = repository.getVideos(language)
                 val latestFeeds = repository.getFeeds(language)
                 val rawRadios = repository.getRadioStatus()
-                val radioStatus = rawRadios.map { radio ->
-                    radio.copy(isActive = isRadioCurrentlyActive(radio))
+                val radioStatus = rawRadios.map { radioItem ->
+                    radioItem.radio.copy(
+                        isActive = isRadioCurrentlyActive(radioItem)
+                    )
                 }
 
                 _state.update {
@@ -155,15 +159,15 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun isRadioCurrentlyActive(radio: Radio): Boolean {
+    private fun isRadioCurrentlyActive(radioItem: RadioItem): Boolean {
         return try {
             val calendar = Calendar.getInstance()
             // Get current day abbreviation in English (e.g., "Mon", "Sun")
             val currentDay = SimpleDateFormat("EEE", Locale.ENGLISH).format(calendar.time).lowercase()
 
             // 1. Check if today is a broadcasting day
-            if (radio.days.isNotEmpty()) {
-                val isBroadcastingToday = radio.days.any { it.equals(currentDay, ignoreCase = true) }
+            if (radioItem.day.isNotBlank()) {
+                val isBroadcastingToday = radioItem.day.equals(currentDay, ignoreCase = true)
                 if (!isBroadcastingToday) return false
             }
 
@@ -172,8 +176,8 @@ class HomeViewModel @Inject constructor(
             val nowStr = sdf.format(calendar.time)
             val now = sdf.parse(nowStr)
             
-            val start = sdf.parse(radio.startHour)
-            val end = sdf.parse(radio.endHour)
+            val start = sdf.parse(radioItem.startHour)
+            val end = sdf.parse(radioItem.endHour)
 
             if (start != null && end != null && now != null) {
                 if (start.before(end)) {

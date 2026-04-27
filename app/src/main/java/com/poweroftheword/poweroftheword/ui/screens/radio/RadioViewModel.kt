@@ -9,6 +9,7 @@ import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import com.poweroftheword.poweroftheword.domain.model.Program
 import com.poweroftheword.poweroftheword.domain.model.Radio
+import com.poweroftheword.poweroftheword.domain.model.RadioItem
 import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -59,8 +60,9 @@ class RadioViewModel @Inject constructor(
         viewModelScope.launch {
             while (true) {
                 kotlinx.coroutines.delay(60000) // Update every minute
-                _radioStatus.value = _radioStatus.value.map { radio ->
-                    radio.copy(isActive = isRadioCurrentlyActive(radio))
+                val rawRadios = repository.getRadioStatus()
+                _radioStatus.value = rawRadios.map { radioItem ->
+                    radioItem.radio.copy(isActive = isRadioCurrentlyActive(radioItem))
                 }
             }
         }
@@ -71,8 +73,8 @@ class RadioViewModel @Inject constructor(
             // Ensure radio data is loaded first if not already
             if (_radioStatus.value.isEmpty()) {
                 val rawRadios = repository.getRadioStatus()
-                _radioStatus.value = rawRadios.map { radio ->
-                    radio.copy(isActive = isRadioCurrentlyActive(radio))
+                _radioStatus.value = rawRadios.map { radioItem ->
+                    radioItem.radio.copy(isActive = isRadioCurrentlyActive(radioItem))
                 }
             }
             
@@ -99,8 +101,8 @@ class RadioViewModel @Inject constructor(
             try {
                 val language = repository.getSavedLanguage().first()
                 val rawRadios = repository.getRadioStatus()
-                _radioStatus.value = rawRadios.map { radio ->
-                    radio.copy(isActive = isRadioCurrentlyActive(radio))
+                _radioStatus.value = rawRadios.map { radioItem ->
+                    radioItem.radio.copy(isActive = isRadioCurrentlyActive(radioItem))
                 }
                 Log.e("RadioViewModel", "Radio Status: ${_radioStatus.value}")
                 _programs.value = repository.getPrograms(language)
@@ -112,15 +114,15 @@ class RadioViewModel @Inject constructor(
         }
     }
 
-    private fun isRadioCurrentlyActive(radio: Radio): Boolean {
+    private fun isRadioCurrentlyActive(radioItem: RadioItem): Boolean {
         return try {
             val calendar = Calendar.getInstance()
             // Get current day abbreviation in English (e.g., "Mon", "Sun")
             val currentDay = SimpleDateFormat("EEE", Locale.ENGLISH).format(calendar.time).lowercase()
 
             // 1. Check if today is a broadcasting day
-            if (radio.days.isNotEmpty()) {
-                val isBroadcastingToday = radio.days.any { it.equals(currentDay, ignoreCase = true) }
+            if (radioItem.day.isNotBlank()) {
+                val isBroadcastingToday = radioItem.day.equals(currentDay, ignoreCase = true)
                 if (!isBroadcastingToday) return false
             }
 
@@ -129,8 +131,8 @@ class RadioViewModel @Inject constructor(
             val nowStr = sdf.format(calendar.time)
             val now = sdf.parse(nowStr)
             
-            val start = sdf.parse(radio.startHour)
-            val end = sdf.parse(radio.endHour)
+            val start = sdf.parse(radioItem.startHour)
+            val end = sdf.parse(radioItem.endHour)
 
             if (start != null && end != null && now != null) {
                 if (start.before(end)) {

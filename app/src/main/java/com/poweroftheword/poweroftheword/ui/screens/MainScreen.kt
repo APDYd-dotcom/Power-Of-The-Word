@@ -285,6 +285,7 @@ fun MainScreen() {
                     onBackClick = { 
                         if (!navController.popBackStack()) {
                             navigateToTab(Screen.Home.route)
+//                            popUpTo(Screen.Home.route) { inclusive = false }
                         }
                     },
                     onVideoClick = { v ->

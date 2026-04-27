@@ -411,13 +411,6 @@ fun RadioLiveSection(radio: com.poweroftheword.poweroftheword.domain.model.Radio
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                
-                Text(
-                    text = "${radio.startHour} - ${radio.endHour}",
-                    style = MaterialTheme.typography.bodySmall.copy(
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                    )
-                )
             }
             
             Surface(
