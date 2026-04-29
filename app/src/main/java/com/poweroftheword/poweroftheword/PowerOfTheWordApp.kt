@@ -3,7 +3,7 @@ package com.poweroftheword.poweroftheword
 import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
-import com.google.firebase.messaging.FirebaseMessaging
+import com.poweroftheword.poweroftheword.service.FCMTopicManager
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
@@ -13,6 +13,9 @@ class PowerOfTheWordApp : Application(), Configuration.Provider {
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
 
+    @Inject
+    lateinit var fcmTopicManager: FCMTopicManager
+
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
             .setWorkerFactory(workerFactory)
@@ -20,7 +23,7 @@ class PowerOfTheWordApp : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
-        // Subscribe to church updates topic
-        FirebaseMessaging.getInstance().subscribeToTopic("all")
+        // Subscribe to "all_users" topic for global notifications
+        fcmTopicManager.subscribeToAllUsers()
     }
 }

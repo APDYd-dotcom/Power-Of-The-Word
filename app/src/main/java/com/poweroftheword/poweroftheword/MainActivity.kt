@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -25,15 +26,20 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.poweroftheword.poweroftheword.service.FCMTopicManager
 import com.poweroftheword.poweroftheword.ui.screens.MainScreen
 import com.poweroftheword.poweroftheword.ui.screens.settings.SettingsViewModel
 import com.poweroftheword.poweroftheword.ui.theme.PowerOfTheWordTheme
 import com.poweroftheword.poweroftheword.util.LocalLocalizedContext
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var fcmTopicManager: FCMTopicManager
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -52,6 +58,11 @@ class MainActivity : ComponentActivity() {
             val settingsViewModel: SettingsViewModel = hiltViewModel()
             val currentLanguage by settingsViewModel.currentLanguage.collectAsState()
             val isDarkMode by settingsViewModel.isDarkMode.collectAsState()
+
+            // Update FCM topics whenever language changes
+            LaunchedEffect(currentLanguage) {
+                fcmTopicManager.updateLanguageTopic(currentLanguage)
+            }
             
             val context = LocalContext.current
             

@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "393526275439",
-    "project_id": "power-of-the-word-28e06",
-    "storage_bucket": "power-of-the-word-28e06.firebasestorage.app"
+    "project_number": "704435092565",
+    "project_id": "power-of-the-word-8b100",
+    "storage_bucket": "power-of-the-word-8b100.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:393526275439:android:9c261ba578dabbe6404c9a",
+        "mobilesdk_app_id": "1:704435092565:android:110dc32f20081d7a15e8dc",
         "android_client_info": {
           "package_name": "com.poweroftheword.poweroftheword"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyC_aThMoBX3qXQI0TySIczxHqta_eObl_A"
+          "current_key": "AIzaSyCHLO9kSMcYaJr4kC32o_OckGRjJmWiU3Y"
         }
       ],
       "services": {
