@@ -29,6 +29,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
@@ -70,11 +73,36 @@ fun LivePlayerScreen(
     var isFullScreen by remember { mutableStateOf(false) }
     val statusBarAppearance = LocalStatusBarAppearance.current
 
+    // Obtain a WindowInsetsControllerCompat once for this screen.
+    val insetsController = remember(activity) {
+        activity?.window?.let { w ->
+            WindowInsetsControllerCompat(w, w.decorView)
+        }
+    }
+
     LaunchedEffect(Unit) {
         statusBarAppearance.isDarkIcons = false
         viewModel.onLiveClicked(liveId)
     }
-    
+
+    // Sync immersive mode with the fullscreen toggle.
+    // Entering fullscreen hides both bars; exiting restores them.
+    LaunchedEffect(isFullScreen) {
+        val window = activity?.window ?: return@LaunchedEffect
+        if (isFullScreen) {
+            WindowCompat.setDecorFitsSystemWindows(window, false)
+            insetsController?.apply {
+                hide(WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.navigationBars())
+                systemBarsBehavior =
+                    WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            }
+        } else {
+            insetsController?.show(
+                WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.navigationBars()
+            )
+        }
+    }
+
     DisposableEffect(Unit) {
         onDispose {
             statusBarAppearance.isDarkIcons = null
@@ -129,6 +157,10 @@ fun LivePlayerScreen(
         onDispose {
             exoPlayer.release()
             activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+            // Restore system bars when leaving the player screen
+            insetsController?.show(
+                WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.navigationBars()
+            )
         }
     }
 
@@ -136,7 +168,8 @@ fun LivePlayerScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(DarkBackground)
-            .statusBarsPadding()
+            // Status bar padding only when bars are visible (i.e. not in immersive mode)
+            .then(if (isFullScreen) Modifier else Modifier.statusBarsPadding())
     ) {
         // Player Section
         Box(

@@ -15,7 +15,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
+import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.HttpRequestRetry
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
@@ -30,7 +32,16 @@ object AppModule {
     @Provides
     @Singleton
     fun provideHttpClient(): HttpClient {
-        return HttpClient(CIO) {
+        return HttpClient(OkHttp) {
+            install(HttpTimeout) {
+                requestTimeoutMillis = 30000
+                connectTimeoutMillis = 15000
+                socketTimeoutMillis = 15000
+            }
+            install(HttpRequestRetry) {
+                retryOnExceptionOrServerErrors(maxRetries = 3)
+                exponentialDelay()
+            }
             install(ContentNegotiation) {
                 json(Json {
                     prettyPrint = true
