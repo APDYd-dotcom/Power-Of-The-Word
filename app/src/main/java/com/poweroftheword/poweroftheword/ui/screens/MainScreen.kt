@@ -25,7 +25,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -74,8 +74,8 @@ fun MainScreen() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    val settingsViewModel: SettingsViewModel = hiltViewModel()
-    val radioViewModel: RadioViewModel = hiltViewModel()
+    val settingsViewModel: SettingsViewModel = koinViewModel()
+    val radioViewModel: RadioViewModel = koinViewModel()
     val isDarkMode by settingsViewModel.isDarkMode.collectAsState()
 
     val bottomNavItems = listOf(
@@ -118,7 +118,7 @@ fun MainScreen() {
         ) {
 
             composable(Screen.Home.route) {
-                val viewModel: HomeViewModel = hiltViewModel()
+                val viewModel: HomeViewModel = koinViewModel()
                 HomeScreen(
                     viewModel = viewModel,
                     isDarkMode = isDarkMode ?: androidx.compose.foundation.isSystemInDarkTheme(),
@@ -149,7 +149,7 @@ fun MainScreen() {
             }
 
             composable(Screen.Videos.route) {
-                val viewModel: VideoListViewModel = hiltViewModel()
+                val viewModel: VideoListViewModel = koinViewModel()
                 VideoListScreen(
                     viewModel = viewModel,
                     onVideoClick = { video ->
@@ -159,7 +159,7 @@ fun MainScreen() {
             }
 
             composable(Screen.Audios.route) {
-                val viewModel: AudioListViewModel = hiltViewModel()
+                val viewModel: AudioListViewModel = koinViewModel()
                 AudioListScreen(
                     viewModel = viewModel,
                     context = navController.context
@@ -167,7 +167,7 @@ fun MainScreen() {
             }
 
             composable(Screen.Live.route) {
-                val viewModel: LiveViewModel = hiltViewModel()
+                val viewModel: LiveViewModel = koinViewModel()
                 LiveScreen(
                     viewModel = viewModel,
                     onLiveClick = { live ->
@@ -182,8 +182,8 @@ fun MainScreen() {
                 arguments = listOf(navArgument("liveId") { type = NavType.IntType })
             ) { backStackEntry ->
                 val liveId = backStackEntry.arguments?.getInt("liveId") ?: 0
-                val viewModel: LiveViewModel = hiltViewModel()
-                val videoViewModel: VideoListViewModel = hiltViewModel()
+                val viewModel: LiveViewModel = koinViewModel()
+                val videoViewModel: VideoListViewModel = koinViewModel()
                 LivePlayerScreen(
                     liveId = liveId,
                     viewModel = viewModel,
@@ -202,7 +202,7 @@ fun MainScreen() {
             }
 
             composable(Screen.Feed.route) {
-                val viewModel: FeedViewModel = hiltViewModel()
+                val viewModel: FeedViewModel = koinViewModel()
                 FeedScreen(
                     viewModel = viewModel,
                     onFeedClick = { feed ->
@@ -237,7 +237,7 @@ fun MainScreen() {
                 }
             ) { backStackEntry ->
                 val feedId = backStackEntry.arguments?.getString("feedId")
-                val viewModel: FeedViewModel = hiltViewModel()
+                val viewModel: FeedViewModel = koinViewModel()
                 val feeds by viewModel.feeds.collectAsState()
                 val feed = feeds.find { it.id == feedId?.toInt() }
                 FeedDetailScreen(
@@ -276,7 +276,7 @@ fun MainScreen() {
                     ) + fadeOut(animationSpec = tween(500))
                 }
             ) { backStackEntry ->
-                val viewModel: VideoListViewModel = hiltViewModel()
+                val viewModel: VideoListViewModel = koinViewModel()
                 val videoId = backStackEntry.arguments?.getString("videoId")
                 val videos by viewModel.filteredVideos.collectAsState()
                 val video = videos.find { it.id.toString() == videoId }
@@ -296,7 +296,7 @@ fun MainScreen() {
             }
 
             composable(Screen.DailyWord.route) {
-                val viewModel: DailyWordViewModel = hiltViewModel()
+                val viewModel: DailyWordViewModel = koinViewModel()
                 DailyWordScreen(
                     viewModel = viewModel,
                     onBackClick = { navController.popBackStack() }
@@ -304,7 +304,7 @@ fun MainScreen() {
             }
 
             composable(Screen.Horaire.route) {
-                val viewModel: HoraireViewModel = hiltViewModel()
+                val viewModel: HoraireViewModel = koinViewModel()
                 HoraireScreen(
                     viewModel = viewModel,
                     onBackClick = {navController.popBackStack()}
@@ -312,7 +312,7 @@ fun MainScreen() {
             }
 
             composable(Screen.Programs.route) {
-                val viewModel: ProgramViewModel = hiltViewModel()
+                val viewModel: ProgramViewModel = koinViewModel()
                 ProgramScreen(
                     viewModel = viewModel,
                     onBackClick = { navController.popBackStack() }
@@ -338,7 +338,7 @@ fun MainScreen() {
             }
 
             composable(Screen.Settings.route) {
-                val viewModel: SettingsViewModel = hiltViewModel()
+                val viewModel: SettingsViewModel = koinViewModel()
                 SettingsScreen(
                     viewModel = viewModel,
                     onBackClick = { navController.popBackStack() },

@@ -9,17 +9,13 @@ import com.poweroftheword.poweroftheword.domain.model.FeedItem
 import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
 import com.poweroftheword.poweroftheword.util.DeviceUtils
 import com.poweroftheword.poweroftheword.util.ShareUtils
-import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class FeedViewModel @Inject constructor(
+class FeedViewModel(
     private val repository: ChurchRepository,
     private val feedLikeDao: FeedLikeDao,
-    @ApplicationContext private val context: Context
+    private val context: Context
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(FeedState())

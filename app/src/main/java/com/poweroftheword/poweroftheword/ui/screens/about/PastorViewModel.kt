@@ -6,14 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.poweroftheword.poweroftheword.domain.model.Pastor
 import com.poweroftheword.poweroftheword.domain.model.PastorItem
 import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-@HiltViewModel
-class PastorViewModel @Inject constructor(
+class PastorViewModel(
     private val repository: ChurchRepository
 ) : ViewModel() {
     private val _pastor = MutableStateFlow<List<PastorItem>>(emptyList())

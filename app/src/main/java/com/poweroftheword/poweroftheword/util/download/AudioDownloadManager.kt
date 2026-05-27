@@ -1,7 +1,6 @@
 package com.poweroftheword.poweroftheword.util.download
 
 import android.content.Context
-import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -13,12 +12,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import java.io.File
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class AudioDownloadManager @Inject constructor(
-    @ApplicationContext private val context: Context,
+class AudioDownloadManager(
+    private val context: Context,
     private val client: HttpClient
 ) {
     fun getAudioFile(audioId: Int): File {

@@ -10,14 +10,11 @@ import com.poweroftheword.poweroftheword.domain.model.*
 import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
 import com.poweroftheword.poweroftheword.util.DeviceUtils
 import com.poweroftheword.poweroftheword.util.ShareUtils
-import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
-import javax.inject.Inject
 
 data class HomeState(
     val dailyWord: DailyWord? = null,
@@ -30,12 +27,11 @@ data class HomeState(
     val currentLanguage: String = "EN"
 )
 
-@HiltViewModel
-class HomeViewModel @Inject constructor(
+class HomeViewModel(
     private val repository: ChurchRepository,
     private val videoLikeDao: VideoLikeDao,
     private val feedLikeDao: FeedLikeDao,
-    @ApplicationContext private val context: Context
+    private val context: Context
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HomeState())

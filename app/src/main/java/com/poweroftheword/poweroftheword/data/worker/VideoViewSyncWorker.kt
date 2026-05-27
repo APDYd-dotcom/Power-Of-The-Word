@@ -2,19 +2,15 @@ package com.poweroftheword.poweroftheword.data.worker
 
 import android.content.Context
 import android.util.Log
-import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.poweroftheword.poweroftheword.data.local.VideoViewDao
 import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
 import com.poweroftheword.poweroftheword.util.DeviceUtils
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
 
-@HiltWorker
-class VideoViewSyncWorker @AssistedInject constructor(
-    @Assisted context: Context,
-    @Assisted workerParams: WorkerParameters,
+class VideoViewSyncWorker(
+    context: Context,
+    workerParams: WorkerParameters,
     private val repository: ChurchRepository,
     private val dao: VideoViewDao
 ) : CoroutineWorker(context, workerParams) {

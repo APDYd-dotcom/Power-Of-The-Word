@@ -39,11 +39,10 @@ import io.ktor.http.contentType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
-import javax.inject.Inject
 
 private val Context.dataStore by preferencesDataStore(name = "settings")
 
-class ChurchRepositoryImpl @Inject constructor(
+class ChurchRepositoryImpl(
     private val client: HttpClient,
     private val context: Context,
     private val videoLikeDao: VideoLikeDao,

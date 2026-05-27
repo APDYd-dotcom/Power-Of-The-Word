@@ -25,21 +25,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.poweroftheword.poweroftheword.service.FCMTopicManager
 import com.poweroftheword.poweroftheword.ui.screens.MainScreen
 import com.poweroftheword.poweroftheword.ui.screens.settings.SettingsViewModel
 import com.poweroftheword.poweroftheword.ui.theme.PowerOfTheWordTheme
 import com.poweroftheword.poweroftheword.util.LocalLocalizedContext
-import dagger.hilt.android.AndroidEntryPoint
+import org.koin.android.ext.android.inject
+import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.KoinContext
 import java.util.Locale
-import javax.inject.Inject
 
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    @Inject
-    lateinit var fcmTopicManager: FCMTopicManager
+    private val fcmTopicManager: FCMTopicManager by inject()
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -55,34 +53,36 @@ class MainActivity : ComponentActivity() {
         
         enableEdgeToEdge()
         setContent {
-            val settingsViewModel: SettingsViewModel = hiltViewModel()
-            val currentLanguage by settingsViewModel.currentLanguage.collectAsState()
-            val isDarkMode by settingsViewModel.isDarkMode.collectAsState()
+            KoinContext {
+                val settingsViewModel: SettingsViewModel = koinViewModel()
+                val currentLanguage by settingsViewModel.currentLanguage.collectAsState()
+                val isDarkMode by settingsViewModel.isDarkMode.collectAsState()
 
-            // Update FCM topics whenever language changes
-            LaunchedEffect(currentLanguage) {
-                fcmTopicManager.updateLanguageTopic(currentLanguage)
-            }
-            
-            val context = LocalContext.current
-            
-            // Re-wrap the context whenever the language changes
-            val localizedContext = remember(currentLanguage) {
-                updateResources(context, currentLanguage)
-            }
+                // Update FCM topics whenever language changes
+                LaunchedEffect(currentLanguage) {
+                    fcmTopicManager.updateLanguageTopic(currentLanguage)
+                }
 
-            CompositionLocalProvider(
-                LocalContext provides localizedContext,
-                LocalLocalizedContext provides localizedContext
-            ) {
-                PowerOfTheWordTheme(
-                    darkTheme = isDarkMode ?: androidx.compose.foundation.isSystemInDarkTheme()
+                val context = LocalContext.current
+
+                // Re-wrap the context whenever the language changes
+                val localizedContext = remember(currentLanguage) {
+                    updateResources(context, currentLanguage)
+                }
+
+                CompositionLocalProvider(
+                    LocalContext provides localizedContext,
+                    LocalLocalizedContext provides localizedContext
                 ) {
-                    Surface(
-                        modifier = Modifier.fillMaxSize(),
-                        color = MaterialTheme.colorScheme.background
+                    PowerOfTheWordTheme(
+                        darkTheme = isDarkMode ?: androidx.compose.foundation.isSystemInDarkTheme()
                     ) {
-                        MainScreen()
+                        Surface(
+                            modifier = Modifier.fillMaxSize(),
+                            color = MaterialTheme.colorScheme.background
+                        ) {
+                            MainScreen()
+                        }
                     }
                 }
             }
@@ -106,7 +106,6 @@ class MainActivity : ComponentActivity() {
         val localizedContext = context.createConfigurationContext(configuration)
         
         // Wrap the original context (the Activity) instead of the localizedContext
-        // to ensure Hilt can still find the Activity context.
         return object : ContextWrapper(context) {
             override fun getResources() = localizedContext.resources
             override fun getAssets() = localizedContext.assets

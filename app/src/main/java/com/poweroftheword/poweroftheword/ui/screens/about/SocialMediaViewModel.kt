@@ -5,14 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.poweroftheword.poweroftheword.domain.model.SocialMediaItem
 import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class SocialMediaViewModel @Inject constructor(
+class SocialMediaViewModel(
     private val churchRepository: ChurchRepository
 ) : ViewModel() {
     private val _socialMedia = MutableStateFlow<List<SocialMediaItem>>(emptyList())

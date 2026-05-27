@@ -48,7 +48,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import com.poweroftheword.poweroftheword.R
 import com.poweroftheword.poweroftheword.ui.screens.settings.SettingsViewModel
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -59,7 +59,7 @@ import com.poweroftheword.poweroftheword.util.truncate
 @Composable
 fun DonationScreen(
     onBackClick: () -> Unit,
-    settingsViewModel: SettingsViewModel = hiltViewModel()
+    settingsViewModel: SettingsViewModel = koinViewModel()
 ) {
 
     val userDarkMode by settingsViewModel.isDarkMode.collectAsState()

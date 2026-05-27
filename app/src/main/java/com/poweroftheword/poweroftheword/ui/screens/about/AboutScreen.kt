@@ -32,7 +32,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import coil.compose.AsyncImage
 import com.poweroftheword.poweroftheword.R
 import com.poweroftheword.poweroftheword.ui.components.AboutScreenSkeleton
@@ -52,10 +52,10 @@ fun AboutScreen(
     onBackClick: () -> Unit,
     onDonationClick: () -> Unit,
     onSettingsClick: () -> Unit,
-    viewModel: PastorViewModel = hiltViewModel(),
-    programViewModel: ProgramViewModel = hiltViewModel(),
-    settingsViewModel: SettingsViewModel = hiltViewModel(),
-    socialMediaViewModel: SocialMediaViewModel = hiltViewModel()
+    viewModel: PastorViewModel = koinViewModel(),
+    programViewModel: ProgramViewModel = koinViewModel(),
+    settingsViewModel: SettingsViewModel = koinViewModel(),
+    socialMediaViewModel: SocialMediaViewModel = koinViewModel()
 ) {
 
     val context = androidx.compose.ui.platform.LocalContext.current

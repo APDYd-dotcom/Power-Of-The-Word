@@ -29,14 +29,14 @@ import com.poweroftheword.poweroftheword.domain.model.Radio
 import com.poweroftheword.poweroftheword.ui.components.RadioHeaderSkeleton
 import com.poweroftheword.poweroftheword.ui.components.RadioStationCardSkeleton
 import com.poweroftheword.poweroftheword.ui.screens.settings.SettingsViewModel
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import androidx.compose.foundation.isSystemInDarkTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RadioScreen(
     viewModel: RadioViewModel,
-    settingsViewModel: SettingsViewModel = hiltViewModel()
+    settingsViewModel: SettingsViewModel = koinViewModel()
 ) {
     val radioStatus by viewModel.radioStatus.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()

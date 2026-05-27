@@ -2,11 +2,8 @@ package com.poweroftheword.poweroftheword.service
 
 import android.util.Log
 import com.google.firebase.messaging.FirebaseMessaging
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class FCMTopicManager @Inject constructor() {
+class FCMTopicManager {
 
     private val allLanguageTopics = listOf("lang_en", "lang_fr", "lang_sw", "lang_rw")
 

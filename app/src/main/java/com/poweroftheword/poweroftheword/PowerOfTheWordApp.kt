@@ -1,28 +1,33 @@
 package com.poweroftheword.poweroftheword
 
 import android.app.Application
-import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
+import com.poweroftheword.poweroftheword.di.appModule
 import com.poweroftheword.poweroftheword.service.FCMTopicManager
-import dagger.hilt.android.HiltAndroidApp
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.androidx.workmanager.factory.KoinWorkerFactory
+import org.koin.core.context.startKoin
 
-@HiltAndroidApp
 class PowerOfTheWordApp : Application(), Configuration.Provider {
 
-    @Inject
-    lateinit var workerFactory: HiltWorkerFactory
-
-    @Inject
-    lateinit var fcmTopicManager: FCMTopicManager
+    private val fcmTopicManager: FCMTopicManager by inject()
 
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
-            .setWorkerFactory(workerFactory)
+            .setWorkerFactory(KoinWorkerFactory())
             .build()
 
     override fun onCreate() {
         super.onCreate()
+        
+        startKoin {
+            androidLogger()
+            androidContext(this@PowerOfTheWordApp)
+            modules(appModule)
+        }
+
         // Subscribe to "all_users" topic for global notifications
         fcmTopicManager.subscribeToAllUsers()
     }

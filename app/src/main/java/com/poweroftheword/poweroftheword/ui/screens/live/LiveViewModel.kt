@@ -7,19 +7,15 @@ import androidx.lifecycle.viewModelScope
 import com.poweroftheword.poweroftheword.domain.model.LiveItem
 import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
 import com.poweroftheword.poweroftheword.util.DeviceUtils
-import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class LiveViewModel @Inject constructor(
+class LiveViewModel(
     private val repository: ChurchRepository,
-    @ApplicationContext private val context: Context
+    private val context: Context
 ) : ViewModel() {
 
     private val _liveStreams = MutableStateFlow<List<LiveItem>>(emptyList())

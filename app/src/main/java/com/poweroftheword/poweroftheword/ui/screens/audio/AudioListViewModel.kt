@@ -10,8 +10,6 @@ import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
 import com.poweroftheword.poweroftheword.util.DeviceUtils
 import com.poweroftheword.poweroftheword.util.ShareUtils
 import com.poweroftheword.poweroftheword.util.formatDate
-import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import com.poweroftheword.poweroftheword.util.download.AudioDownloadManager
 import com.poweroftheword.poweroftheword.util.download.DownloadProgress
 import kotlinx.coroutines.flow.*
@@ -21,14 +19,12 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-import javax.inject.Inject
 
-@HiltViewModel
-class AudioListViewModel @Inject constructor(
+class AudioListViewModel(
     private val repository: ChurchRepository,
     private val audioLikeDao: AudioLikeDao,
     val downloadManager: AudioDownloadManager,
-    @ApplicationContext private val context: Context
+    private val context: Context
 ) : ViewModel() {
 
     private val _audios = MutableStateFlow<List<AudioItem>>(emptyList())

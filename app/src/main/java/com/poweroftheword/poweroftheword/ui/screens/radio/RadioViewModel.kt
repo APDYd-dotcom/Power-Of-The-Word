@@ -11,7 +11,6 @@ import com.poweroftheword.poweroftheword.domain.model.Program
 import com.poweroftheword.poweroftheword.domain.model.Radio
 import com.poweroftheword.poweroftheword.domain.model.RadioItem
 import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,11 +19,9 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
-import javax.inject.Inject
 import kotlin.collections.emptyList
 
-@HiltViewModel
-class RadioViewModel @Inject constructor(
+class RadioViewModel(
     private val repository: ChurchRepository,
     application: Application
 ) : AndroidViewModel(application) {

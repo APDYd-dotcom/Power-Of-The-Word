@@ -25,7 +25,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import com.poweroftheword.poweroftheword.ui.components.ContactScreenSkeleton
 import com.poweroftheword.poweroftheword.ui.screens.about.PastorViewModel
 import com.poweroftheword.poweroftheword.util.IntentUtils
@@ -34,7 +34,7 @@ import com.poweroftheword.poweroftheword.util.IntentUtils
 @Composable
 fun ContactScreen(
     onBackClick: () -> Unit,
-    viewModel: PastorViewModel = hiltViewModel()
+    viewModel: PastorViewModel = koinViewModel()
 ) {
     val context = LocalContext.current
     val pastors by viewModel.pastor.collectAsState()
