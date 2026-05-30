@@ -64,12 +64,14 @@ class ChurchRepositoryImpl(
         return try {
             Log.d("ChurchRepo", "getVideos | Language: $language")
             val response: String = client.get("$BASE_URL/getvideo/") {
-                parameter("language", language)
+                contentType(ContentType.Application.Json)
+                setBody(mapOf("language" to language))
             }.bodyAsText()
+            Log.d("ChurchRepo", "getVideos | Response: $response")
 
             val res = json.decodeFromString<Video>(response)
             Log.d("ChurchRepo", "getVideos | Found ${res.videos.size} videos")
-            res.videos
+            res.videos.ifEmpty { res.results }
 
         } catch (e: Exception) {
             Log.e("ChurchRepo", "getVideos | Error: ${e.message}", e)
@@ -80,8 +82,9 @@ class ChurchRepositoryImpl(
     override suspend fun getLiveStreams(language: String): List<LiveItem> {
         return try {
             Log.d("ChurchRepo", "getLiveStreams | Fetching...")
-            val response: String = client.get("$BASE_URL/getlive/") {
-                parameter("language", language)
+            val response: String = client.post("$BASE_URL/getlive/") {
+                contentType(ContentType.Application.Json)
+                setBody(mapOf("language" to language))
             }.bodyAsText()
 
             val res = json.decodeFromString<Live>(response)
@@ -110,8 +113,9 @@ class ChurchRepositoryImpl(
     override suspend fun getAudio(language: String): List<AudioItem> {
         return try {
             Log.d("ChurchRepo", "getAudio | Language: $language")
-            val response: String = client.get("$BASE_URL/getaudio/") {
-                parameter("language", language)
+            val response: String = client.post("$BASE_URL/getaudio/") {
+                contentType(ContentType.Application.Json)
+                setBody(mapOf("language" to language))
             }.bodyAsText()
 
             val res = json.decodeFromString<Audio>(response)
@@ -127,8 +131,9 @@ class ChurchRepositoryImpl(
     override suspend fun getFeeds(language: String): List<FeedItem> {
         return try {
             Log.d("ChurchRepo", "getFeeds | Language: $language")
-            val rawResponse: String = client.get("$BASE_URL/getfeed/") {
-                parameter("language", language)
+            val rawResponse: String = client.post("$BASE_URL/getfeed/") {
+                contentType(ContentType.Application.Json)
+                setBody(mapOf("language" to language))
             }.bodyAsText()
 
             val response = json.decodeFromString<Feed>(rawResponse)
@@ -144,8 +149,9 @@ class ChurchRepositoryImpl(
     override suspend fun getDailyWord(language: String): List<DailyWordItem> {
         return try {
             Log.d("ChurchRepo", "getDailyWord | Language: $language")
-            val response: String = client.get("$BASE_URL/getdailyword/") {
-                parameter("language", language)
+            val response: String = client.post("$BASE_URL/getdailyword/") {
+                contentType(ContentType.Application.Json)
+                setBody(mapOf("language" to language))
             }.bodyAsText()
 
             val res = json.decodeFromString<DailyWord>(response)
@@ -174,8 +180,9 @@ class ChurchRepositoryImpl(
     override suspend fun getPrograms(language: String): List<Program> {
         return try {
             Log.d("ChurchRepo", "getPrograms | Language: $language")
-            val response: String = client.get("$BASE_URL/getprogram/") {
-                parameter("language", language)
+            val response: String = client.post("$BASE_URL/getprogram/") {
+                contentType(ContentType.Application.Json)
+                setBody(mapOf("language" to language))
             }.bodyAsText()
 
             val res = json.decodeFromString<ProgramResponse>(response)
@@ -191,8 +198,9 @@ class ChurchRepositoryImpl(
     override suspend fun getHoraire(language: String): List<HoraireItem> {
         return try {
             Log.d("ChurchRepo", "getHoraire | Language: $language")
-            val response: String = client.get("$BASE_URL/horaire/") {
-                parameter("language", language)
+            val response: String = client.post("$BASE_URL/horaire/") {
+                contentType(ContentType.Application.Json)
+                setBody(mapOf("language" to language))
             }.bodyAsText()
             Log.d("ChurchRepo", "getHoraire | Found ${response} entries")
             val res = json.decodeFromString<Horaire>(response)
@@ -219,9 +227,9 @@ class ChurchRepositoryImpl(
     override suspend fun likeVideo(videoId: String, deviceId: String) {
         try {
             Log.d("ChurchRepo", "likeVideo | videoId: $videoId, deviceId: $deviceId")
-            val response = client.post("$BASE_URL/interact/") {
+            val response = client.post("$BASE_URL/likevideo/") {
                 contentType(ContentType.Application.Json)
-                setBody(mapOf("video_id" to videoId, "device_id" to deviceId))
+                setBody(mapOf("video" to videoId, "device_id" to deviceId))
             }
             Log.d("ChurchRepo", "likeVideo | Success: ${response.status}")
         } catch (e: Exception) {
