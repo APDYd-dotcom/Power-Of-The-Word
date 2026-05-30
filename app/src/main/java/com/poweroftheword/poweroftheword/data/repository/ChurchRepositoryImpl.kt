@@ -38,11 +38,10 @@ import io.ktor.http.contentType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
-import javax.inject.Inject
 
 private val Context.dataStore by preferencesDataStore(name = "settings")
 
-class ChurchRepositoryImpl @Inject constructor(
+class ChurchRepositoryImpl(
     private val client: HttpClient,
     private val context: Context,
     private val videoLikeDao: VideoLikeDao,
@@ -64,12 +63,9 @@ class ChurchRepositoryImpl @Inject constructor(
         return try {
             Log.d("ChurchRepo", "getVideos | Language: $language")
             val response: String = client.get("$BASE_URL/getvideo/") {
-                setBody(
-                    TextContent(
-                        "language=$language",
-                        ContentType.Application.FormUrlEncoded
-                    )
-                )
+                url {
+                    parameters.append("language", language)
+                }
             }.bodyAsText()
 
             val res = json.decodeFromString<Video>(response)
@@ -86,12 +82,9 @@ class ChurchRepositoryImpl @Inject constructor(
         return try {
             Log.d("ChurchRepo", "getLiveStreams | Fetching...")
             val response: String = client.get("$BASE_URL/getlive/") {
-                setBody(
-                    TextContent(
-                        "language=$language",
-                        ContentType.Application.FormUrlEncoded
-                    )
-                )
+                url {
+                    parameters.append("language", language)
+                }
             }.bodyAsText()
 
             val res = json.decodeFromString<Live>(response)
@@ -121,12 +114,9 @@ class ChurchRepositoryImpl @Inject constructor(
         return try {
             Log.d("ChurchRepo", "getAudio | Language: $language")
             val response: String = client.get("$BASE_URL/getaudio/") {
-                setBody(
-                    TextContent(
-                        "language=$language",
-                        ContentType.Application.FormUrlEncoded
-                    )
-                )
+                url {
+                    parameters.append("language", language)
+                }
             }.bodyAsText()
 
             val res = json.decodeFromString<Audio>(response)
@@ -143,12 +133,9 @@ class ChurchRepositoryImpl @Inject constructor(
         return try {
             Log.d("ChurchRepo", "getFeeds | Language: $language")
             val rawResponse: String = client.get("$BASE_URL/getfeed/") {
-                setBody(
-                    TextContent(
-                        "language=$language",
-                        ContentType.Application.FormUrlEncoded
-                    )
-                )
+                url {
+                    parameters.append("language", language)
+                }
             }.bodyAsText()
 
             val response = json.decodeFromString<Feed>(rawResponse)
@@ -165,12 +152,9 @@ class ChurchRepositoryImpl @Inject constructor(
         return try {
             Log.d("ChurchRepo", "getDailyWord | Language: $language")
             val response: String = client.get("$BASE_URL/getdailyword/") {
-                setBody(
-                    TextContent(
-                        "language=$language",
-                        ContentType.Application.FormUrlEncoded
-                    )
-                )
+                url {
+                    parameters.append("language", language)
+                }
             }.bodyAsText()
 
             val res = json.decodeFromString<DailyWord>(response)
@@ -200,12 +184,9 @@ class ChurchRepositoryImpl @Inject constructor(
         return try {
             Log.d("ChurchRepo", "getPrograms | Language: $language")
             val response: String = client.get("$BASE_URL/getprogram/") {
-                setBody(
-                    TextContent(
-                        "language=$language",
-                        ContentType.Application.FormUrlEncoded
-                    )
-                )
+                url {
+                    parameters.append("language", language)
+                }
             }.bodyAsText()
 
             val res = json.decodeFromString<ProgramResponse>(response)
@@ -222,12 +203,9 @@ class ChurchRepositoryImpl @Inject constructor(
         return try {
             Log.d("ChurchRepo", "getHoraire | Language: $language")
             val response: String = client.get("$BASE_URL/horaire/") {
-                setBody(
-                    TextContent(
-                        "language=$language",
-                        ContentType.Application.FormUrlEncoded
-                    )
-                )
+                url {
+                    parameters.append("language", language)
+                }
             }.bodyAsText()
             Log.d("ChurchRepo", "getHoraire | Found ${response} entries")
             val res = json.decodeFromString<Horaire>(response)

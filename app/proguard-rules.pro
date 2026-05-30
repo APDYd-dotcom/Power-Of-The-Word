@@ -1,14 +1,3 @@
-# Hilt
--keep public class * extends android.app.Service
--keep public class * extends android.app.Application
--keep public class * extends android.content.ContentProvider
--keep public class * extends android.app.Activity
--keep public class * extends android.content.BroadcastReceiver
--keep public class * extends androidx.fragment.app.Fragment
--keep public class * extends androidx.viewmodel.ViewModel
--keep class androidx.hilt.lifecycle.ViewModelFactoryModules { *; }
--keep class com.google.dagger.hilt.android.internal.managers.ViewComponentManager$FragmentContextWrapper { *; }
-
 # Ktor
 -keep class io.ktor.** { *; }
 -keep class kotlinx.serialization.** { *; }
@@ -28,3 +17,8 @@
 
 # Data Models (keep for serialization)
 -keep @kotlinx.serialization.Serializable class com.poweroftheword.poweroftheword.domain.model.** { *; }
+
+# Koin
+-keep class org.koin.** { *; }
+-keep class * extends org.koin.core.module.Module
+-keepattr *Annotation*

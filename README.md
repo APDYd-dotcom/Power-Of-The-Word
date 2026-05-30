@@ -42,7 +42,7 @@ A professional Android application built with **Jetpack Compose** and **Kotlin**
 
 - **UI:** Jetpack Compose (Material 3)
 - **Architecture:** Clean Architecture + MVVM
-- **Dependency Injection:** Hilt
+- **Dependency Injection:** Koin
 - **Networking:** Ktor Client (CIO)
 - **Media:** Media3 ExoPlayer & Android YouTube Player
 - **Image Loading:** Coil
@@ -73,7 +73,7 @@ com.poweroftheword.poweroftheword
 │
 ├── data          # Repository implementations and API logic
 ├── domain        # Business models and repository interfaces
-├── di            # Hilt dependency injection modules
+├── di            # Koin dependency injection modules
 ├── service       # Firebase Messaging services
 ├── ui
 │   ├── navigation # Compose destination routing

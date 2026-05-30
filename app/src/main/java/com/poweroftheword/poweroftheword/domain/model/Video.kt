@@ -5,8 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Video(
-    val videos: List<VideoItem> = emptyList(),
-    val results: List<VideoItem> = emptyList()
+    val videos: List<VideoItem>
 )
 
 @Serializable

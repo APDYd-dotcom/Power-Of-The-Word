@@ -2,6 +2,7 @@ package com.poweroftheword.poweroftheword
 
 import android.app.Application
 import androidx.work.Configuration
+import com.google.firebase.FirebaseApp
 import com.poweroftheword.poweroftheword.di.appModule
 import com.poweroftheword.poweroftheword.service.FCMTopicManager
 import org.koin.android.ext.android.inject
@@ -21,6 +22,9 @@ class PowerOfTheWordApp : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
+        
+        // Explicit Firebase initialization
+        FirebaseApp.initializeApp(this)
         
         startKoin {
             androidLogger()

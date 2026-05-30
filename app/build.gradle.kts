@@ -128,14 +128,8 @@ dependencies {
     implementation(libs.koin.androidx.compose)
     implementation(libs.koin.androidx.workmanager)
     
-    // WorkManager
-    implementation(libs.androidx.work.runtime.ktx)
-
     // Splash theme
     implementation("androidx.core:core-splashscreen:1.0.1")
-
-    implementation("androidx.palette:palette-ktx:1.0.0")
-    implementation("io.coil-kt:coil-compose:2.4.0")
 
     implementation("com.google.android.material:material:1.11.0")
 }
