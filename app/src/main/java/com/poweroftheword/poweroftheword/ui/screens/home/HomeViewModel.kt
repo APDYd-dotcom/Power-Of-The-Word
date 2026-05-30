@@ -61,8 +61,8 @@ class HomeViewModel(
             while (true) {
                 kotlinx.coroutines.delay(60000) // Update every minute
                 val rawRadios = repository.getRadioStatus()
-                val radioStatus = rawRadios.map { radioItem ->
-                    radioItem.radio.copy(
+                val radioStatus = rawRadios.mapNotNull { radioItem ->
+                    radioItem.radio?.copy(
                         isActive = isRadioCurrentlyActive(radioItem)
                     )
                 }
@@ -89,8 +89,8 @@ class HomeViewModel(
                 val latestVideos = repository.getVideos(language)
                 val latestFeeds = repository.getFeeds(language)
                 val rawRadios = repository.getRadioStatus()
-                val radioStatus = rawRadios.map { radioItem ->
-                    radioItem.radio.copy(
+                val radioStatus = rawRadios.mapNotNull { radioItem ->
+                    radioItem.radio?.copy(
                         isActive = isRadioCurrentlyActive(radioItem)
                     )
                 }
@@ -161,19 +161,25 @@ class HomeViewModel(
             // Get current day abbreviation in English (e.g., "Mon", "Sun")
             val currentDay = SimpleDateFormat("EEE", Locale.ENGLISH).format(calendar.time).lowercase()
 
+            val day = radioItem.day ?: ""
+            val startHour = radioItem.startHour ?: ""
+            val endHour = radioItem.endHour ?: ""
+
             // 1. Check if today is a broadcasting day
-            if (radioItem.day.isNotBlank()) {
-                val isBroadcastingToday = radioItem.day.equals(currentDay, ignoreCase = true)
+            if (day.isNotBlank()) {
+                val isBroadcastingToday = day.equals(currentDay, ignoreCase = true)
                 if (!isBroadcastingToday) return false
             }
 
             // 2. Check if current time is within broadcasting hours
+            if (startHour.isBlank() || endHour.isBlank()) return false
+
             val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
             val nowStr = sdf.format(calendar.time)
             val now = sdf.parse(nowStr)
             
-            val start = sdf.parse(radioItem.startHour)
-            val end = sdf.parse(radioItem.endHour)
+            val start = sdf.parse(startHour)
+            val end = sdf.parse(endHour)
 
             if (start != null && end != null && now != null) {
                 if (start.before(end)) {

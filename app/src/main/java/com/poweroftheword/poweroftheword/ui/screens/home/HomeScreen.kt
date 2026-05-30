@@ -406,7 +406,7 @@ fun RadioLiveSection(radio: com.poweroftheword.poweroftheword.domain.model.Radio
                 }
                 
                 Text(
-                    text = radio.name,
+                    text = radio.name ?: "Power Of The Word Radio",
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis

@@ -136,7 +136,7 @@ fun MainScreen() {
                         navController.navigate(Screen.Live.route)
                     },
                     onRadioClick = { radio ->
-                        radioViewModel.playById(radio.id)
+                        radio.id?.let { radioViewModel.playById(it) }
                         navigateToTab(Screen.Radio.route)
                     },
                     onSeeAllVideos = {

@@ -146,7 +146,7 @@ fun RadioScreen(
                                 Spacer(Modifier.height(16.dp))
 
                                 Text(
-                                    if (isPlaying && playingRadio != null) playingRadio.name else "Radio",
+                                    if (isPlaying && playingRadio != null) (playingRadio.name ?: "Radio") else "Radio",
                                     color = if (isDark) Color.White else MaterialTheme.colorScheme.onBackground,
                                     fontSize = 22.sp,
                                     fontWeight = FontWeight.Bold
@@ -247,7 +247,7 @@ fun RadioStationCard(
             // TEXT
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = radio.name,
+                    text = radio.name ?: "Power Of The Word Radio",
                     color = if (isDark) Color.White else MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold,
                     fontSize = 15.sp,

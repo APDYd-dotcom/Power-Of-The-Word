@@ -58,8 +58,8 @@ class RadioViewModel(
             while (true) {
                 kotlinx.coroutines.delay(60000) // Update every minute
                 val rawRadios = repository.getRadioStatus()
-                _radioStatus.value = rawRadios.map { radioItem ->
-                    radioItem.radio.copy(isActive = isRadioCurrentlyActive(radioItem))
+                _radioStatus.value = rawRadios.mapNotNull { radioItem ->
+                    radioItem.radio?.copy(isActive = isRadioCurrentlyActive(radioItem))
                 }
             }
         }
@@ -70,8 +70,8 @@ class RadioViewModel(
             // Ensure radio data is loaded first if not already
             if (_radioStatus.value.isEmpty()) {
                 val rawRadios = repository.getRadioStatus()
-                _radioStatus.value = rawRadios.map { radioItem ->
-                    radioItem.radio.copy(isActive = isRadioCurrentlyActive(radioItem))
+                _radioStatus.value = rawRadios.mapNotNull { radioItem ->
+                    radioItem.radio?.copy(isActive = isRadioCurrentlyActive(radioItem))
                 }
             }
             
@@ -80,7 +80,7 @@ class RadioViewModel(
                 if (_currentlyPlayingId.value != radio.id) {
                     exoPlayer.stop()
                     exoPlayer.clearMediaItems()
-                    val mediaItem = MediaItem.fromUri(radio.url)
+                    val mediaItem = MediaItem.fromUri(radio.url ?: "")
                     exoPlayer.setMediaItem(mediaItem)
                     exoPlayer.prepare()
                     exoPlayer.play()
@@ -98,8 +98,8 @@ class RadioViewModel(
             try {
                 val language = repository.getSavedLanguage().first()
                 val rawRadios = repository.getRadioStatus()
-                _radioStatus.value = rawRadios.map { radioItem ->
-                    radioItem.radio.copy(isActive = isRadioCurrentlyActive(radioItem))
+                _radioStatus.value = rawRadios.mapNotNull { radioItem ->
+                    radioItem.radio?.copy(isActive = isRadioCurrentlyActive(radioItem))
                 }
                 Log.e("RadioViewModel", "Radio Status: ${_radioStatus.value}")
                 _programs.value = repository.getPrograms(language)
@@ -118,7 +118,7 @@ class RadioViewModel(
             val currentDay = SimpleDateFormat("EEE", Locale.ENGLISH).format(calendar.time).lowercase()
 
             // 1. Check if today is a broadcasting day
-            if (radioItem.day.isNotBlank()) {
+            if (!radioItem.day.isNullOrBlank()) {
                 val isBroadcastingToday = radioItem.day.equals(currentDay, ignoreCase = true)
                 if (!isBroadcastingToday) return false
             }
@@ -128,8 +128,8 @@ class RadioViewModel(
             val nowStr = sdf.format(calendar.time)
             val now = sdf.parse(nowStr)
             
-            val start = sdf.parse(radioItem.startHour)
-            val end = sdf.parse(radioItem.endHour)
+            val start = radioItem.startHour?.let { sdf.parse(it) }
+            val end = radioItem.endHour?.let { sdf.parse(it) }
 
             if (start != null && end != null && now != null) {
                 if (start.before(end)) {
@@ -158,7 +158,7 @@ class RadioViewModel(
         } else {
             exoPlayer.stop()
             exoPlayer.clearMediaItems()
-            val mediaItem = MediaItem.fromUri(radio.url)
+            val mediaItem = MediaItem.fromUri(radio.url ?: "")
             exoPlayer.setMediaItem(mediaItem)
             exoPlayer.prepare()
             exoPlayer.play()
