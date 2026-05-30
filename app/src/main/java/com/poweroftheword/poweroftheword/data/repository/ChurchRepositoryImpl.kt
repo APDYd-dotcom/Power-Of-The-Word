@@ -28,7 +28,6 @@ import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
-import io.ktor.client.request.parameter
 import io.ktor.client.request.patch
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -39,10 +38,11 @@ import io.ktor.http.contentType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
+import javax.inject.Inject
 
 private val Context.dataStore by preferencesDataStore(name = "settings")
 
-class ChurchRepositoryImpl(
+class ChurchRepositoryImpl @Inject constructor(
     private val client: HttpClient,
     private val context: Context,
     private val videoLikeDao: VideoLikeDao,
@@ -64,14 +64,17 @@ class ChurchRepositoryImpl(
         return try {
             Log.d("ChurchRepo", "getVideos | Language: $language")
             val response: String = client.get("$BASE_URL/getvideo/") {
-                contentType(ContentType.Application.Json)
-                setBody(mapOf("language" to language))
+                setBody(
+                    TextContent(
+                        "language=$language",
+                        ContentType.Application.FormUrlEncoded
+                    )
+                )
             }.bodyAsText()
-            Log.d("ChurchRepo", "getVideos | Response: $response")
 
             val res = json.decodeFromString<Video>(response)
             Log.d("ChurchRepo", "getVideos | Found ${res.videos.size} videos")
-            res.videos.ifEmpty { res.results }
+            res.videos
 
         } catch (e: Exception) {
             Log.e("ChurchRepo", "getVideos | Error: ${e.message}", e)
@@ -82,9 +85,13 @@ class ChurchRepositoryImpl(
     override suspend fun getLiveStreams(language: String): List<LiveItem> {
         return try {
             Log.d("ChurchRepo", "getLiveStreams | Fetching...")
-            val response: String = client.post("$BASE_URL/getlive/") {
-                contentType(ContentType.Application.Json)
-                setBody(mapOf("language" to language))
+            val response: String = client.get("$BASE_URL/getlive/") {
+                setBody(
+                    TextContent(
+                        "language=$language",
+                        ContentType.Application.FormUrlEncoded
+                    )
+                )
             }.bodyAsText()
 
             val res = json.decodeFromString<Live>(response)
@@ -113,9 +120,13 @@ class ChurchRepositoryImpl(
     override suspend fun getAudio(language: String): List<AudioItem> {
         return try {
             Log.d("ChurchRepo", "getAudio | Language: $language")
-            val response: String = client.post("$BASE_URL/getaudio/") {
-                contentType(ContentType.Application.Json)
-                setBody(mapOf("language" to language))
+            val response: String = client.get("$BASE_URL/getaudio/") {
+                setBody(
+                    TextContent(
+                        "language=$language",
+                        ContentType.Application.FormUrlEncoded
+                    )
+                )
             }.bodyAsText()
 
             val res = json.decodeFromString<Audio>(response)
@@ -131,9 +142,13 @@ class ChurchRepositoryImpl(
     override suspend fun getFeeds(language: String): List<FeedItem> {
         return try {
             Log.d("ChurchRepo", "getFeeds | Language: $language")
-            val rawResponse: String = client.post("$BASE_URL/getfeed/") {
-                contentType(ContentType.Application.Json)
-                setBody(mapOf("language" to language))
+            val rawResponse: String = client.get("$BASE_URL/getfeed/") {
+                setBody(
+                    TextContent(
+                        "language=$language",
+                        ContentType.Application.FormUrlEncoded
+                    )
+                )
             }.bodyAsText()
 
             val response = json.decodeFromString<Feed>(rawResponse)
@@ -149,9 +164,13 @@ class ChurchRepositoryImpl(
     override suspend fun getDailyWord(language: String): List<DailyWordItem> {
         return try {
             Log.d("ChurchRepo", "getDailyWord | Language: $language")
-            val response: String = client.post("$BASE_URL/getdailyword/") {
-                contentType(ContentType.Application.Json)
-                setBody(mapOf("language" to language))
+            val response: String = client.get("$BASE_URL/getdailyword/") {
+                setBody(
+                    TextContent(
+                        "language=$language",
+                        ContentType.Application.FormUrlEncoded
+                    )
+                )
             }.bodyAsText()
 
             val res = json.decodeFromString<DailyWord>(response)
@@ -180,9 +199,13 @@ class ChurchRepositoryImpl(
     override suspend fun getPrograms(language: String): List<Program> {
         return try {
             Log.d("ChurchRepo", "getPrograms | Language: $language")
-            val response: String = client.post("$BASE_URL/getprogram/") {
-                contentType(ContentType.Application.Json)
-                setBody(mapOf("language" to language))
+            val response: String = client.get("$BASE_URL/getprogram/") {
+                setBody(
+                    TextContent(
+                        "language=$language",
+                        ContentType.Application.FormUrlEncoded
+                    )
+                )
             }.bodyAsText()
 
             val res = json.decodeFromString<ProgramResponse>(response)
@@ -198,9 +221,13 @@ class ChurchRepositoryImpl(
     override suspend fun getHoraire(language: String): List<HoraireItem> {
         return try {
             Log.d("ChurchRepo", "getHoraire | Language: $language")
-            val response: String = client.post("$BASE_URL/horaire/") {
-                contentType(ContentType.Application.Json)
-                setBody(mapOf("language" to language))
+            val response: String = client.get("$BASE_URL/horaire/") {
+                setBody(
+                    TextContent(
+                        "language=$language",
+                        ContentType.Application.FormUrlEncoded
+                    )
+                )
             }.bodyAsText()
             Log.d("ChurchRepo", "getHoraire | Found ${response} entries")
             val res = json.decodeFromString<Horaire>(response)
@@ -227,9 +254,9 @@ class ChurchRepositoryImpl(
     override suspend fun likeVideo(videoId: String, deviceId: String) {
         try {
             Log.d("ChurchRepo", "likeVideo | videoId: $videoId, deviceId: $deviceId")
-            val response = client.post("$BASE_URL/likevideo/") {
+            val response = client.post("$BASE_URL/interact/") {
                 contentType(ContentType.Application.Json)
-                setBody(mapOf("video" to videoId, "device_id" to deviceId))
+                setBody(mapOf("video_id" to videoId, "device_id" to deviceId))
             }
             Log.d("ChurchRepo", "likeVideo | Success: ${response.status}")
         } catch (e: Exception) {
