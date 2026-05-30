@@ -28,11 +28,17 @@ import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
+import io.ktor.client.request.parameter
+import io.ktor.client.request.*
+import io.ktor.http.*
+import io.ktor.client.statement.*
 import io.ktor.client.request.patch
 import io.ktor.client.request.post
+import io.ktor.client.request.request
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
+import io.ktor.http.HttpMethod
 import io.ktor.http.content.TextContent
 import io.ktor.http.contentType
 import kotlinx.coroutines.flow.Flow
@@ -61,19 +67,27 @@ class ChurchRepositoryImpl(
 
     override suspend fun getVideos(language: String): List<VideoItem> {
         return try {
-            Log.d("ChurchRepo", "getVideos | Language: $language")
-            val response: String = client.get("$BASE_URL/getvideo/") {
-                url {
-                    parameters.append("language", language)
-                }
+
+            val responseText = client.request("$BASE_URL/getvideo/") {
+                method = HttpMethod.Get
+
+                contentType(ContentType.Application.FormUrlEncoded)
+
+                setBody(
+                    "language=$language"
+                )
             }.bodyAsText()
 
-            val res = json.decodeFromString<Video>(response)
-            Log.d("ChurchRepo", "getVideos | Found ${res.videos.size} videos")
-            res.videos
+            Log.d("ChurchRepo", "RAW RESPONSE = $responseText")
+
+            val result = json.decodeFromString<Video>(responseText)
+
+            Log.d("ChurchRepo", "Videos Found = ${result.videos.size}")
+
+            result.videos
 
         } catch (e: Exception) {
-            Log.e("ChurchRepo", "getVideos | Error: ${e.message}", e)
+            Log.e("ChurchRepo", "getVideos failed", e)
             emptyList()
         }
     }
