@@ -68,8 +68,13 @@ class ChurchRepositoryImpl @Inject constructor(
 
             Log.d("ChurchRepo", "getVideos | language=$language")
 
-            val responseText = client.get("$BASE_URL/getvideo/") {
-                parameter("language", language)
+            val responseText = client.post("$BASE_URL/getvideo/") {
+                setBody(
+                    TextContent(
+                        "language=$language",
+                        ContentType.Application.FormUrlEncoded
+                    )
+                )
             }.bodyAsText()
 
             Log.d("ChurchRepo", "RAW RESPONSE = $responseText")
