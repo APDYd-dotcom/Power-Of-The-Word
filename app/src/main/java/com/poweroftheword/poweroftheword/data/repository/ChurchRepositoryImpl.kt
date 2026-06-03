@@ -95,7 +95,7 @@ class ChurchRepositoryImpl @Inject constructor(
     override suspend fun getLiveStreams(language: String): List<LiveItem> {
         return try {
             Log.d("ChurchRepo", "getLiveStreams | Fetching...")
-            val response: String = client.get("$BASE_URL/getlive/") {
+            val response: String = client.post("$BASE_URL/getlive/") {
                 setBody(
                     TextContent(
                         "language=$language",
@@ -130,7 +130,7 @@ class ChurchRepositoryImpl @Inject constructor(
     override suspend fun getAudio(language: String): List<AudioItem> {
         return try {
             Log.d("ChurchRepo", "getAudio | Language: $language")
-            val response: String = client.get("$BASE_URL/getaudio/") {
+            val response: String = client.post("$BASE_URL/getaudio/") {
                 setBody(
                     TextContent(
                         "language=$language",
@@ -152,7 +152,7 @@ class ChurchRepositoryImpl @Inject constructor(
     override suspend fun getFeeds(language: String): List<FeedItem> {
         return try {
             Log.d("ChurchRepo", "getFeeds | Language: $language")
-            val rawResponse: String = client.get("$BASE_URL/getfeed/") {
+            val rawResponse: String = client.post("$BASE_URL/getfeed/") {
                 setBody(
                     TextContent(
                         "language=$language",
@@ -174,7 +174,7 @@ class ChurchRepositoryImpl @Inject constructor(
     override suspend fun getDailyWord(language: String): List<DailyWordItem> {
         return try {
             Log.d("ChurchRepo", "getDailyWord | Language: $language")
-            val response: String = client.get("$BASE_URL/getdailyword/") {
+            val response: String = client.post("$BASE_URL/getdailyword/") {
                 setBody(
                     TextContent(
                         "language=$language",
@@ -209,7 +209,7 @@ class ChurchRepositoryImpl @Inject constructor(
     override suspend fun getPrograms(language: String): List<Program> {
         return try {
             Log.d("ChurchRepo", "getPrograms | Language: $language")
-            val response: String = client.get("$BASE_URL/getprogram/") {
+            val response: String = client.post("$BASE_URL/getprogram/") {
                 setBody(
                     TextContent(
                         "language=$language",
@@ -231,7 +231,7 @@ class ChurchRepositoryImpl @Inject constructor(
     override suspend fun getHoraire(language: String): List<HoraireItem> {
         return try {
             Log.d("ChurchRepo", "getHoraire | Language: $language")
-            val response: String = client.get("$BASE_URL/horaire/") {
+            val response: String = client.post("$BASE_URL/horaire/") {
                 setBody(
                     TextContent(
                         "language=$language",
