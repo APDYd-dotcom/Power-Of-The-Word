@@ -52,6 +52,7 @@ import org.koin.androidx.compose.koinViewModel
 import com.poweroftheword.poweroftheword.R
 import com.poweroftheword.poweroftheword.ui.screens.settings.SettingsViewModel
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.ui.tooling.preview.Preview
 import com.poweroftheword.poweroftheword.util.localizedString
 import com.poweroftheword.poweroftheword.util.truncate
 
@@ -157,75 +158,75 @@ fun DonationScreen(
             item { Spacer(Modifier.height(16.dp)) }
 
             // AMOUNT
-            item {
-                CardShape(isDark) {
-                    Column {
-
-                        Text(localizedString(R.string.select_amount), fontWeight = FontWeight.Bold, color = if (isDark) Color.White else MaterialTheme.colorScheme.onSurface)
-
-                        Spacer(Modifier.height(12.dp))
-
-                        val amounts = listOf(10, 25, 50, 100, 250, 500)
-
-                        amounts.chunked(3).forEach { row ->
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(10.dp)
-                            ) {
-                                row.forEach { amount ->
-                                    AmountChip(
-                                        amount = amount,
-                                        selected = selectedAmount == amount,
-                                        modifier = Modifier.weight(1f),
-                                        isDark = isDark
-                                    ) {
-                                        selectedAmount = amount
-                                        customAmount = ""
-                                    }
-                                }
-                            }
-                            Spacer(Modifier.height(10.dp))
-                        }
-
-                        Spacer(Modifier.height(8.dp))
-
-                        OutlinedTextField(
-                            value = customAmount,
-                            onValueChange = {
-                                customAmount = it
-                                selectedAmount = null
-                            },
-                            placeholder = { Text(localizedString(R.string.enter_custom_amount)) },
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp)
-                        )
-                    }
-                }
-            }
-
-            item { Spacer(Modifier.height(16.dp)) }
+//            item {
+//                CardShape(isDark) {
+//                    Column {
+//
+//                        Text(localizedString(R.string.select_amount), fontWeight = FontWeight.Bold, color = if (isDark) Color.White else MaterialTheme.colorScheme.onSurface)
+//
+//                        Spacer(Modifier.height(12.dp))
+//
+//                        val amounts = listOf(10, 25, 50, 100, 250, 500)
+//
+//                        amounts.chunked(3).forEach { row ->
+//                            Row(
+//                                modifier = Modifier.fillMaxWidth(),
+//                                horizontalArrangement = Arrangement.spacedBy(10.dp)
+//                            ) {
+//                                row.forEach { amount ->
+//                                    AmountChip(
+//                                        amount = amount,
+//                                        selected = selectedAmount == amount,
+//                                        modifier = Modifier.weight(1f),
+//                                        isDark = isDark
+//                                    ) {
+//                                        selectedAmount = amount
+//                                        customAmount = ""
+//                                    }
+//                                }
+//                            }
+//                            Spacer(Modifier.height(10.dp))
+//                        }
+//
+//                        Spacer(Modifier.height(8.dp))
+//
+//                        OutlinedTextField(
+//                            value = customAmount,
+//                            onValueChange = {
+//                                customAmount = it
+//                                selectedAmount = null
+//                            },
+//                            placeholder = { Text(localizedString(R.string.enter_custom_amount)) },
+//                            modifier = Modifier.fillMaxWidth(),
+//                            shape = RoundedCornerShape(12.dp)
+//                        )
+//                    }
+//                }
+//            }
+//
+//            item { Spacer(Modifier.height(16.dp)) }
 
             // MONTHLY
-            item {
-                CardShape(isDark) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Checkbox(
-                            checked = isMonthly,
-                            onCheckedChange = { isMonthly = it }
-                        )
-                        Column {
-                            Text(localizedString(R.string.make_monthly), color = if (isDark) Color.White else MaterialTheme.colorScheme.onSurface)
-                            Text(
-                                localizedString(R.string.recurring_donation),
-                                fontSize = 12.sp,
-                                color = Color.Gray
-                            )
-                        }
-                    }
-                }
-            }
+//            item {
+//                CardShape(isDark) {
+//                    Row(verticalAlignment = Alignment.CenterVertically) {
+//                        Checkbox(
+//                            checked = isMonthly,
+//                            onCheckedChange = { isMonthly = it }
+//                        )
+//                        Column {
+//                            Text(localizedString(R.string.make_monthly), color = if (isDark) Color.White else MaterialTheme.colorScheme.onSurface)
+//                            Text(
+//                                localizedString(R.string.recurring_donation),
+//                                fontSize = 12.sp,
+//                                color = Color.Gray
+//                            )
+//                        }
+//                    }
+//                }
+//            }
 
-            item { Spacer(Modifier.height(16.dp)) }
+//            item { Spacer(Modifier.height(16.dp)) }
 
             // PAYMENT
             item {
@@ -236,7 +237,7 @@ fun DonationScreen(
                         Spacer(Modifier.height(12.dp))
 
                         listOf(
-                            localizedString(R.string.credit_debit_card) to "Credit/Debit Card",
+//                            localizedString(R.string.credit_debit_card) to "Credit/Debit Card",
                             localizedString(R.string.bank_transfer) to "Bank Transfer",
                             localizedString(R.string.lumicash) to "Lumicash",
                             localizedString(R.string.ecocash) to "Ecocash",
@@ -273,35 +274,35 @@ fun DonationScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-
-            // BUTTON
-            item {
-                val finalAmount = selectedAmount ?: customAmount.toIntOrNull()
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(gradientButton, RoundedCornerShape(14.dp))
-                        .clickable {
-                            if (finalAmount != null) {
-                                android.widget.Toast.makeText(
-                                    context,
-                                    "Proceeding with donation of $$finalAmount via $selectedPayment",
-                                    android.widget.Toast.LENGTH_LONG
-                                ).show()
-                            }
-                        }
-                        .padding(16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        if (finalAmount == null) localizedString(R.string.select_amount)
-                        else localizedString(R.string.donate_with_amount, finalAmount.toString()),
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                }
-            }
+//
+//            // BUTTON
+//            item {
+//                val finalAmount = selectedAmount ?: customAmount.toIntOrNull()
+//
+//                Box(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .background(gradientButton, RoundedCornerShape(14.dp))
+//                        .clickable {
+//                            if (finalAmount != null) {
+//                                android.widget.Toast.makeText(
+//                                    context,
+//                                    "Proceeding with donation of $$finalAmount via $selectedPayment",
+//                                    android.widget.Toast.LENGTH_LONG
+//                                ).show()
+//                            }
+//                        }
+//                        .padding(16.dp),
+//                    contentAlignment = Alignment.Center
+//                ) {
+//                    Text(
+//                        if (finalAmount == null) localizedString(R.string.select_amount)
+//                        else localizedString(R.string.donate_with_amount, finalAmount.toString()),
+//                        fontWeight = FontWeight.Bold,
+//                        color = Color.White
+//                    )
+//                }
+//            }
             item {
                 Spacer(modifier = Modifier.height(16.dp))
             }
