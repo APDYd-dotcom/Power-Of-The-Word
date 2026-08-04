@@ -293,7 +293,7 @@ fun AboutScreen(
                             context.startActivity(intent)
                         }, text = pastor?.email ?: "info@poweroftheword.com", isDark = isDark)
                         ContactItem(iconVector = Icons.Default.Favorite, onClik = { onDonationClick() }, text = localizedString(R.string.donate_power_word), isDark = isDark)
-                        ContactItem(iconVector = Icons.Default.MenuBook, text = localizedString(R.string.power_word_story), isDark = isDark)
+                       // ContactItem(iconVector = Icons.Default.MenuBook, text = localizedString(R.string.power_word_story), isDark = isDark)
                         ContactItem(iconVector = Icons.Default.Settings, onClik = { onSettingsClick() }, text = localizedString(R.string.settings), isDark = isDark)
                     }
                     

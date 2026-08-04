@@ -139,6 +139,9 @@ fun MainScreen() {
                         radio.id?.let { radioViewModel.playById(it) }
                         navigateToTab(Screen.Radio.route)
                     },
+                    onSeeAllLiveRadio = {
+                        navigateToTab(Screen.Radio.route)
+                    },
                     onSeeAllVideos = {
                         navigateToTab(Screen.Videos.route)
                     },
@@ -347,7 +350,7 @@ fun MainScreen() {
                     onNavigateToHoraire = { navController.navigate(Screen.Horaire.route) },
                     onNavigateToPrograms = { navController.navigate(Screen.Programs.route) },
                     onNavigateToDonation = { navController.navigate(Screen.Donation.route) },
-                    onNavigateToAbout = { navigateToTab(Screen.About.route) },
+                    onNavigateToAbout = { navController.navigate(Screen.About.route) },
                     onNavigateToContact = { navController.navigate(Screen.Contact.route) }
                 )
             }

@@ -82,7 +82,8 @@ fun DailyWordScreen(
             )
         }
     ) { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
+        Box(modifier = Modifier.padding(paddingValues).fillMaxSize()
+        ) {
             if (state.isLoading && item == null) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             } else if (item == null) {

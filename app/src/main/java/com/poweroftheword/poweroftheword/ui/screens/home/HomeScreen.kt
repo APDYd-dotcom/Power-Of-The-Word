@@ -96,7 +96,7 @@ fun LiveSection(live: LiveItem, onLiveClick: (LiveItem) -> Unit) {
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
                 )
-                
+
                 Surface(
                     modifier = Modifier
                         .align(Alignment.TopStart)
@@ -133,14 +133,14 @@ fun LiveSection(live: LiveItem, onLiveClick: (LiveItem) -> Unit) {
                         )
                     )
                 }
-                
+
                 Text(
                     text = live.title,
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                
+
                 Text(
                     text = formatDate(live.date) ,
                     style = MaterialTheme.typography.bodySmall.copy(
@@ -148,7 +148,7 @@ fun LiveSection(live: LiveItem, onLiveClick: (LiveItem) -> Unit) {
                     )
                 )
             }
-            
+
             Surface(
                 modifier = Modifier.size(40.dp),
                 color = MaterialTheme.colorScheme.primary,
@@ -175,6 +175,7 @@ fun HomeScreen(
     onFeedClick: (FeedItem) -> Unit,
     onLiveClick: (LiveItem) -> Unit,
     onSeeAllLive: () -> Unit,
+    onSeeAllLiveRadio: () -> Unit,
     onRadioClick: (com.poweroftheword.poweroftheword.domain.model.Radio) -> Unit,
     onSeeAllVideos: () -> Unit,
     onSeeAllFeeds: () -> Unit
@@ -215,18 +216,24 @@ fun HomeScreen(
                     val activeLiveStreams = state.liveStreams.filter { it.isActive }
                     val activeRadios = state.radioStatus.filter { it.isActive }
 
-                    if (activeLiveStreams.isNotEmpty() || activeRadios.isNotEmpty()) {
+                    if ( activeRadios.isNotEmpty()) {
+//                        item {
+//                            SectionHeader(
+//                                title = "Live Stream",
+//                                onSeeAllClick = { onSeeAllLive() }
+//                            )
+//                        }
+
+//                        items(activeLiveStreams) { live ->
+//                            LiveSection(
+//                                live = live,
+//                                onLiveClick = { onLiveClick(live) }
+//                            )
+//                        }
                         item {
                             SectionHeader(
-                                title = "Live Stream",
-                                onSeeAllClick = { onSeeAllLive() }
-                            )
-                        }
-
-                        items(activeLiveStreams) { live ->
-                            LiveSection(
-                                live = live,
-                                onLiveClick = { onLiveClick(live) }
+                                title = "All Radio",
+                                onSeeAllClick = { onSeeAllLiveRadio() }
                             )
                         }
 
@@ -237,6 +244,7 @@ fun HomeScreen(
                             )
                         }
                     }
+
 
                     if (state.latestVideos.isNotEmpty()) {
                         item {
