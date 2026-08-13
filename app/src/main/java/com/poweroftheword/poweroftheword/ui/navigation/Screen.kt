@@ -7,7 +7,7 @@ import androidx.compose.material.icons.outlined.*
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.poweroftheword.poweroftheword.R
 
-sealed class Screen(val route: String, @StringRes val titleResId: Int, val icon: ImageVector? = null) {
+sealed class Screen(val route: String, @get:StringRes val titleResId: Int, val icon: ImageVector? = null) {
     object Home : Screen("home", R.string.home, Icons.Outlined.Home)
     object Videos : Screen("videos", R.string.videos, Icons.Outlined.PlayArrow)
     object Audios : Screen("audios", R.string.audio, Icons.Outlined.MusicNote)

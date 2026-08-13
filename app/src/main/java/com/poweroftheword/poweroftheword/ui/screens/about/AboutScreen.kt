@@ -160,12 +160,12 @@ fun AboutScreen(
                                         .size(80.dp)
                                         .clip(RoundedCornerShape(20.dp)),
                                     contentScale = ContentScale.Crop,
-                                    placeholder = painterResource(id = R.drawable.dailword1),
-                                    error = painterResource(id = R.drawable.dailword1)
+                                    placeholder = painterResource(id = R.drawable.logo),
+                                    error = painterResource(id = R.drawable.logo)
                                 )
                             } else {
                                 Image(
-                                    painter = painterResource(id = R.drawable.dailword1),
+                                    painter = painterResource(id = R.drawable.logo),
                                     contentDescription = null,
                                     modifier = Modifier
                                         .size(80.dp)

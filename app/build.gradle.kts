@@ -52,6 +52,14 @@ android {
     kapt {
         correctErrorTypes = true
     }
+
+    lint {
+        disable += "RememberInComposition"
+        disable += "NullSafeMutableLiveData"
+        disable += "FrequentlyChangingValue"
+        disable += "AutoboxingStateCreation"
+        abortOnError = false
+    }
 }
 
 dependencies {

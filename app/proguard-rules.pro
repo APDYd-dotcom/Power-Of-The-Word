@@ -1,6 +1,8 @@
 # Ktor
 -keep class io.ktor.** { *; }
 -keep class kotlinx.serialization.** { *; }
+-dontwarn java.lang.management.**
+-dontwarn org.slf4j.impl.StaticLoggerBinder
 
 # Media3
 -keep class androidx.media3.** { *; }
@@ -21,4 +23,4 @@
 # Koin
 -keep class org.koin.** { *; }
 -keep class * extends org.koin.core.module.Module
--keepattr *Annotation*
+-keepattributes *Annotation*
