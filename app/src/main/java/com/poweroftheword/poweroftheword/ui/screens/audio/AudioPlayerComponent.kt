@@ -404,32 +404,31 @@ fun AudioPlayerComponent(
                 }
 
                 // SHARE BUTTON
-                IconButton(onClick = {
-                    viewModel.onAudioShared(audio.id)
-                    val audioUrl = "https://poweroftheword.bi${audio.file}"
-                    val shareText = shareFormat.format(
-                        formatDate(audio.date),
-                        audioUrl,
-                        shareAppMessage
-                    )
-                    
-                    if (isDownloaded) {
-                        val file = downloadManager.getAudioFile(audio.id)
-                        if (file.exists()) {
-                            ShareUtils.shareAudioFile(context, file, audio.title, shareText)
-                        } else {
-                            ShareUtils.shareText(context, shareText)
-                        }
-                    } else {
-                        ShareUtils.shareText(context, shareText)
-                    }
-                }) {
-                    Icon(
-                        imageVector = Icons.Default.Share,
-                        contentDescription = null,
-                        tint = if (isDownloaded) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
+//                IconButton(onClick = {
+//                    viewModel.onAudioShared(audio.id)
+//                    val shareText = shareFormat.format(
+//                        formatDate(audio.date),
+//                        audio.title,
+//                        shareAppMessage
+//                    )
+//
+//                    if (isDownloaded) {
+//                        val file = downloadManager.getAudioFile(audio.id)
+//                        if (file.exists()) {
+//                            ShareUtils.shareAudioFile(context, file, audio.title, shareText)
+//                        } else {
+//                            ShareUtils.shareText(context, shareText)
+//                        }
+//                    } else {
+//                        ShareUtils.shareText(context, shareText)
+//                    }
+//                }) {
+//                    Icon(
+//                        imageVector = Icons.Default.Share,
+//                        contentDescription = null,
+//                        tint = if (isDownloaded) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+//                    )
+//                }
             }
         }
     }
