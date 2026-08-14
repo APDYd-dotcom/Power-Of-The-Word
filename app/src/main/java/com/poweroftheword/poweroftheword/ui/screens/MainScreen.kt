@@ -1,5 +1,6 @@
 package com.poweroftheword.poweroftheword.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -105,6 +106,11 @@ fun MainScreen() {
         Screen.LivePlayer.route
     )
     val isBottomBarVisible = currentDestination?.route !in hideBottomBarRoutes
+
+    val isHome = currentDestination?.route == Screen.Home.route
+    BackHandler(enabled = !isHome) {
+        navigateToTab(Screen.Home.route)
+    }
 
     Box(
         modifier = Modifier.fillMaxSize()
