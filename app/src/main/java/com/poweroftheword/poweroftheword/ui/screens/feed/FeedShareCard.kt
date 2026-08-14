@@ -12,12 +12,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.poweroftheword.poweroftheword.BuildConfig
 import com.poweroftheword.poweroftheword.domain.model.FeedItem
+import com.poweroftheword.poweroftheword.R
 
 @Composable
 fun FeedShareCard(
@@ -34,7 +36,7 @@ fun FeedShareCard(
         modifier = modifier
             .width(360.dp)
             .wrapContentHeight(),
-        shape = RoundedCornerShape(0.dp), // Square corners for full screen feel or slight rounding
+        shape = RoundedCornerShape(0.dp),
         colors = CardDefaults.cardColors(containerColor = backgroundColor),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
@@ -59,7 +61,7 @@ fun FeedShareCard(
                     Text(
                         text = feed.type?.uppercase() ?: "EVENT",
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
-                        color = Color(0xFF5A8DBE), // Darker blue for text
+                        color = Color(0xFF5A8DBE),
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold
                     )
@@ -145,7 +147,7 @@ fun FeedShareCard(
 
                 // 🔥 EVENT DETAILS HEADER
                 Text(
-                    text = "EVENT DETAILS:",
+                    text = stringResource(R.string.event_details_label),
                     fontWeight = FontWeight.Black,
                     style = MaterialTheme.typography.titleLarge,
                     color = primaryTextColor
@@ -153,17 +155,16 @@ fun FeedShareCard(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Using emojis as requested in the "Pro" look
-                ShareDetailRow("📅", "Date", feed.date ?: "N/A", primaryTextColor)
-                ShareDetailRow("⏰", "Time", "${feed.startHour ?: ""} - ${feed.endHour ?: ""}", primaryTextColor)
-                ShareDetailRow("📍", "Location", feed.location ?: "Main Sanctuary", primaryTextColor)
-                ShareDetailRow("🎤", "Leader", feed.host ?: "Pastor & Team", primaryTextColor)
+                ShareDetailRow("📅", stringResource(R.string.date_label), feed.date ?: "N/A", primaryTextColor)
+                ShareDetailRow("⏰", stringResource(R.string.time_label), "${feed.startHour ?: ""} - ${feed.endHour ?: ""}", primaryTextColor)
+                ShareDetailRow("📍", stringResource(R.string.location_label), feed.location ?: "Main Sanctuary", primaryTextColor)
+                ShareDetailRow("🎤", stringResource(R.string.leader_label), feed.host ?: "Pastor & Team", primaryTextColor)
 
                 Spacer(modifier = Modifier.height(32.dp))
                 
                 // Branding footer
                 Text(
-                    text = "Download the app at poweroftheword.bi",
+                    text = "poweroftheword.bi",
                     style = MaterialTheme.typography.labelMedium,
                     color = secondaryTextColor.copy(alpha = 0.6f),
                     modifier = Modifier.align(Alignment.CenterHorizontally)

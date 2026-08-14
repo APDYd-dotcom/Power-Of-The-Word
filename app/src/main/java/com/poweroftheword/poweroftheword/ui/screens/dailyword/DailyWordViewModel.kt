@@ -6,11 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.poweroftheword.poweroftheword.domain.model.DailyWord
 import com.poweroftheword.poweroftheword.domain.model.DailyWordItem
 import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class DailyWordViewModel(
@@ -20,8 +16,13 @@ class DailyWordViewModel(
     private val _state = MutableStateFlow(DailyWordState())
     val state: StateFlow<DailyWordState> = _state.asStateFlow()
 
+    val currentLanguage: StateFlow<String> = repository.getSavedLanguage()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "EN")
+
     init {
-        loadDailyWord()
+        currentLanguage
+            .onEach { loadDailyWord() }
+            .launchIn(viewModelScope)
     }
 
     private fun loadDailyWord() {

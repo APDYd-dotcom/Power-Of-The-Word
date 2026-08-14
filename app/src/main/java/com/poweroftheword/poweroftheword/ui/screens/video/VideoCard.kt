@@ -91,7 +91,7 @@ fun VideoCard(
         ) {
             // Channel Logo from Drawable
             Image(
-                painter = painterResource(id = R.drawable.logo),
+                painter = painterResource(id = R.drawable.img),
                 contentDescription = "Channel Logo",
                 modifier = Modifier
                     .size(40.dp)

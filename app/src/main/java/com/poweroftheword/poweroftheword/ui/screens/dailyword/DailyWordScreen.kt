@@ -28,6 +28,7 @@ import com.poweroftheword.poweroftheword.R
 import com.poweroftheword.poweroftheword.ui.theme.LocalStatusBarAppearance
 import com.poweroftheword.poweroftheword.ui.util.getDominantColorFromUrl
 import com.poweroftheword.poweroftheword.util.ShareUtils
+import com.poweroftheword.poweroftheword.util.LocalizationUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,9 +79,11 @@ fun DailyWordScreen(
                 },
                 actions = {
                     IconButton(onClick = { 
+                        val lang = viewModel.currentLanguage.value
+                        val shareMessage = LocalizationUtils.getLocalizedString(context, R.string.share_app_message, lang)
                         ShareUtils.shareText(
                             context = context,
-                            text = context.getString(R.string.share_app_message)
+                            text = shareMessage
                         )
                     }) {
                         Icon(Icons.Default.Share, contentDescription = "Share")

@@ -55,6 +55,7 @@ import com.poweroftheword.poweroftheword.ui.components.VideoCardSkeleton
 import com.poweroftheword.poweroftheword.ui.screens.feed.FeedItemCard
 import com.poweroftheword.poweroftheword.ui.screens.video.VideoCard
 import com.poweroftheword.poweroftheword.util.ShareUtils
+import com.poweroftheword.poweroftheword.util.LocalizationUtils
 import com.poweroftheword.poweroftheword.util.formatDate
 import com.poweroftheword.poweroftheword.util.shimmerEffect
 import com.poweroftheword.poweroftheword.util.truncate
@@ -214,9 +215,11 @@ fun HomeScreen(
                             onLanguageChange = { viewModel.changeLanguage(it) },
                             onThemeToggle = onThemeToggle,
                             onShareApp = { 
+                                val lang = state.currentLanguage
+                                val shareMessage = LocalizationUtils.getLocalizedString(context, R.string.share_app_message, lang)
                                 ShareUtils.shareText(
                                     context = context,
-                                    text = context.getString(R.string.share_app_message)
+                                    text = shareMessage
                                 )
                             }
                         )

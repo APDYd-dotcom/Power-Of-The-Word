@@ -18,7 +18,7 @@
     <string name="send_email">Tuma Barua Pepe</string>
     <string name="share_audio">Shiriki Sauti</string>
 
-    <string name="pastor_name">Mchungaji Justin Nitezuwera</string>
+    <string name="pastor_name">Mchungaji Nitezuwera Justin</string>
     <string name="pastor_title">Mwinjilisti wa Habari Njema ya Yesu Kristo</string>
     <string name="about_motto">Amka ukisali na kumsifu Bwana kila siku!</string>
     <string name="about_description">Power of the Word ni matangazo ya kuwaamsha Wakristo kiroho ili kuruhusu Roho Mtakatifu kutimiza mapenzi ya Mungu.</string>
@@ -114,4 +114,10 @@
     <string name="donate_with_amount">Changia $%1$s</string>
     <string name="share_app">Shiriki Programu</string>
     <string name="share_app_message">Pakua programu ya Power of the Word na uendelee kubarikiwa: https://poweroftheword.bi/app</string>
+    <string name="video_share_format">%1$s\nIMEANDALIWA NA : %2$s\n👉 Bonyeza hapa kutazama video kamili:\n🔗 %3$s\n➡️ Jisajili — Shiriki — Toa Maoni — Penda\nShiriki kwenye hali yako ili kusaidia wengine.\nMubarikiwe 🙏\n\n%4$s</string>
+    <string name="date_label">Tarehe</string>
+    <string name="time_label">Saa</string>
+    <string name="location_label">Mahali</string>
+    <string name="leader_label">Kiongozi</string>
+    <string name="event_details_label">MAELEZO YA TUKIO</string>
 </resources>

@@ -17,7 +17,7 @@
     <string name="send_email">Rungika Imeeli</string>
     <string name="share_audio">Sangiza Amajwi</string>
 
-    <string name="pastor_name">Pasitori Justin Nitezuwera</string>
+    <string name="pastor_name">Pasitori Nitezuwera Justin</string>
     <string name="pastor_title">Umwigisha w\'Ubutumwa Bwiza bwa Yesu Kristo</string>
     <string name="about_motto">Vyukana ugusenga n\'ugushimagiza Umwami iminsi yose!</string>
     <string name="about_description">Power of the Word ni ikiganiro kigamije kuvyura abakristo mu buryo bw\'impwemu kugira ngo bubahe Impwemu Yera gushitsa ivyo Imana igomba.</string>
@@ -113,4 +113,10 @@
     <string name="donate_with_amount">Tanga $%1$s</string>
     <string name="share_app">Sangiza abandi</string>
     <string name="share_app_message">Ugurura programu ya Power of the Word uhezagirwe: https://poweroftheword.bi/app</string>
+    <string name="video_share_format">%1$s\nHOSTED: %2$s\n👉 Fyonda hano urebe video yose:\n🔗 %3$s\n➡️ Subscribe — Share — Comment — Like\nSangiza ku statut yawe kugira n’abandi bafashwe.\nMwese mube muhezagiwe 🙏\n\n%4$s</string>
+    <string name="date_label">Itariki</string>
+    <string name="time_label">Isaha</string>
+    <string name="location_label">Ikibanza</string>
+    <string name="leader_label">Uwurongoye</string>
+    <string name="event_details_label">IBIDUKIKUJE</string>
 </resources>

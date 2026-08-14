@@ -10,6 +10,8 @@ import com.poweroftheword.poweroftheword.domain.model.*
 import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
 import com.poweroftheword.poweroftheword.util.DeviceUtils
 import com.poweroftheword.poweroftheword.util.ShareUtils
+import com.poweroftheword.poweroftheword.util.LocalizationUtils
+import com.poweroftheword.poweroftheword.R
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -148,10 +150,41 @@ class HomeViewModel(
                 Log.e("HomeViewModel", "Failed to record share on server", e)
             }
 
-            ShareUtils.shareText(
+            val originalUrl = convertToOriginalUrl(video.url)
+            val lang = state.value.currentLanguage
+            
+            val shareAppMessage = LocalizationUtils.getLocalizedString(context, R.string.share_app_message, lang)
+            val pastorName = LocalizationUtils.getLocalizedString(context, R.string.pastor_name, lang)
+
+            val shareText = LocalizationUtils.getLocalizedString(
                 context,
-                "Check out this sermon:\n${video.title}\n${video.url}"
+                R.string.video_share_format,
+                lang,
+                video.title,
+                pastorName,
+                originalUrl,
+                shareAppMessage
             )
+
+            ShareUtils.shareText(context, shareText)
+        }
+    }
+
+    private fun convertToOriginalUrl(url: String): String {
+        return when {
+            url.contains("youtube.com/embed/") -> {
+                val id = url.substringAfter("embed/").substringBefore("?").substringBefore("/")
+                "https://youtu.be/$id"
+            }
+            url.contains("youtube.com/watch?v=") -> {
+                val id = url.substringAfter("v=").substringBefore("&")
+                "https://youtu.be/$id"
+            }
+            url.contains("youtu.be/") -> {
+                val id = url.substringAfter("youtu.be/").substringBefore("?").substringBefore("/")
+                "https://youtu.be/$id"
+            }
+            else -> url
         }
     }
 

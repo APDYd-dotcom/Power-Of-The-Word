@@ -17,7 +17,7 @@
     <string name="send_email">Envoyer un Email</string>
     <string name="share_audio">Partager l\'Audio</string>
 
-    <string name="pastor_name">Pasteur Justin Nitezuwera</string>
+    <string name="pastor_name">Pasteur Nitezuwera Justin</string>
     <string name="pastor_title">Évangéliste de la Bonne Nouvelle de Jésus-Christ</string>
     <string name="about_motto">Réveillez-vous en priant et en louant le Seigneur chaque jour !</string>
     <string name="about_description">Power of the Word est une émission destinée à éveiller spirituellement les chrétiens afin de permettre au Saint-Esprit d\'accomplir la volonté de Dieu.</string>
@@ -113,4 +113,10 @@
     <string name="donate_with_amount">Faire un don de %1$s $</string>
     <string name="share_app">Partager l\'application</string>
     <string name="share_app_message">Téléchargez l\'application Power of the Word et restez béni : https://poweroftheword.bi/app</string>
+    <string name="video_share_format">%1$s\nANIMÉ PAR : %2$s\n👉 Cliquez ici pour regarder la vidéo complète :\n🔗 %3$s\n➡️ S\'abonner — Partager — Commenter — Aimer\nPartagez sur votre statut pour aider les autres.\nSoyez bénis 🙏\n\n%4$s</string>
+    <string name="date_label">Date</string>
+    <string name="time_label">Heure</string>
+    <string name="location_label">Lieu</string>
+    <string name="leader_label">Animateur</string>
+    <string name="event_details_label">DÉTAILS DE L\'ÉVÉNEMENT</string>
 </resources>
