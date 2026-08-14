@@ -8,8 +8,6 @@ import com.poweroftheword.poweroftheword.data.local.AudioLikeDao
 import com.poweroftheword.poweroftheword.domain.model.AudioItem
 import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
 import com.poweroftheword.poweroftheword.util.DeviceUtils
-import com.poweroftheword.poweroftheword.util.ShareUtils
-import com.poweroftheword.poweroftheword.util.formatDate
 import com.poweroftheword.poweroftheword.util.download.AudioDownloadManager
 import com.poweroftheword.poweroftheword.util.download.DownloadProgress
 import kotlinx.coroutines.flow.*
@@ -122,25 +120,13 @@ class AudioListViewModel(
         }
     }
 
-    fun shareDownloadedAudio(audio: AudioItem) {
+    fun onAudioShared(audioId: Int) {
         viewModelScope.launch {
             val deviceId = DeviceUtils.getDeviceId(context)
             try {
-                repository.interactions(deviceId, audioId = audio.id.toString(), action = "share")
+                repository.interactions(deviceId, audioId = audioId.toString(), action = "share")
             } catch (e: Exception) {
                 Log.e("AudioVM", "Failed to register share: ${e.message}")
-            }
-            
-            val file = downloadManager.getAudioFile(audio.id)
-            if (file.exists()) {
-                ShareUtils.shareAudioInTwoParts(
-                    context,
-                    file,
-                    audio.title,
-                    "Power Of The Word\n${audio.title}\nDate: ${formatDate(audio.date)}"
-                )
-            } else {
-                shareAudio(audio)
             }
         }
     }
@@ -236,21 +222,6 @@ class AudioListViewModel(
         viewModelScope.launch {
             val deviceId = DeviceUtils.getDeviceId(context)
             repository.toggleAudioLikeLocal(audioId, deviceId)
-        }
-    }
-
-    fun shareAudio(audio: AudioItem) {
-        viewModelScope.launch {
-            val deviceId = DeviceUtils.getDeviceId(context)
-            try {
-                repository.interactions(deviceId, audioId = audio.id.toString(), action = "share")
-            } catch (e: Exception) {
-                Log.e("AudioVM", "Failed to register share: ${e.message}")
-            }
-            ShareUtils.shareText(
-                context,
-                "Power Of The Word\n${audio.title}\nDate: ${formatDate(audio.date)}\nListen here: https://poweroftheword.bi${audio.file}"
-            )
         }
     }
 }

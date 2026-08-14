@@ -122,4 +122,5 @@
     <string name="location_label">Location</string>
     <string name="leader_label">Leader</string>
     <string name="event_details_label">EVENT DETAILS</string>
+    <string name="audio_share_format">Power Of The Word\nDate: %1$s\n%2$s\n\n%3$s</string>
 </resources>

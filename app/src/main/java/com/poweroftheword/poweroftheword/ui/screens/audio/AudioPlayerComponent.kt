@@ -65,13 +65,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.poweroftheword.poweroftheword.R
 import com.poweroftheword.poweroftheword.domain.model.AudioItem
+import com.poweroftheword.poweroftheword.util.ShareUtils
 import com.poweroftheword.poweroftheword.util.formatDate
 import com.poweroftheword.poweroftheword.util.formatTime
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -97,6 +101,9 @@ fun AudioPlayerComponent(
     val downloadProgress by viewModel.downloadProgress.collectAsState()
     val currentProgress = downloadProgress[audio.id]
     val isDownloading = currentProgress != null
+
+    val shareAppMessage = stringResource(R.string.share_app_message)
+    val shareFormat = stringResource(R.string.audio_share_format)
 
     var showCheck by remember { mutableStateOf(false) }
     var downloadStarted by remember { mutableStateOf(false) }
@@ -398,10 +405,23 @@ fun AudioPlayerComponent(
 
                 // SHARE BUTTON
                 IconButton(onClick = {
+                    viewModel.onAudioShared(audio.id)
+                    val audioUrl = "https://poweroftheword.bi${audio.file}"
+                    val shareText = shareFormat.format(
+                        formatDate(audio.date),
+                        audioUrl,
+                        shareAppMessage
+                    )
+                    
                     if (isDownloaded) {
-                        viewModel.shareDownloadedAudio(audio)
+                        val file = downloadManager.getAudioFile(audio.id)
+                        if (file.exists()) {
+                            ShareUtils.shareAudioFile(context, file, audio.title, shareText)
+                        } else {
+                            ShareUtils.shareText(context, shareText)
+                        }
                     } else {
-                        viewModel.shareAudio(audio)
+                        ShareUtils.shareText(context, shareText)
                     }
                 }) {
                     Icon(
