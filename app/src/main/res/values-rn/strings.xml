@@ -120,4 +120,14 @@
     <string name="leader_label">Uwurongoye</string>
     <string name="event_details_label">IBIDUKIKUJE</string>
     <string name="audio_share_format">Ububasha bw\'Ijambo\nItariki: %1$s\n%2$s\n\n%3$s</string>
+    <string name="event">Igikorane</string>
+    <string name="event_not_found">Igikorane nticitabiriwe</string>
+    <string name="recently">Vuba aha</string>
+    <string name="views_count">Bamaze kuraba %1$d</string>
+    <string name="what_to_expect_header">IVYO MWITEZE:</string>
+    <string name="liked">Warakunze</string>
+    <string name="like">Kunda</string>
+    <string name="share_image">Sangiza Isanamu</string>
+    <string name="main_sanctuary">Main Sanctuary</string>
+    <string name="pastor_and_team">Pasitori n\'Umugwi wiwe</string>
 </resources>

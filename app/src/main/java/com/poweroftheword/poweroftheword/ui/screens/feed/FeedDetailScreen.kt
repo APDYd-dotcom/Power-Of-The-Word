@@ -62,7 +62,7 @@ fun FeedDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Event") },
+                title = { Text(stringResource(R.string.event)) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.Default.ArrowBack, contentDescription = null)
@@ -82,7 +82,7 @@ fun FeedDetailScreen(
                                 )
                             }
                         }) {
-                            Icon(Icons.Default.Share, contentDescription = "Share Image")
+                            Icon(Icons.Default.Share, contentDescription = stringResource(R.string.share_image))
                         }
                     }
                 }
@@ -99,7 +99,7 @@ fun FeedDetailScreen(
                 FeedDetailSkeleton()
             } else if (feed == null) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("Event not found")
+                    Text(stringResource(R.string.event_not_found))
                 }
             } else {
                 // Register view when screen is opened
@@ -172,7 +172,7 @@ fun FeedDetailScreen(
                             Spacer(modifier = Modifier.width(4.dp))
 
                             Text(
-                                text = feed.date ?: "Recently",
+                                text = feed.date ?: stringResource(R.string.recently),
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }
@@ -190,7 +190,7 @@ fun FeedDetailScreen(
                             Spacer(modifier = Modifier.width(4.dp))
 
                             Text(
-                                text = "${feed.views} views",
+                                text = stringResource(R.string.views_count, feed.views ?: 0),
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }
@@ -214,23 +214,23 @@ fun FeedDetailScreen(
 
                         // 🔥 EXTRA DETAILS (STATIC STYLE FOR NOW)
                         Text(
-                            text = "EVENT DETAILS:",
+                            text = stringResource(R.string.event_details_label) + ":",
                             fontWeight = FontWeight.Bold,
                             style = MaterialTheme.typography.labelLarge
                         )
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        DetailRow("📅 Date", feed.date ?: "N/A")
-                        DetailRow("⏰ Time", "${feed.startHour ?: ""} - ${feed.endHour ?: ""}")
-                        DetailRow("📍 Location", feed.location ?: "Main Sanctuary")
-                        DetailRow("🎤 Leader", feed.host ?: "Pastor & Team")
+                        DetailRow("📅 " + stringResource(R.string.date_label), feed.date ?: "N/A")
+                        DetailRow("⏰ " + stringResource(R.string.time_label), "${feed.startHour ?: ""} - ${feed.endHour ?: ""}")
+                        DetailRow("📍 " + stringResource(R.string.location_label), feed.location ?: stringResource(R.string.main_sanctuary))
+                        DetailRow("🎤 " + stringResource(R.string.leader_label), feed.host ?: stringResource(R.string.pastor_and_team))
 
                         Spacer(modifier = Modifier.height(16.dp))
 
                         if (!feed.expectation.isNullOrBlank()) {
                             Text(
-                                text = "WHAT TO EXPECT:",
+                                text = stringResource(R.string.what_to_expect_header),
                                 fontWeight = FontWeight.Bold
                             )
 
@@ -260,7 +260,7 @@ fun FeedDetailScreen(
                                     tint = if (isLiked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
-                                Text(if (isLiked) "Liked" else "Like")
+                                Text(if (isLiked) stringResource(R.string.liked) else stringResource(R.string.like))
                             }
 
                             OutlinedButton(
@@ -280,7 +280,7 @@ fun FeedDetailScreen(
                             ) {
                                 Icon(Icons.Default.Share, contentDescription = null)
                                 Spacer(modifier = Modifier.width(6.dp))
-                                Text("Share Image")
+                                Text(stringResource(R.string.share_image))
                             }
                         }
 

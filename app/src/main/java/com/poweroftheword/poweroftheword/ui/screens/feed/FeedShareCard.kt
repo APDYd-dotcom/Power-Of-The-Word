@@ -101,7 +101,7 @@ fun FeedShareCard(
                     Spacer(modifier = Modifier.width(4.dp))
 
                     Text(
-                        text = feed.date ?: "Recently",
+                        text = feed.date ?: stringResource(R.string.recently),
                         style = MaterialTheme.typography.bodyMedium,
                         color = secondaryTextColor
                     )
@@ -120,7 +120,7 @@ fun FeedShareCard(
                     Spacer(modifier = Modifier.width(6.dp))
 
                     Text(
-                        text = "${feed.views} views",
+                        text = stringResource(R.string.views_count, feed.views ?: 0),
                         style = MaterialTheme.typography.bodyMedium,
                         color = secondaryTextColor
                     )
@@ -157,8 +157,8 @@ fun FeedShareCard(
 
                 ShareDetailRow("📅", stringResource(R.string.date_label), feed.date ?: "N/A", primaryTextColor)
                 ShareDetailRow("⏰", stringResource(R.string.time_label), "${feed.startHour ?: ""} - ${feed.endHour ?: ""}", primaryTextColor)
-                ShareDetailRow("📍", stringResource(R.string.location_label), feed.location ?: "Main Sanctuary", primaryTextColor)
-                ShareDetailRow("🎤", stringResource(R.string.leader_label), feed.host ?: "Pastor & Team", primaryTextColor)
+                ShareDetailRow("📍", stringResource(R.string.location_label), feed.location ?: stringResource(R.string.main_sanctuary), primaryTextColor)
+                ShareDetailRow("🎤", stringResource(R.string.leader_label), feed.host ?: stringResource(R.string.pastor_and_team), primaryTextColor)
 
                 Spacer(modifier = Modifier.height(32.dp))
                 

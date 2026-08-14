@@ -123,4 +123,14 @@
     <string name="leader_label">Leader</string>
     <string name="event_details_label">EVENT DETAILS</string>
     <string name="audio_share_format">Power Of The Word\nDate: %1$s\n%2$s\n\n%3$s</string>
+    <string name="event">Event</string>
+    <string name="event_not_found">Event not found</string>
+    <string name="recently">Recently</string>
+    <string name="views_count">%1$d views</string>
+    <string name="what_to_expect_header">WHAT TO EXPECT:</string>
+    <string name="liked">Liked</string>
+    <string name="like">Like</string>
+    <string name="share_image">Share Image</string>
+    <string name="main_sanctuary">Main Sanctuary</string>
+    <string name="pastor_and_team">Pastor &amp; Team</string>
 </resources>

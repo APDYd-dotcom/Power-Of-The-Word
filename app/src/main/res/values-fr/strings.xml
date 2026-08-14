@@ -120,4 +120,14 @@
     <string name="leader_label">Animateur</string>
     <string name="event_details_label">DÉTAILS DE L\'ÉVÉNEMENT</string>
     <string name="audio_share_format">La Puissance de la Parole\nDate : %1$s\n%2$s\n\n%3$s</string>
+    <string name="event">Événement</string>
+    <string name="event_not_found">Événement non trouvé</string>
+    <string name="recently">Récemment</string>
+    <string name="views_count">%1$d vues</string>
+    <string name="what_to_expect_header">À QUOI S\'ATTENDRE :</string>
+    <string name="liked">Aimé</string>
+    <string name="like">J\'aime</string>
+    <string name="share_image">Partager l\'image</string>
+    <string name="main_sanctuary">Sanctuaire Principal</string>
+    <string name="pastor_and_team">Pasteur &amp; Équipe</string>
 </resources>

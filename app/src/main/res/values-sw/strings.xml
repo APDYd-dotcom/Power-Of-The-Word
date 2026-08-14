@@ -121,4 +121,14 @@
     <string name="leader_label">Kiongozi</string>
     <string name="event_details_label">MAELEZO YA TUKIO</string>
     <string name="audio_share_format">Nguvu ya Neno\nTarehe: %1$s\n%2$s\n\n%3$s</string>
+    <string name="event">Tukio</string>
+    <string name="event_not_found">Tukio halikupatikana</string>
+    <string name="recently">Hivi karibuni</string>
+    <string name="views_count">Mitazamo %1$d</string>
+    <string name="what_to_expect_header">MATARAJIO:</string>
+    <string name="liked">Umependa</string>
+    <string name="like">Penda</string>
+    <string name="share_image">Shiriki Picha</string>
+    <string name="main_sanctuary">Hekalu Kuu</string>
+    <string name="pastor_and_team">Mchungaji na Timu</string>
 </resources>
