@@ -55,7 +55,7 @@ import com.poweroftheword.poweroftheword.ui.components.VideoCardSkeleton
 import com.poweroftheword.poweroftheword.ui.screens.feed.FeedItemCard
 import com.poweroftheword.poweroftheword.ui.screens.video.VideoCard
 import com.poweroftheword.poweroftheword.util.ShareUtils
-import com.poweroftheword.poweroftheword.util.LocalizationUtils
+import com.poweroftheword.poweroftheword.util.convertToYoutubeOriginalUrl
 import com.poweroftheword.poweroftheword.util.formatDate
 import com.poweroftheword.poweroftheword.util.shimmerEffect
 import com.poweroftheword.poweroftheword.util.truncate
@@ -187,6 +187,10 @@ fun HomeScreen(
     val likedVideoIds by viewModel.likedVideoIds.collectAsState()
     val likedFeedIds by viewModel.likedFeedIds.collectAsState()
     val context = LocalContext.current
+    
+    val shareAppMessage = stringResource(R.string.share_app_message)
+    val pastorName = stringResource(R.string.pastor_name)
+    val shareFormat = stringResource(R.string.video_share_format)
 
     Surface {
         PullToRefreshBox(
@@ -215,11 +219,9 @@ fun HomeScreen(
                             onLanguageChange = { viewModel.changeLanguage(it) },
                             onThemeToggle = onThemeToggle,
                             onShareApp = { 
-                                val lang = state.currentLanguage
-                                val shareMessage = LocalizationUtils.getLocalizedString(context, R.string.share_app_message, lang)
                                 ShareUtils.shareText(
                                     context = context,
-                                    text = shareMessage
+                                    text = shareAppMessage
                                 )
                             }
                         )
@@ -270,7 +272,18 @@ fun HomeScreen(
                             VideoCard(
                                 video = video.copy(isLiked = likedVideoIds.contains(video.id.toString())),
                                 onClick = { onVideoClick(video) },
-                                onLikeClick = { viewModel.likeVideo(video.id.toString()) }
+                                onLikeClick = { viewModel.likeVideo(video.id.toString()) },
+                                onShareClick = {
+                                    viewModel.onVideoShared(video.id.toString())
+                                    val originalUrl = convertToYoutubeOriginalUrl(video.url)
+                                    val shareText = shareFormat.format(
+                                        video.title,
+                                        pastorName,
+                                        originalUrl,
+                                        shareAppMessage
+                                    )
+                                    ShareUtils.shareText(context, shareText)
+                                }
                             )
                         }
                     }

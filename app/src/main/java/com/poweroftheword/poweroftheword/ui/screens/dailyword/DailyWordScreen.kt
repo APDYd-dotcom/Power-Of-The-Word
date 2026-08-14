@@ -28,7 +28,7 @@ import com.poweroftheword.poweroftheword.R
 import com.poweroftheword.poweroftheword.ui.theme.LocalStatusBarAppearance
 import com.poweroftheword.poweroftheword.ui.util.getDominantColorFromUrl
 import com.poweroftheword.poweroftheword.util.ShareUtils
-import com.poweroftheword.poweroftheword.util.LocalizationUtils
+import androidx.compose.ui.res.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,6 +45,8 @@ fun DailyWordScreen(
     val isDarkTheme = androidx.compose.foundation.isSystemInDarkTheme()
     val defaultDominantColor = if (isDarkTheme) Color(0xFF12141C) else Color(0xFFF8F9FA)
     var dominantColor by remember(isDarkTheme) { mutableStateOf(defaultDominantColor) }
+    
+    val shareAppMessage = stringResource(R.string.share_app_message)
 
     // Sync status bar icons with dominant color luminance
     LaunchedEffect(dominantColor) {
@@ -79,11 +81,9 @@ fun DailyWordScreen(
                 },
                 actions = {
                     IconButton(onClick = { 
-                        val lang = viewModel.currentLanguage.value
-                        val shareMessage = LocalizationUtils.getLocalizedString(context, R.string.share_app_message, lang)
                         ShareUtils.shareText(
                             context = context,
-                            text = shareMessage
+                            text = shareAppMessage
                         )
                     }) {
                         Icon(Icons.Default.Share, contentDescription = "Share")

@@ -43,7 +43,6 @@ import com.poweroftheword.poweroftheword.ui.components.FeedDetailSkeleton
 import com.poweroftheword.poweroftheword.ui.util.rememberCaptureController
 import com.poweroftheword.poweroftheword.ui.util.capturable
 import com.poweroftheword.poweroftheword.util.ShareUtils
-import com.poweroftheword.poweroftheword.util.LocalizationUtils
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,6 +56,8 @@ fun FeedDetailScreen(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val captureController = rememberCaptureController()
+    
+    val shareAppMessage = stringResource(R.string.share_app_message)
 
     Scaffold(
         topBar = {
@@ -72,14 +73,12 @@ fun FeedDetailScreen(
                         IconButton(onClick = { 
                             scope.launch {
                                 val bitmap = captureController.capture()
-                                val lang = viewModel.currentLanguage.value
-                                val shareMessage = LocalizationUtils.getLocalizedString(context, R.string.share_app_message, lang)
-
+                                
                                 ShareUtils.shareImage(
                                     context = context,
                                     bitmap = bitmap,
                                     title = feed.title,
-                                    message = shareMessage
+                                    message = shareAppMessage
                                 )
                             }
                         }) {
@@ -269,14 +268,12 @@ fun FeedDetailScreen(
                                 onClick = { 
                                     scope.launch {
                                         val bitmap = captureController.capture()
-                                        val lang = viewModel.currentLanguage.value
-                                        val shareMessage = LocalizationUtils.getLocalizedString(context, R.string.share_app_message, lang)
                                         
                                         ShareUtils.shareImage(
                                             context = context,
                                             bitmap = bitmap,
                                             title = feed.title,
-                                            message = shareMessage
+                                            message = shareAppMessage
                                         )
                                     }
                                 }

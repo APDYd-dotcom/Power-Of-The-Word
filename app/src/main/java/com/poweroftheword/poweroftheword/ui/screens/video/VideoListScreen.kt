@@ -15,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -23,6 +24,8 @@ import com.poweroftheword.poweroftheword.R
 import com.poweroftheword.poweroftheword.domain.model.VideoItem
 import com.poweroftheword.poweroftheword.ui.components.LanguageDropdownWrapper
 import com.poweroftheword.poweroftheword.ui.components.VideoCardSkeleton
+import com.poweroftheword.poweroftheword.util.ShareUtils
+import com.poweroftheword.poweroftheword.util.convertToYoutubeOriginalUrl
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,6 +38,11 @@ fun VideoListScreen(
     val selectedType by viewModel.selectedType.collectAsState()
     val error by viewModel.error.collectAsState()
     val currentLanguage by viewModel.currentLanguage.collectAsState()
+    val context = LocalContext.current
+
+    val shareAppMessage = stringResource(R.string.share_app_message)
+    val pastorName = stringResource(R.string.pastor_name)
+    val shareFormat = stringResource(R.string.video_share_format)
 
     val videoTypes = listOf("preach", "testimony", "live")
 
@@ -133,7 +141,17 @@ fun VideoListScreen(
                             video = item,
                             onClick = { onVideoClick(item) },
                             onLikeClick = { viewModel.likeVideo(item.id.toString()) },
-                            onShareClick = { viewModel.shareVideo(item) }
+                            onShareClick = { 
+                                viewModel.onVideoShared(item.id.toString())
+                                val originalUrl = convertToYoutubeOriginalUrl(item.url)
+                                val shareText = shareFormat.format(
+                                    item.title,
+                                    pastorName,
+                                    originalUrl,
+                                    shareAppMessage
+                                )
+                                ShareUtils.shareText(context, shareText)
+                            }
                         )
                     }
                 }

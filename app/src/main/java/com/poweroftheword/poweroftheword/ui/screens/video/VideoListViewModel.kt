@@ -2,6 +2,7 @@ package com.poweroftheword.poweroftheword.ui.screens.video
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.poweroftheword.poweroftheword.data.local.VideoLikeDao
@@ -9,8 +10,6 @@ import com.poweroftheword.poweroftheword.data.local.VideoViewDao
 import com.poweroftheword.poweroftheword.domain.model.VideoItem
 import com.poweroftheword.poweroftheword.domain.repository.ChurchRepository
 import com.poweroftheword.poweroftheword.util.DeviceUtils
-import com.poweroftheword.poweroftheword.util.ShareUtils
-import com.poweroftheword.poweroftheword.util.LocalizationUtils
 import com.poweroftheword.poweroftheword.R
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -144,37 +143,19 @@ class VideoListViewModel(
         }
     }
 
-    fun shareVideo(video: VideoItem) {
+    fun onVideoShared(videoId: String) {
         viewModelScope.launch {
             val deviceId = DeviceUtils.getDeviceId(context)
             try {
                 repository.interactions(
                     deviceId = deviceId,
-                    videoId = video.id.toString(),
+                    videoId = videoId,
                     action = "share"
                 )
-                repository.shareVideo(video.id.toString(), deviceId)
+                repository.shareVideo(videoId, deviceId)
             } catch (e: Exception) {
                 Log.e("VideoListVM", "Failed to record share on server", e)
             }
-
-            val originalUrl = convertToOriginalUrl(video.url)
-            val lang = currentLanguage.value
-            
-            val shareAppMessage = LocalizationUtils.getLocalizedString(context, R.string.share_app_message, lang)
-            val pastorName = LocalizationUtils.getLocalizedString(context, R.string.pastor_name, lang)
-            
-            val shareText = LocalizationUtils.getLocalizedString(
-                context,
-                R.string.video_share_format,
-                lang,
-                video.title,
-                pastorName,
-                originalUrl,
-                shareAppMessage
-            )
-
-            ShareUtils.shareText(context, shareText)
         }
     }
 

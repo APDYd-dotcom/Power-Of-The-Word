@@ -20,7 +20,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -29,8 +31,11 @@ import androidx.core.view.WindowCompat
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
+import com.poweroftheword.poweroftheword.R
 import com.poweroftheword.poweroftheword.domain.model.VideoItem
 import com.poweroftheword.poweroftheword.util.formatDate
+import com.poweroftheword.poweroftheword.util.ShareUtils
+import com.poweroftheword.poweroftheword.util.convertToYoutubeOriginalUrl
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,6 +47,7 @@ fun VideoDetailScreen(
 ) {
     val videos by viewModel.filteredVideos.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val context = LocalContext.current
 
     val currentVideo = remember(videoId, videos) {
         videos.find { it.id.toString() == videoId }
@@ -156,10 +162,27 @@ fun VideoDetailScreen(
                                     tint = if (currentVideo.isLiked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                                     onClick = { viewModel.likeVideo(currentVideo.id.toString()) }
                                 )
+                                val shareAppMessage = stringResource(R.string.share_app_message)
+                                val pastorName = stringResource(R.string.pastor_name)
+                                val shareFormat = stringResource(R.string.video_share_format)
+                                
                                 ActionChip(
                                     icon = Icons.Outlined.Share,
                                     label = "Share ${currentVideo.share ?: 0}",
-                                    onClick = { viewModel.shareVideo(currentVideo) }
+                                    onClick = { 
+                                        viewModel.onVideoShared(currentVideo.id.toString())
+                                        
+                                        val originalUrl = convertToYoutubeOriginalUrl(currentVideo.url)
+                                        
+                                        val shareText = shareFormat.format(
+                                            currentVideo.title,
+                                            pastorName,
+                                            originalUrl,
+                                            shareAppMessage
+                                        )
+                                        
+                                        ShareUtils.shareText(context, shareText)
+                                    }
                                 )
                             }
 
