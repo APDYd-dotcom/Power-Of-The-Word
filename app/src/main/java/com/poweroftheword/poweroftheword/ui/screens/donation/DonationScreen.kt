@@ -25,6 +25,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -402,7 +403,7 @@ fun StatCard(
             Text(
                 text = label,
                 fontSize = 12.sp,
-                color = Color.Gray,
+                color = if (isDark) Color.LightGray else MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -414,16 +415,58 @@ fun StatCard(
 
 @Composable
 fun BankDetailsCard(isDark: Boolean) {
-    GradientBorderCard(borderColor = Color(0xFF3D74F6), isDark = isDark) {
+    GradientBorderCard(borderColor = Color(0xFF3D74F6).copy(alpha = 0.6f), isDark = isDark) {
         Column {
-            Text(localizedString(R.string.bank_transfer_details), color = if (isDark) Color.White else MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
+            Text(
+                text = localizedString(R.string.bank_transfer_details),
+                color = if (isDark) Color.White else Color(0xFF1A1A1A),
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp,
+                modifier = Modifier.padding(bottom = 12.dp)
+            )
 
-            Spacer(Modifier.height(12.dp))
+            // Account 1: KCB USD
+            Text(
+                "KCB Bank (USD)",
+                color = Color(0xFF3D74F6),
+                fontWeight = FontWeight.Bold,
+                fontSize = 15.sp,
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
+            InfoRow(localizedString(R.string.account_name), "Nitezuwera Justin", isDark)
+            InfoRow(localizedString(R.string.account_number), "6690828204", isDark)
+            Text(
+                text = "Iyo ni compte yama dollars",
+                color = if (isDark) Color.LightGray else MaterialTheme.colorScheme.onSurfaceVariant,
+                fontSize = 13.sp,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
 
-            InfoRow(localizedString(R.string.bank_name), "First National Bank", isDark)
-            InfoRow(localizedString(R.string.account_name), "Power of the Word Ministry", isDark)
-            InfoRow(localizedString(R.string.account_number), "1234567890", isDark)
-            InfoRow(localizedString(R.string.swift_code), "FNBXXX123", isDark)
+            HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = Color.Gray.copy(alpha = 0.15f))
+
+            // Account 2: KCB BIF
+            Text(
+                "KCB Bank (BIF)",
+                color = Color(0xFF3D74F6),
+                fontWeight = FontWeight.Bold,
+                fontSize = 15.sp,
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
+            InfoRow(localizedString(R.string.account_name), "Nitezuwera Justin", isDark)
+            InfoRow(localizedString(R.string.account_number) , "6691183975", isDark)
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = Color.Gray.copy(alpha = 0.15f))
+
+            // Account 3: CRDB Bank
+            Text(
+                "CRDB Bank",
+                color = Color(0xFF3D74F6),
+                fontWeight = FontWeight.Bold,
+                fontSize = 15.sp,
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
+            InfoRow(localizedString(R.string.account_name), "Nitezuwera Justin", isDark)
+            InfoRow(localizedString(R.string.account_number) , "0152801472600", isDark)
         }
     }
 }
@@ -495,14 +538,14 @@ fun BankobuCard(isDark: Boolean) {
 
             Spacer(Modifier.height(12.dp))
 
-            InfoBox("+257 76 XX XX XX", localizedString(R.string.bankobu_account), isDark)
-            InfoBox("Power of the Word Ministry", localizedString(R.string.account_name), isDark)
+            InfoBox("21454120101-31", localizedString(R.string.bankobu_account), isDark)
+            InfoBox("Nitezuwera Justin", localizedString(R.string.account_name), isDark)
 
             InstructionBox(
                 listOf(
-                    "Dial *365#",
-                    "Select Transfer",
-                    "Enter account number",
+                    "Dial *161#",
+                    "Enter Transfer",
+                    "Enter account number: 21454120101-31",
                     "Enter amount",
                     "Confirm PIN"
                 ),
@@ -527,7 +570,7 @@ fun IhelaCard(isDark: Boolean) {
 
             InstructionBox(
                 listOf(
-                    "Dial *505#",
+                    "Dial *161#",
                     "Select Send Money",
                     "Enter number",
                     "Enter amount",
@@ -543,9 +586,18 @@ fun IhelaCard(isDark: Boolean) {
 @Composable
 fun InfoRow(label: String, value: String, isDark: Boolean) {
     Row(modifier = Modifier.padding(vertical = 4.dp)) {
-        Text(label, color = Color.Gray)
-        Spacer(Modifier.width(6.dp))
-        Text(value, fontWeight = FontWeight.Medium, color = if (isDark) Color.White else MaterialTheme.colorScheme.onSurface)
+        Text(
+            text = label,
+            color = if (isDark) Color.LightGray else MaterialTheme.colorScheme.onSurfaceVariant,
+            fontSize = 15.sp
+        )
+        Spacer(Modifier.width(8.dp))
+        Text(
+            text = value,
+            fontWeight = FontWeight.Bold,
+            color = if (isDark) Color.White else Color(0xFF1A1A1A),
+            fontSize = 15.sp
+        )
     }
 }
 
@@ -560,7 +612,7 @@ fun InfoBox(value: String, label: String, isDark: Boolean) {
             .padding(12.dp)
     ) {
         Column {
-            Text(label, color = Color.Gray, fontSize = 12.sp)
+            Text(label, color = if (isDark) Color.LightGray else MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
             Text(value, color = if (isDark) Color.White else MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
         }
     }
