@@ -166,12 +166,12 @@ fun SettingsScreen(
                         onClick = onNavigateToFeed
                     )
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
-                    SettingsMenuItem(
-                        title = localizedString(R.string.daily_word),
-                        icon = Icons.Default.Favorite,
-                        iconColor = Color(0xFFFF6B6B),
-                        onClick = onNavigateToDailyWord
-                    )
+//                    SettingsMenuItem(
+//                        title = localizedString(R.string.daily_word),
+//                        icon = Icons.Default.Favorite,
+//                        iconColor = Color(0xFFFF6B6B),
+//                        onClick = onNavigateToDailyWord
+//                    )
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                     SettingsMenuItem(
                         title = localizedString(R.string.pastor_schedule),

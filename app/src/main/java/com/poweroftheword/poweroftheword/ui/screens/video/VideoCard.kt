@@ -72,13 +72,13 @@ fun VideoCard(
                     .align(Alignment.BottomEnd)
                     .padding(8.dp)
             ) {
-                Text(
-                    text = "VIDEO", 
-                    color = Color.White,
-                    fontSize = 10.sp,
-                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
-                    fontWeight = FontWeight.Bold
-                )
+//                Text(
+//                    text = "VIDEO",
+//                    color = Color.White,
+//                    fontSize = 10.sp,
+//                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+//                    fontWeight = FontWeight.Bold
+//                )
             }
         }
 
