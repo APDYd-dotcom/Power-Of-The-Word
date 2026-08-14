@@ -130,4 +130,5 @@
     <string name="share_image">Sangiza Isanamu</string>
     <string name="main_sanctuary">Main Sanctuary</string>
     <string name="pastor_and_team">Pasitori n\'Umugwi wiwe</string>
+    <string name="feed_share_format">%1$s\n📅 %2$s: %3$s\n📍 %4$s: %5$s\n👉 Nyabuna uze uhezagirwe!\n\n%6$s</string>
 </resources>

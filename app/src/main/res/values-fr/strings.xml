@@ -130,4 +130,5 @@
     <string name="share_image">Partager l\'image</string>
     <string name="main_sanctuary">Sanctuaire Principal</string>
     <string name="pastor_and_team">Pasteur &amp; Équipe</string>
+    <string name="feed_share_format">%1$s\n📅 %2$s : %3$s\n📍 %4$s : %5$s\n👉 Rejoignez-nous et soyez bénis !\n\n%6$s</string>
 </resources>

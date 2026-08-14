@@ -58,6 +58,10 @@ fun FeedDetailScreen(
     val captureController = rememberCaptureController()
     
     val shareAppMessage = stringResource(R.string.share_app_message)
+    val feedShareFormat = stringResource(R.string.feed_share_format)
+    val dateLabel = stringResource(R.string.date_label)
+    val locationLabel = stringResource(R.string.location_label)
+    val mainSanctuary = stringResource(R.string.main_sanctuary)
 
     Scaffold(
         topBar = {
@@ -73,12 +77,20 @@ fun FeedDetailScreen(
                         IconButton(onClick = { 
                             scope.launch {
                                 val bitmap = captureController.capture()
-                                
+                                val shareText = feedShareFormat.format(
+                                    feed.title,
+                                    dateLabel,
+                                    feed.date ?: "",
+                                    locationLabel,
+                                    feed.location ?: mainSanctuary,
+                                    shareAppMessage
+                                )
+
                                 ShareUtils.shareImage(
                                     context = context,
                                     bitmap = bitmap,
                                     title = feed.title,
-                                    message = shareAppMessage
+                                    message = shareText
                                 )
                             }
                         }) {
@@ -268,12 +280,20 @@ fun FeedDetailScreen(
                                 onClick = { 
                                     scope.launch {
                                         val bitmap = captureController.capture()
+                                        val shareText = feedShareFormat.format(
+                                            feed.title,
+                                            dateLabel,
+                                            feed.date ?: "",
+                                            locationLabel,
+                                            feed.location ?: mainSanctuary,
+                                            shareAppMessage
+                                        )
                                         
                                         ShareUtils.shareImage(
                                             context = context,
                                             bitmap = bitmap,
                                             title = feed.title,
-                                            message = shareAppMessage
+                                            message = shareText
                                         )
                                     }
                                 }
