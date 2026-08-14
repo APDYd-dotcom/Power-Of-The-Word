@@ -114,4 +114,6 @@
     <string name="save_confirmation_sms">Save confirmation SMS</string>
     <string name="keep_reference">Keep reference</string>
     <string name="donate_with_amount">Donate $%1$s</string>
+    <string name="share_app">Share App</string>
+    <string name="share_app_message">Download the Power of the Word app and stay blessed: https://poweroftheword.bi/app</string>
 </resources>

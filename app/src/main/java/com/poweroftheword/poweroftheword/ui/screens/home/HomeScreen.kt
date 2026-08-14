@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -53,6 +54,7 @@ import com.poweroftheword.poweroftheword.ui.components.FeedItemCardSkeleton
 import com.poweroftheword.poweroftheword.ui.components.VideoCardSkeleton
 import com.poweroftheword.poweroftheword.ui.screens.feed.FeedItemCard
 import com.poweroftheword.poweroftheword.ui.screens.video.VideoCard
+import com.poweroftheword.poweroftheword.util.ShareUtils
 import com.poweroftheword.poweroftheword.util.formatDate
 import com.poweroftheword.poweroftheword.util.shimmerEffect
 import com.poweroftheword.poweroftheword.util.truncate
@@ -183,6 +185,7 @@ fun HomeScreen(
     val state by viewModel.state.collectAsState()
     val likedVideoIds by viewModel.likedVideoIds.collectAsState()
     val likedFeedIds by viewModel.likedFeedIds.collectAsState()
+    val context = LocalContext.current
 
     Surface {
         PullToRefreshBox(
@@ -209,7 +212,13 @@ fun HomeScreen(
                             currentLanguage = state.currentLanguage,
                             isDarkMode = isDarkMode,
                             onLanguageChange = { viewModel.changeLanguage(it) },
-                            onThemeToggle = onThemeToggle
+                            onThemeToggle = onThemeToggle,
+                            onShareApp = { 
+                                ShareUtils.shareText(
+                                    context = context,
+                                    text = context.getString(R.string.share_app_message)
+                                )
+                            }
                         )
                     }
 

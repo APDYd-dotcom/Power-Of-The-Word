@@ -111,4 +111,6 @@
     <string name="save_confirmation_sms">Enregistrer le SMS de confirmation</string>
     <string name="keep_reference">Conserver la référence</string>
     <string name="donate_with_amount">Faire un don de %1$s $</string>
+    <string name="share_app">Partager l\'application</string>
+    <string name="share_app_message">Téléchargez l\'application Power of the Word et restez béni : https://poweroftheword.bi/app</string>
 </resources>

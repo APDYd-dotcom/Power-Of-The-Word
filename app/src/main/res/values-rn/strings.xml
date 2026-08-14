@@ -111,4 +111,6 @@
     <string name="save_confirmation_sms">Bika ubutumwa bwo kwemeza</string>
     <string name="keep_reference">Guma ubitse inomero y\'ikimenyetso</string>
     <string name="donate_with_amount">Tanga $%1$s</string>
+    <string name="share_app">Sangiza abandi</string>
+    <string name="share_app_message">Ugurura programu ya Power of the Word uhezagirwe: https://poweroftheword.bi/app</string>
 </resources>

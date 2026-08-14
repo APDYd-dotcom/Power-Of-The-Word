@@ -24,8 +24,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.poweroftheword.poweroftheword.BuildConfig
+import com.poweroftheword.poweroftheword.R
 import com.poweroftheword.poweroftheword.ui.theme.LocalStatusBarAppearance
 import com.poweroftheword.poweroftheword.ui.util.getDominantColorFromUrl
+import com.poweroftheword.poweroftheword.util.ShareUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,7 +77,12 @@ fun DailyWordScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /* Share logic */ }) {
+                    IconButton(onClick = { 
+                        ShareUtils.shareText(
+                            context = context,
+                            text = context.getString(R.string.share_app_message)
+                        )
+                    }) {
                         Icon(Icons.Default.Share, contentDescription = "Share")
                     }
                 }

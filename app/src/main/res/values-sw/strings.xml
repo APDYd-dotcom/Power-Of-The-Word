@@ -112,4 +112,6 @@
     <string name="save_confirmation_sms">Hifadhi SMS ya uthibitisho</string>
     <string name="keep_reference">Weka namba ya kumbukumbu</string>
     <string name="donate_with_amount">Changia $%1$s</string>
+    <string name="share_app">Shiriki Programu</string>
+    <string name="share_app_message">Pakua programu ya Power of the Word na uendelee kubarikiwa: https://poweroftheword.bi/app</string>
 </resources>

@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,6 +26,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -33,6 +35,7 @@ import androidx.palette.graphics.Palette
 import coil.compose.AsyncImage
 import com.poweroftheword.poweroftheword.domain.model.DailyWord
 import com.poweroftheword.poweroftheword.BuildConfig
+import com.poweroftheword.poweroftheword.R
 import com.poweroftheword.poweroftheword.ui.theme.LocalStatusBarAppearance
 import com.poweroftheword.poweroftheword.ui.util.getDominantColorFromUrl
 import com.poweroftheword.poweroftheword.util.truncate
@@ -43,7 +46,8 @@ fun DynamicHero(
     currentLanguage: String,
     isDarkMode: Boolean,
     onLanguageChange: (String) -> Unit,
-    onThemeToggle: (Boolean) -> Unit
+    onThemeToggle: (Boolean) -> Unit,
+    onShareApp: () -> Unit
 ) {
     val context = LocalContext.current
     val statusBarAppearance = LocalStatusBarAppearance.current
@@ -136,6 +140,30 @@ fun DynamicHero(
                         onToggle = { onThemeToggle(!isDarkMode) }
                     )
                 }
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            OutlinedButton(
+                onClick = onShareApp,
+                modifier = Modifier.align(Alignment.End),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    contentColor = Color.White
+                ),
+                border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.5f)),
+                shape = RoundedCornerShape(12.dp),
+                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Share,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp)
+                )
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    text = stringResource(R.string.share_app),
+                    style = MaterialTheme.typography.labelMedium
+                )
             }
         }
     }
