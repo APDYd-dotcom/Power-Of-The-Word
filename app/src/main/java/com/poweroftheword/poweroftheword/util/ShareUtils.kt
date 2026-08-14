@@ -4,9 +4,11 @@ import android.app.Activity
 import android.content.ClipData
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import androidx.core.content.FileProvider
 import java.io.File
+import java.io.FileOutputStream
 
 object ShareUtils {
     fun shareText(context: Context, text: String, title: String = "Share via") {
@@ -70,6 +72,49 @@ object ShareUtils {
 
         // Part 1: Prepare Text Share (Triggered last, so it appears on top)
         shareText(context, message, "Step 1: Share Sermon Info")
+    }
+
+    fun shareImage(context: Context, bitmap: Bitmap, title: String, message: String = "") {
+        val imagesFolder = File(context.cacheDir, "images")
+        try {
+            imagesFolder.mkdirs()
+            val file = File(imagesFolder, "shared_image_${System.currentTimeMillis()}.png")
+            val stream = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+            stream.flush()
+            stream.close()
+
+            val uri: Uri = FileProvider.getUriForFile(
+                context,
+                "${context.packageName}.provider",
+                file
+            )
+
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "image/png"
+                putExtra(Intent.EXTRA_STREAM, uri)
+                if (message.isNotBlank()) {
+                    putExtra(Intent.EXTRA_TEXT, message)
+                }
+                putExtra(Intent.EXTRA_SUBJECT, title)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                
+                val clip = ClipData.newRawUri(null, uri)
+                if (message.isNotBlank()) {
+                    clip.addItem(ClipData.Item(message))
+                }
+                clipData = clip
+            }
+
+            val shareIntent = Intent.createChooser(intent, "Share Event")
+            if (context !is Activity) {
+                shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            context.startActivity(shareIntent)
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }
 

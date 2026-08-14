@@ -1,5 +1,6 @@
 package com.poweroftheword.poweroftheword.ui.screens.feed
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,9 +9,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -21,30 +24,26 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material.icons.outlined.Visibility
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.poweroftheword.poweroftheword.domain.model.FeedItem
 import com.poweroftheword.poweroftheword.BuildConfig
+import com.poweroftheword.poweroftheword.R
 import com.poweroftheword.poweroftheword.ui.components.FeedDetailSkeleton
+import com.poweroftheword.poweroftheword.ui.util.rememberCaptureController
+import com.poweroftheword.poweroftheword.ui.util.capturable
+import com.poweroftheword.poweroftheword.util.ShareUtils
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,6 +53,9 @@ fun FeedDetailScreen(
     onBackClick: () -> Unit
 ) {
     val isLoading by viewModel.isLoading.collectAsState()
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val captureController = rememberCaptureController()
 
     Scaffold(
         topBar = {
@@ -66,8 +68,18 @@ fun FeedDetailScreen(
                 },
                 actions = {
                     if (feed != null) {
-                        IconButton(onClick = { viewModel.shareFeed(feed) }) {
-                            Icon(Icons.Default.Share, contentDescription = null)
+                        IconButton(onClick = { 
+                            scope.launch {
+                                val bitmap = captureController.capture()
+                                ShareUtils.shareImage(
+                                    context = context,
+                                    bitmap = bitmap,
+                                    title = feed.title,
+                                    message = context.getString(R.string.share_app_message)
+                                )
+                            }
+                        }) {
+                            Icon(Icons.Default.Share, contentDescription = "Share Image")
                         }
                     }
                 }
@@ -250,16 +262,38 @@ fun FeedDetailScreen(
 
                             OutlinedButton(
                                 modifier = Modifier.weight(1f),
-                                onClick = { viewModel.shareFeed(feed) }
+                                onClick = { 
+                                    scope.launch {
+                                        val bitmap = captureController.capture()
+                                        ShareUtils.shareImage(
+                                            context = context,
+                                            bitmap = bitmap,
+                                            title = feed.title,
+                                            message = context.getString(R.string.share_app_message)
+                                        )
+                                    }
+                                }
                             ) {
                                 Icon(Icons.Default.Share, contentDescription = null)
                                 Spacer(modifier = Modifier.width(6.dp))
-                                Text("Share")
+                                Text("Share Image")
                             }
                         }
 
                         Spacer(modifier = Modifier.height(24.dp))
                     }
+                }
+                
+                // Hidden view for capturing
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .offset(y = 2000.dp) // Off-screen
+                        .capturable(captureController)
+                        .background(Color(0xFFFDF7E7))
+                ) {
+                    FeedShareCard(feed = feed)
                 }
             }
         }
