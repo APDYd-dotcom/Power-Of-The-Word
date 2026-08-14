@@ -59,7 +59,7 @@ fun FeedDetailScreen(
     
     val shareAppMessage = stringResource(R.string.share_app_message)
     val feedShareFormat = stringResource(R.string.feed_share_format)
-    val dateLabel = stringResource(R.string.date_label)
+    val timeLabel = stringResource(R.string.time_label)
     val locationLabel = stringResource(R.string.location_label)
     val mainSanctuary = stringResource(R.string.main_sanctuary)
 
@@ -78,9 +78,8 @@ fun FeedDetailScreen(
                             scope.launch {
                                 val bitmap = captureController.capture()
                                 val shareText = feedShareFormat.format(
-                                    feed.title,
-                                    dateLabel,
-                                    feed.date ?: "",
+                                    timeLabel,
+                                    "${feed.startHour ?: ""} - ${feed.endHour ?: ""}",
                                     locationLabel,
                                     feed.location ?: mainSanctuary,
                                     shareAppMessage
@@ -281,9 +280,8 @@ fun FeedDetailScreen(
                                     scope.launch {
                                         val bitmap = captureController.capture()
                                         val shareText = feedShareFormat.format(
-                                            feed.title,
-                                            dateLabel,
-                                            feed.date ?: "",
+                                            timeLabel,
+                                            "${feed.startHour ?: ""} - ${feed.endHour ?: ""}",
                                             locationLabel,
                                             feed.location ?: mainSanctuary,
                                             shareAppMessage

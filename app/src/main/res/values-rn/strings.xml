@@ -112,7 +112,7 @@
     <string name="keep_reference">Guma ubitse inomero y\'ikimenyetso</string>
     <string name="donate_with_amount">Tanga $%1$s</string>
     <string name="share_app">Sangiza abandi</string>
-    <string name="share_app_message">Ugurura programu ya Power of the Word uhezagirwe: https://poweroftheword.bi/app</string>
+    <string name="share_app_message">Ugurura programu ya Power of the Word uhezagirwe: https://poweroftheword.bi/app/</string>
     <string name="video_share_format">%1$s\nHOSTED: %2$s\n👉 Fyonda hano urebe video yose:\n🔗 %3$s\n➡️ Subscribe — Share — Comment — Like\nSangiza ku statut yawe kugira n’abandi bafashwe.\nMwese mube muhezagiwe 🙏\n\n%4$s</string>
     <string name="date_label">Itariki</string>
     <string name="time_label">Isaha</string>
@@ -130,5 +130,5 @@
     <string name="share_image">Sangiza Isanamu</string>
     <string name="main_sanctuary">Main Sanctuary</string>
     <string name="pastor_and_team">Pasitori n\'Umugwi wiwe</string>
-    <string name="feed_share_format">%1$s\n📅 %2$s: %3$s\n📍 %4$s: %5$s\n👉 Nyabuna uze uhezagirwe!\n\n%6$s</string>
+    <string name="feed_share_format">⏰ %1$s: %2$s\n📍 %3$s: %4$s\n👉 Nyabuna uze uhezagirwe!\n\n%5$s</string>
 </resources>

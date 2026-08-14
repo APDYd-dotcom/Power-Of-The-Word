@@ -112,7 +112,7 @@
     <string name="keep_reference">Conserver la référence</string>
     <string name="donate_with_amount">Faire un don de %1$s $</string>
     <string name="share_app">Partager l\'application</string>
-    <string name="share_app_message">Téléchargez l\'application Power of the Word et restez béni : https://poweroftheword.bi/app</string>
+    <string name="share_app_message">Téléchargez l\'application Power of the Word et restez béni : https://poweroftheword.bi/app/</string>
     <string name="video_share_format">%1$s\nANIMÉ PAR : %2$s\n👉 Cliquez ici pour regarder la vidéo complète :\n🔗 %3$s\n➡️ S\'abonner — Partager — Commenter — Aimer\nPartagez sur votre statut pour aider les autres.\nSoyez bénis 🙏\n\n%4$s</string>
     <string name="date_label">Date</string>
     <string name="time_label">Heure</string>
@@ -130,5 +130,5 @@
     <string name="share_image">Partager l\'image</string>
     <string name="main_sanctuary">Sanctuaire Principal</string>
     <string name="pastor_and_team">Pasteur &amp; Équipe</string>
-    <string name="feed_share_format">%1$s\n📅 %2$s : %3$s\n📍 %4$s : %5$s\n👉 Rejoignez-nous et soyez bénis !\n\n%6$s</string>
+    <string name="feed_share_format">⏰ %1$s : %2$s\n📍 %3$s : %4$s\n👉 Rejoignez-nous et soyez bénis !\n\n%5$s</string>
 </resources>

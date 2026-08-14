@@ -126,71 +126,16 @@ fun FeedShareCard(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(20.dp))
-
-                HorizontalDivider(color = Color.Black.copy(alpha = 0.1f))
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                // 🔥 DESCRIPTION
-                feed.desc?.let {
-                    Text(
-                        text = it,
-                        style = MaterialTheme.typography.bodyLarge.copy(
-                            lineHeight = 26.sp
-                        ),
-                        color = primaryTextColor
-                    )
-                }
-
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // 🔥 EVENT DETAILS HEADER
-                Text(
-                    text = stringResource(R.string.event_details_label),
-                    fontWeight = FontWeight.Black,
-                    style = MaterialTheme.typography.titleLarge,
-                    color = primaryTextColor
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                ShareDetailRow("📅", stringResource(R.string.date_label), feed.date ?: "N/A", primaryTextColor)
-                ShareDetailRow("⏰", stringResource(R.string.time_label), "${feed.startHour ?: ""} - ${feed.endHour ?: ""}", primaryTextColor)
-                ShareDetailRow("📍", stringResource(R.string.location_label), feed.location ?: stringResource(R.string.main_sanctuary), primaryTextColor)
-                ShareDetailRow("🎤", stringResource(R.string.leader_label), feed.host ?: stringResource(R.string.pastor_and_team), primaryTextColor)
-
-                Spacer(modifier = Modifier.height(32.dp))
-                
                 // Branding footer
                 Text(
-                    text = "poweroftheword.bi",
+                    text = "Power of The Word • v${BuildConfig.VERSION_NAME}",
                     style = MaterialTheme.typography.labelMedium,
                     color = secondaryTextColor.copy(alpha = 0.6f),
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
             }
         }
-    }
-}
-
-@Composable
-fun ShareDetailRow(emoji: String, label: String, value: String, textColor: Color) {
-    Row(
-        modifier = Modifier.padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(text = emoji, fontSize = 20.sp)
-        Spacer(modifier = Modifier.width(12.dp))
-        Text(
-            text = "$label: ",
-            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-            color = textColor
-        )
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodyLarge,
-            color = textColor
-        )
     }
 }

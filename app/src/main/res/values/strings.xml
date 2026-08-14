@@ -115,7 +115,7 @@
     <string name="keep_reference">Keep reference</string>
     <string name="donate_with_amount">Donate $%1$s</string>
     <string name="share_app">Share App</string>
-    <string name="share_app_message">Download the Power of the Word app and stay blessed: https://poweroftheword.bi/app</string>
+    <string name="share_app_message">Download the Power of the Word app and stay blessed: https://poweroftheword.bi/app/</string>
     <string name="video_share_format">%1$s\nHOSTED: %2$s\n👉 Click here to watch the full video:\n🔗 %3$s\n➡️ Subscribe — Share — Comment — Like\nShare on your status to help others.\nBe blessed 🙏\n\n%4$s</string>
     <string name="date_label">Date</string>
     <string name="time_label">Time</string>
@@ -133,5 +133,5 @@
     <string name="share_image">Share Image</string>
     <string name="main_sanctuary">Main Sanctuary</string>
     <string name="pastor_and_team">Pastor &amp; Team</string>
-    <string name="feed_share_format">%1$s\n📅 %2$s: %3$s\n📍 %4$s: %5$s\n👉 Join us and be blessed!\n\n%6$s</string>
+    <string name="feed_share_format">⏰ %1$s: %2$s\n📍 %3$s: %4$s\n👉 Join us and be blessed!\n\n%5$s</string>
 </resources>

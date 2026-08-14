@@ -113,7 +113,7 @@
     <string name="keep_reference">Weka namba ya kumbukumbu</string>
     <string name="donate_with_amount">Changia $%1$s</string>
     <string name="share_app">Shiriki Programu</string>
-    <string name="share_app_message">Pakua programu ya Power of the Word na uendelee kubarikiwa: https://poweroftheword.bi/app</string>
+    <string name="share_app_message">Pakua programu ya Power of the Word na uendelee kubarikiwa: https://poweroftheword.bi/app/</string>
     <string name="video_share_format">%1$s\nIMEANDALIWA NA : %2$s\n👉 Bonyeza hapa kutazama video kamili:\n🔗 %3$s\n➡️ Jisajili — Shiriki — Toa Maoni — Penda\nShiriki kwenye hali yako ili kusaidia wengine.\nMubarikiwe 🙏\n\n%4$s</string>
     <string name="date_label">Tarehe</string>
     <string name="time_label">Saa</string>
@@ -131,5 +131,5 @@
     <string name="share_image">Shiriki Picha</string>
     <string name="main_sanctuary">Hekalu Kuu</string>
     <string name="pastor_and_team">Mchungaji na Timu</string>
-    <string name="feed_share_format">%1$s\n📅 %2$s: %3$s\n📍 %4$s: %5$s\n👉 Ungana nasi na ubarikiwe!\n\n%6$s</string>
+    <string name="feed_share_format">⏰ %1$s: %2$s\n📍 %3$s: %4$s\n👉 Ungana nasi na ubarikiwe!\n\n%5$s</string>
 </resources>
