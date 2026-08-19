@@ -435,12 +435,6 @@ fun BankDetailsCard(isDark: Boolean) {
             )
             InfoRow(localizedString(R.string.account_name), "Nitezuwera Justin", isDark)
             InfoRow(localizedString(R.string.account_number), "6690828204", isDark)
-            Text(
-                text = "Iyo ni compte yama dollars",
-                color = if (isDark) Color.LightGray else MaterialTheme.colorScheme.onSurfaceVariant,
-                fontSize = 13.sp,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = Color.Gray.copy(alpha = 0.15f))
 
@@ -483,12 +477,12 @@ fun LumicashCard(isDark: Boolean) {
 
             Spacer(Modifier.height(12.dp))
 
-            InfoBox("+257 79 XX XX XX", localizedString(R.string.lumicash_number), isDark)
+            InfoBox("+257 69 XX XX XX", localizedString(R.string.lumicash_number), isDark)
             InfoBox("Power of the Word", localizedString(R.string.account_name), isDark)
 
             InstructionBox(
                 steps = listOf(
-                    "Dial *155# on your phone",
+                    "Dial *163# on your phone",
                     "Select Send Money",
                     "Enter number above",
                     "Enter amount and confirm",
@@ -588,7 +582,7 @@ fun InfoRow(label: String, value: String, isDark: Boolean) {
     Row(modifier = Modifier.padding(vertical = 4.dp)) {
         Text(
             text = label,
-            color = if (isDark) Color.LightGray else MaterialTheme.colorScheme.onSurfaceVariant,
+            color = if (isDark) Color.LightGray else Color(0xFF444444),
             fontSize = 15.sp
         )
         Spacer(Modifier.width(8.dp))
@@ -596,7 +590,7 @@ fun InfoRow(label: String, value: String, isDark: Boolean) {
             text = value,
             fontWeight = FontWeight.Bold,
             color = if (isDark) Color.White else Color(0xFF1A1A1A),
-            fontSize = 15.sp
+            fontSize = 16.sp
         )
     }
 }
