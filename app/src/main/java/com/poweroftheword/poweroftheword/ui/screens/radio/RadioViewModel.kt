@@ -58,9 +58,15 @@ class RadioViewModel(
             while (true) {
                 kotlinx.coroutines.delay(60000) // Update every minute
                 val rawRadios = repository.getRadioStatus()
-                _radioStatus.value = rawRadios.mapNotNull { radioItem ->
-                    radioItem.radio?.copy(isActive = isRadioCurrentlyActive(radioItem))
-                }
+                _radioStatus.value = rawRadios
+                    .groupBy { it.radio?.id }
+                    .mapNotNull { (_, items) ->
+                        val firstItem = items.firstOrNull() ?: return@mapNotNull null
+                        val radio = firstItem.radio ?: return@mapNotNull null
+                        radio.copy(
+                            isActive = items.any { isRadioCurrentlyActive(it) }
+                        )
+                    }
             }
         }
     }
@@ -70,9 +76,15 @@ class RadioViewModel(
             // Ensure radio data is loaded first if not already
             if (_radioStatus.value.isEmpty()) {
                 val rawRadios = repository.getRadioStatus()
-                _radioStatus.value = rawRadios.mapNotNull { radioItem ->
-                    radioItem.radio?.copy(isActive = isRadioCurrentlyActive(radioItem))
-                }
+                _radioStatus.value = rawRadios
+                    .groupBy { it.radio?.id }
+                    .mapNotNull { (_, items) ->
+                        val firstItem = items.firstOrNull() ?: return@mapNotNull null
+                        val radio = firstItem.radio ?: return@mapNotNull null
+                        radio.copy(
+                            isActive = items.any { isRadioCurrentlyActive(it) }
+                        )
+                    }
             }
             
             val radio = _radioStatus.value.find { it.id == id }
@@ -98,9 +110,15 @@ class RadioViewModel(
             try {
                 val language = repository.getSavedLanguage().first()
                 val rawRadios = repository.getRadioStatus()
-                _radioStatus.value = rawRadios.mapNotNull { radioItem ->
-                    radioItem.radio?.copy(isActive = isRadioCurrentlyActive(radioItem))
-                }
+                _radioStatus.value = rawRadios
+                    .groupBy { it.radio?.id }
+                    .mapNotNull { (_, items) ->
+                        val firstItem = items.firstOrNull() ?: return@mapNotNull null
+                        val radio = firstItem.radio ?: return@mapNotNull null
+                        radio.copy(
+                            isActive = items.any { isRadioCurrentlyActive(it) }
+                        )
+                    }
                 Log.e("RadioViewModel", "Radio Status: ${_radioStatus.value}")
                 _programs.value = repository.getPrograms(language)
             } catch (e: Exception) {
@@ -112,40 +130,33 @@ class RadioViewModel(
     }
 
     private fun isRadioCurrentlyActive(radioItem: RadioItem): Boolean {
+        val startStr = radioItem.startHour?.takeIf { it.isNotBlank() } ?: return false
+        val endStr = radioItem.endHour?.takeIf { it.isNotBlank() } ?: return false
+        val day = radioItem.day?.takeIf { it.isNotBlank() } ?: return false
+
         return try {
             val calendar = Calendar.getInstance()
-            // Get current day abbreviation in English (e.g., "Mon", "Sun")
-            val currentDay = SimpleDateFormat("EEE", Locale.ENGLISH).format(calendar.time).lowercase()
-
-            // 1. Check if today is a broadcasting day
-            if (!radioItem.day.isNullOrBlank()) {
-                val isBroadcastingToday = radioItem.day.equals(currentDay, ignoreCase = true)
-                if (!isBroadcastingToday) return false
-            }
-
-            // 2. Check if current time is within broadcasting hours
-            val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
-            val nowStr = sdf.format(calendar.time)
-            val now = sdf.parse(nowStr)
+            val currentDay = SimpleDateFormat("EEE", Locale.US).format(calendar.time).lowercase()
             
-            val start = radioItem.startHour?.let { sdf.parse(it) }
-            val end = radioItem.endHour?.let { sdf.parse(it) }
+            // 1. Strict Day Check
+            if (!day.equals(currentDay, ignoreCase = true)) return false
+
+            // 2. Strict Time Check
+            val sdf = SimpleDateFormat("HH:mm:ss", Locale.US)
+            val now = sdf.parse(sdf.format(calendar.time))
+            
+            fun parse(t: String) = try { 
+                if (t.count { it == ':' } == 1) sdf.parse("$t:00") else sdf.parse(t) 
+            } catch (e: Exception) { null }
+
+            val start = parse(startStr)
+            val end = parse(endStr)
 
             if (start != null && end != null && now != null) {
-                if (start.before(end)) {
-                    // Normal range (e.g., 08:00 - 20:00)
-                    now in start..end
-                } else {
-                    // Overnight range (e.g., 22:00 - 04:00)
-                    now >= start || now <= end
-                }
-            } else {
-                false
-            }
-        } catch (e: Exception) {
-            Log.e("RadioViewModel", "Error parsing time or day", e)
-            false
-        }
+                if (start.before(end)) now in start..end
+                else now >= start || now <= end // Overnight
+            } else false
+        } catch (e: Exception) { false }
     }
 
     fun togglePlay(radio: Radio) {

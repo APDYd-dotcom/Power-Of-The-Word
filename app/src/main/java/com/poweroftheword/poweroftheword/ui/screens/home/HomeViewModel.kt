@@ -61,11 +61,15 @@ class HomeViewModel(
             while (true) {
                 kotlinx.coroutines.delay(60000) // Update every minute
                 val rawRadios = repository.getRadioStatus()
-                val radioStatus = rawRadios.mapNotNull { radioItem ->
-                    radioItem.radio?.copy(
-                        isActive = isRadioCurrentlyActive(radioItem)
-                    )
-                }
+                val radioStatus = rawRadios
+                    .groupBy { it.radio?.id }
+                    .mapNotNull { (_, items) ->
+                        val firstItem = items.firstOrNull() ?: return@mapNotNull null
+                        val radio = firstItem.radio ?: return@mapNotNull null
+                        radio.copy(
+                            isActive = items.any { isRadioCurrentlyActive(it) }
+                        )
+                    }
                 _state.update { currentState ->
                     currentState.copy(radioStatus = radioStatus)
                 }
@@ -89,11 +93,15 @@ class HomeViewModel(
                 val latestVideos = repository.getVideos(language)
                 val latestFeeds = repository.getFeeds(language)
                 val rawRadios = repository.getRadioStatus()
-                val radioStatus = rawRadios.mapNotNull { radioItem ->
-                    radioItem.radio?.copy(
-                        isActive = isRadioCurrentlyActive(radioItem)
-                    )
-                }
+                val radioStatus = rawRadios
+                    .groupBy { it.radio?.id }
+                    .mapNotNull { (_, items) ->
+                        val firstItem = items.firstOrNull() ?: return@mapNotNull null
+                        val radio = firstItem.radio ?: return@mapNotNull null
+                        radio.copy(
+                            isActive = items.any { isRadioCurrentlyActive(it) }
+                        )
+                    }
 
                 _state.update {
                     it.copy(
@@ -151,45 +159,32 @@ class HomeViewModel(
     }
 
     private fun isRadioCurrentlyActive(radioItem: RadioItem): Boolean {
+        val startStr = radioItem.startHour?.takeIf { it.isNotBlank() } ?: return false
+        val endStr = radioItem.endHour?.takeIf { it.isNotBlank() } ?: return false
+        val day = radioItem.day?.takeIf { it.isNotBlank() } ?: return false
+
         return try {
             val calendar = Calendar.getInstance()
-            // Get current day abbreviation in English (e.g., "Mon", "Sun")
-            val currentDay = SimpleDateFormat("EEE", Locale.ENGLISH).format(calendar.time).lowercase()
-
-            val day = radioItem.day ?: ""
-            val startHour = radioItem.startHour ?: ""
-            val endHour = radioItem.endHour ?: ""
-
-            // 1. Check if today is a broadcasting day
-            if (day.isNotBlank()) {
-                val isBroadcastingToday = day.equals(currentDay, ignoreCase = true)
-                if (!isBroadcastingToday) return false
-            }
-
-            // 2. Check if current time is within broadcasting hours
-            if (startHour.isBlank() || endHour.isBlank()) return false
-
-            val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
-            val nowStr = sdf.format(calendar.time)
-            val now = sdf.parse(nowStr)
+            val currentDay = SimpleDateFormat("EEE", Locale.US).format(calendar.time).lowercase()
             
-            val start = sdf.parse(startHour)
-            val end = sdf.parse(endHour)
+            // 1. Strict Day Check
+            if (!day.equals(currentDay, ignoreCase = true)) return false
+
+            // 2. Strict Time Check
+            val sdf = SimpleDateFormat("HH:mm:ss", Locale.US)
+            val now = sdf.parse(sdf.format(calendar.time))
+            
+            fun parse(t: String) = try { 
+                if (t.count { it == ':' } == 1) sdf.parse("$t:00") else sdf.parse(t) 
+            } catch (e: Exception) { null }
+
+            val start = parse(startStr)
+            val end = parse(endStr)
 
             if (start != null && end != null && now != null) {
-                if (start.before(end)) {
-                    // Normal range (e.g., 08:00 - 20:00)
-                    now in start..end
-                } else {
-                    // Overnight range (e.g., 22:00 - 04:00)
-                    now >= start || now <= end
-                }
-            } else {
-                false
-            }
-        } catch (e: Exception) {
-            Log.e("HomeViewModel", "Error parsing time or day", e)
-            false
-        }
+                if (start.before(end)) now in start..end
+                else now >= start || now <= end // Overnight
+            } else false
+        } catch (e: Exception) { false }
     }
 }

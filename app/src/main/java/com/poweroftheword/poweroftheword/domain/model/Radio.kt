@@ -8,7 +8,7 @@ data class RadioResponse(
     val count: Int = 0,
     val next: String? = null,
     val previous: String? = null,
-    val results: List<Radio> = emptyList()
+    val results: List<RadioItem> = emptyList()
 )
 
 @Serializable

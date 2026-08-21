@@ -59,6 +59,7 @@ import com.poweroftheword.poweroftheword.util.convertToYoutubeOriginalUrl
 import com.poweroftheword.poweroftheword.util.formatDate
 import com.poweroftheword.poweroftheword.util.shimmerEffect
 import com.poweroftheword.poweroftheword.util.truncate
+import android.util.Log
 
 @Composable
 fun LiveSection(live: LiveItem, onLiveClick: (LiveItem) -> Unit) {
@@ -230,23 +231,10 @@ fun HomeScreen(
                     val activeLiveStreams = state.liveStreams.filter { it.isActive }
                     val activeRadios = state.radioStatus.filter { it.isActive }
 
-                    if ( activeRadios.isNotEmpty()) {
-//                        item {
-//                            SectionHeader(
-//                                title = "Live Stream",
-//                                onSeeAllClick = { onSeeAllLive() }
-//                            )
-//                        }
-
-//                        items(activeLiveStreams) { live ->
-//                            LiveSection(
-//                                live = live,
-//                                onLiveClick = { onLiveClick(live) }
-//                            )
-//                        }
+                    if (activeRadios.isNotEmpty()) {
                         item {
                             SectionHeader(
-                                title = "All Radio",
+                                title = "Live Radio",
                                 onSeeAllClick = { onSeeAllLiveRadio() }
                             )
                         }
@@ -257,6 +245,7 @@ fun HomeScreen(
                                 onRadioClick = { onRadioClick(radio) }
                             )
                         }
+                        Log.d("HomeScreen", "Active Radios: ${activeRadios.size}")
                     }
 
 
