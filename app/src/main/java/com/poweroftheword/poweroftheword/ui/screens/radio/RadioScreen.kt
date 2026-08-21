@@ -39,6 +39,7 @@ fun RadioScreen(
     settingsViewModel: SettingsViewModel = koinViewModel()
 ) {
     val radioStatus by viewModel.radioStatus.collectAsState()
+    val liveRadios = remember(radioStatus) { radioStatus.filter { it.isActive } }
     val isLoading by viewModel.isLoading.collectAsState()
     val currentlyPlayingId by viewModel.currentlyPlayingId.collectAsState()
     val isPlaying by viewModel.isPlaying.collectAsState()
@@ -83,7 +84,7 @@ fun RadioScreen(
         ) { padding ->
 
             PullToRefreshBox(
-                isRefreshing = isLoading && radioStatus.isNotEmpty(),
+                isRefreshing = isLoading && liveRadios.isNotEmpty(),
                 onRefresh = { viewModel.loadRadioData() },
                 modifier = Modifier.padding(padding).fillMaxSize()
             ) {
@@ -94,12 +95,12 @@ fun RadioScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
 
-                    if (isLoading && radioStatus.isEmpty()) {
+                    if (isLoading && liveRadios.isEmpty()) {
                         // 🔷 LOADING SKELETONS
                         item { RadioHeaderSkeleton() }
                         item {
                             Text(
-                                "ALL STATIONS",
+                                "LIVE STATIONS",
                                 color = if (isDark) Color.LightGray else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.Bold
@@ -111,7 +112,7 @@ fun RadioScreen(
                     } else {
                         // 🔷 HEADER
                         item {
-                            val playingRadio = radioStatus.find { it.id == currentlyPlayingId }
+                            val playingRadio = liveRadios.find { it.id == currentlyPlayingId }
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -155,17 +156,19 @@ fun RadioScreen(
                         }
 
                         // 🔷 TITLE
-                        item {
-                            Text(
-                                "ALL STATIONS",
-                                color = if (isDark) Color.LightGray else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.Bold
-                            )
+                        if (liveRadios.isNotEmpty()) {
+                            item {
+                                Text(
+                                    "LIVE STATIONS",
+                                    color = if (isDark) Color.LightGray else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
                         }
 
                         // 🔷 LIST
-                        items(radioStatus) { radio ->
+                        items(liveRadios) { radio ->
                             RadioStationCard(
                                 radio = radio,
                                 isCurrentlyPlaying = radio.id == currentlyPlayingId,
@@ -173,6 +176,21 @@ fun RadioScreen(
                                 isDark = isDark,
                                 onPlayClick = { viewModel.togglePlay(radio) }
                             )
+                        }
+                        
+                        if (!isLoading && liveRadios.isEmpty()) {
+                            item {
+                                Box(
+                                    modifier = Modifier.fillParentMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        "No radio stations are currently live",
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = if (isDark) Color.Gray else MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
                         }
                     }
                 }
